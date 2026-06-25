@@ -4,7 +4,7 @@ import type { UserRole } from '../../types'
 import {
   LayoutDashboard, Users, Briefcase, FileText, CreditCard,
   Clock, BarChart2, AlertTriangle, MessageSquare, UserCheck,
-  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield, X,
+  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield, X, Search,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -43,6 +43,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   client: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/browse-editors', icon: Search, label: 'Browse Editors' },
     { to: '/projects', icon: Briefcase, label: 'My Projects' },
     { to: '/contracts', icon: FileText, label: 'Contracts' },
     { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },

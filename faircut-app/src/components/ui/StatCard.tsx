@@ -14,7 +14,7 @@ interface StatCardProps {
 export function StatCard({ label, value, icon: Icon, change, changeType = 'neutral', accent = 'bg-navy-50', className }: StatCardProps) {
   return (
     <div className={cn('card flex items-start justify-between', className)}>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0 flex-1">
         <p className="stat-label">{label}</p>
         <p className="stat-value">{value}</p>
         {change && (

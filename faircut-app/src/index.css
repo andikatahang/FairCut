@@ -67,7 +67,7 @@
   .badge-navy   { @apply badge bg-navy-50 text-navy; }
   .page-title   { @apply text-2xl font-bold text-navy; }
   .page-subtitle { @apply text-sm text-navy/60 mt-1; }
-  .stat-value   { @apply text-3xl font-bold text-navy; }
+  .stat-value   { @apply text-xl font-bold text-navy leading-tight; }
   .stat-label   { @apply text-sm text-navy/60; }
   .table-wrapper { @apply overflow-x-auto rounded-xl border border-border; }
   .table thead  { @apply bg-navy/5 text-navy/60 text-xs uppercase tracking-wider; }

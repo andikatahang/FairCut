@@ -18,6 +18,7 @@ import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
 import DeliverablesPage from './pages/deliverables/DeliverablesPage'
 import AuditTrailPage from './pages/audit/AuditTrailPage'
+import BrowseEditorsPage from './pages/browse-editors/BrowseEditorsPage'
 
 const ALLOWED_PATHS: Record<UserRole, string[]> = {
   superadmin: [
@@ -34,7 +35,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/ess', '/attendance', '/settings',
   ],
   client: [
-    '/dashboard', '/projects', '/contracts', '/deliverables', '/chat',
+    '/dashboard', '/browse-editors', '/projects', '/contracts', '/deliverables', '/chat',
     '/payments', '/disputes', '/settings',
   ],
   mediator: [
@@ -87,6 +88,7 @@ function AppRoutes() {
         <Route path="/chat" element={<RoleGuard role={role}><ChatPage /></RoleGuard>} />
         <Route path="/ess" element={<RoleGuard role={role}><ESSPage /></RoleGuard>} />
         <Route path="/offboarding" element={<RoleGuard role={role}><OffboardingPage /></RoleGuard>} />
+        <Route path="/browse-editors" element={<RoleGuard role={role}><BrowseEditorsPage /></RoleGuard>} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
