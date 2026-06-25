@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Bell, Search, CheckCheck, AlertTriangle, FileText, CreditCard, User, Clock, PackageCheck, X } from 'lucide-react'
+import { Bell, Search, CheckCheck, AlertTriangle, FileText, CreditCard, User, Clock, PackageCheck, X, Menu } from 'lucide-react'
 import type { UserRole } from '../../types'
 
 const pageTitles: Record<string, string> = {
@@ -90,9 +90,10 @@ const NOTIFS_BY_ROLE: Record<UserRole, Notification[]> = {
 interface HeaderProps {
   pathname: string
   role: UserRole
+  onMenuClick: () => void
 }
 
-export function Header({ pathname, role }: HeaderProps) {
+export function Header({ pathname, role, onMenuClick }: HeaderProps) {
   const title = pageTitles[pathname] ?? 'FairCut'
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState<Notification[]>(() => NOTIFS_BY_ROLE[role] ?? [])
@@ -119,8 +120,15 @@ export function Header({ pathname, role }: HeaderProps) {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-border flex items-center justify-between px-6 sticky top-0 z-30">
-      <div>
+    <header className="h-16 bg-white border-b border-border flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden p-2 rounded-xl hover:bg-navy-50 text-navy/50 hover:text-navy transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <h1 className="text-base font-semibold text-navy">{title}</h1>
       </div>
 

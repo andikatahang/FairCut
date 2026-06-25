@@ -4,7 +4,7 @@ import type { UserRole } from '../../types'
 import {
   LayoutDashboard, Users, Briefcase, FileText, CreditCard,
   Clock, BarChart2, AlertTriangle, MessageSquare, UserCheck,
-  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield,
+  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield, X,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -26,9 +26,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   admin_manager: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/recruitment', icon: Users, label: 'Recruitment' },
     { to: '/attendance', icon: Clock, label: 'Attendance & Leave' },
     { to: '/performance', icon: BarChart2, label: 'Performance KPI' },
     { to: '/projects', icon: Briefcase, label: 'Projects' },
+    { to: '/offboarding', icon: UserCheck, label: 'Offboarding' },
   ],
   editor: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -76,21 +78,29 @@ interface SidebarProps {
   collapsed: boolean
   onCollapse: (v: boolean) => void
   onLogout: () => void
+  mobileOpen: boolean
+  onMobileClose: () => void
 }
 
-export function Sidebar({ role, userName, collapsed, onCollapse, onLogout }: SidebarProps) {
+export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobileOpen, onMobileClose }: SidebarProps) {
   const items = navByRole[role] ?? navByRole.superadmin
 
   return (
     <aside className={cn(
-      'fixed left-0 top-0 h-full bg-navy flex flex-col transition-all duration-300 z-40',
-      collapsed ? 'w-16' : 'w-60'
+      'fixed left-0 top-0 h-full bg-navy flex flex-col z-50',
+      'transition-all duration-300',
+      // Desktop: always visible, width controlled by collapsed state
+      'lg:translate-x-0',
+      collapsed ? 'lg:w-16' : 'lg:w-60',
+      // Mobile: full width, slide in/out
+      'w-60',
+      mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     )}>
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               <Scissors className="w-4 h-4 text-navy" />
             </div>
             <span className="text-white font-bold text-lg tracking-tight">FairCut</span>
@@ -101,11 +111,24 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout }: Sid
             <Scissors className="w-4 h-4 text-navy" />
           </div>
         )}
-        {!collapsed && (
-          <button onClick={() => onCollapse(true)} className="p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors">
-            <ChevronLeft className="w-4 h-4" />
+        <div className="flex items-center gap-1">
+          {/* Mobile close */}
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <X className="w-4 h-4" />
           </button>
-        )}
+          {/* Desktop collapse */}
+          {!collapsed && (
+            <button
+              onClick={() => onCollapse(true)}
+              className="hidden lg:block p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Role label */}
@@ -124,20 +147,23 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout }: Sid
             className={({ isActive }) => cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer',
               isActive ? 'text-white bg-white/15' : 'text-white/60 hover:text-white hover:bg-white/10',
-              collapsed && 'justify-center'
+              collapsed && 'lg:justify-center'
             )}
             title={collapsed ? label : undefined}
           >
             <Icon className="w-4 h-4 flex-shrink-0" />
-            {!collapsed && <span>{label}</span>}
+            <span className={cn(collapsed && 'lg:hidden')}>{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      {/* User + collapse/expand */}
+      {/* User + controls */}
       <div className="px-2 py-3 border-t border-white/10 space-y-1">
         {collapsed ? (
-          <button onClick={() => onCollapse(false)} className="w-full flex justify-center p-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+          <button
+            onClick={() => onCollapse(false)}
+            className="hidden lg:flex w-full justify-center p-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          >
             <ChevronLeft className="w-4 h-4 rotate-180" />
           </button>
         ) : (
@@ -153,15 +179,26 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout }: Sid
         )}
         <button
           onClick={onLogout}
-          className={cn('w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors', collapsed && 'justify-center')}
+          className={cn(
+            'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors',
+            collapsed && 'lg:justify-center'
+          )}
           title={collapsed ? 'Logout' : undefined}
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Logout</span>}
+          <span className={cn(collapsed && 'lg:hidden')}>Logout</span>
         </button>
-        <NavLink to="/settings" className={cn('flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors', collapsed && 'justify-center')} title={collapsed ? 'Settings' : undefined}>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) => cn(
+            'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+            isActive ? 'text-white bg-white/15' : 'text-white/60 hover:text-white hover:bg-white/10',
+            collapsed && 'lg:justify-center'
+          )}
+          title={collapsed ? 'Settings' : undefined}
+        >
           <Settings className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Settings</span>}
+          <span className={cn(collapsed && 'lg:hidden')}>Settings</span>
         </NavLink>
       </div>
     </aside>

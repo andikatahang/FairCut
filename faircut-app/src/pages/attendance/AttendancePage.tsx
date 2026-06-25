@@ -81,7 +81,7 @@ export default function AttendancePage() {
           <div className="flex justify-end">
             <button className="btn-primary"><Calendar className="w-4 h-4"/>Request Leave</button>
           </div>
-          <div className="card p-0 overflow-hidden">
+          <div className="card p-0 overflow-hidden"><div className="overflow-x-auto">
             <table className="table">
               <thead><tr><th>Editor</th><th>Type</th><th>Start</th><th>End</th><th>Status</th><th>Submitted</th></tr></thead>
               <tbody>
@@ -97,7 +97,7 @@ export default function AttendancePage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div></div>
         </div>
       )}
 

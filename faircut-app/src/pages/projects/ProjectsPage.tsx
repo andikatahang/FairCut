@@ -29,7 +29,7 @@ export default function ProjectsPage() {
         <button className="btn-primary"><Plus className="w-4 h-4"/>New Project</button>
       </div>
 
-      <div className="card p-0 overflow-hidden">
+      <div className="card p-0 overflow-hidden"><div className="overflow-x-auto">
         <table className="table">
           <thead><tr><th>Project</th><th>Client</th><th>Editor</th><th>Value</th><th>Status</th><th>Started</th></tr></thead>
           <tbody>
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </div></div>
     </div>
   )
 }

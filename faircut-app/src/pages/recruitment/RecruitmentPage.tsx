@@ -182,7 +182,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
               <button className="btn-primary"><Plus className="w-4 h-4" /> New Job Posting</button>
             </div>
           )}
-          <div className="card p-0 overflow-hidden">
+          <div className="card p-0 overflow-hidden"><div className="overflow-x-auto">
             <table className="table">
               <thead><tr><th>Title</th><th>Specialization</th><th>Applicants</th><th>Status</th><th>Created</th></tr></thead>
               <tbody>
@@ -197,7 +197,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div></div>
         </div>
       )}
 
