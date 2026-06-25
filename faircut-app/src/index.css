@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: #FBFBFB;
+    color: #0A1628;
+    margin: 0;
+  }
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-navy text-white px-5 py-2.5 rounded-xl font-medium text-sm
+           hover:bg-navy-600 active:bg-navy-700
+           transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
+  }
+  .btn-secondary {
+    @apply bg-white text-navy border border-navy/20 px-5 py-2.5 rounded-xl font-medium text-sm
+           hover:bg-navy-50 active:bg-navy-100
+           transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
+  }
+  .btn-ghost {
+    @apply text-navy/70 px-4 py-2 rounded-xl font-medium text-sm
+           hover:bg-navy-50 hover:text-navy
+           transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white px-5 py-2.5 rounded-xl font-medium text-sm
+           hover:bg-red-700 active:bg-red-800
+           transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-border shadow-card p-6;
+  }
+  .card-sm {
+    @apply bg-white rounded-xl border border-border shadow-card p-4;
+  }
+  .input {
+    @apply w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm
+           focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy/40
+           placeholder:text-gray-400 transition-all duration-150;
+  }
+  .label {
+    @apply block text-sm font-medium text-navy/80 mb-1.5;
+  }
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-blue   { @apply badge bg-blue-50 text-blue-700; }
+  .badge-green  { @apply badge bg-emerald-50 text-emerald-700; }
+  .badge-yellow { @apply badge bg-amber-50 text-amber-700; }
+  .badge-red    { @apply badge bg-red-50 text-red-700; }
+  .badge-gray   { @apply badge bg-gray-100 text-gray-600; }
+  .badge-navy   { @apply badge bg-navy-50 text-navy; }
+  .page-title   { @apply text-2xl font-bold text-navy; }
+  .page-subtitle { @apply text-sm text-navy/60 mt-1; }
+  .stat-value   { @apply text-3xl font-bold text-navy; }
+  .stat-label   { @apply text-sm text-navy/60; }
+  .table-wrapper { @apply overflow-x-auto rounded-xl border border-border; }
+  .table thead  { @apply bg-navy/5 text-navy/60 text-xs uppercase tracking-wider; }
+  .table thead th { @apply px-4 py-3 text-left font-medium; }
+  .table tbody tr { @apply border-t border-border hover:bg-navy-50/30 transition-colors; }
+  .table tbody td { @apply px-4 py-3 text-navy/80; }
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+           text-white/70 hover:text-white hover:bg-white/10
+           transition-all duration-150 cursor-pointer;
+  }
+  .sidebar-link.active { @apply text-white bg-white/15; }
+}
