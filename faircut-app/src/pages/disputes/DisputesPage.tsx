@@ -4,7 +4,7 @@ import { StatusBadge } from '../../components/ui/Badge'
 import { Modal } from '../../components/ui/Modal'
 import { formatDateTime, formatDate } from '../../lib/utils'
 import { mockDisputes } from '../../data/mockData'
-import type { Dispute } from '../../types'
+import type { Dispute, UserRole } from '../../types'
 
 const resolutionOptions = [
   { value: 'free_revision', label: 'Free Revision', desc: 'Editor re-works at no charge' },
@@ -14,7 +14,8 @@ const resolutionOptions = [
   { value: 'quality_sanction', label: 'Quality Sanction', desc: 'Free revision + editor flag' },
 ]
 
-export default function DisputesPage() {
+export default function DisputesPage({ role }: { role: UserRole }) {
+  const isMediator = role === 'mediator' || role === 'superadmin'
   const [selected, setSelected] = useState<Dispute | null>(mockDisputes[0])
   const [decideModal, setDecideModal] = useState(false)
   const [resolution, setResolution] = useState('')
@@ -103,12 +104,16 @@ export default function DisputesPage() {
                   <p className="text-sm text-emerald-700">{selected.resolution_note}</p>
                   <p className="text-xs text-emerald-600 mt-2">Resolved {selected.resolved_at ? formatDate(selected.resolved_at) : '—'}</p>
                 </div>
-              ) : (
+              ) : isMediator ? (
                 <div className="flex gap-3">
                   <button onClick={() => setDecideModal(true)} className="btn-primary flex-1 justify-center">
                     <AlertTriangle className="w-4 h-4" /> Make Decision
                   </button>
                   <button className="btn-secondary">Request More Evidence</button>
+                </div>
+              ) : (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+                  Awaiting mediator decision.
                 </div>
               )}
 

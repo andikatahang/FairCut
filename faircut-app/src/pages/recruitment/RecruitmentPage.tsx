@@ -4,7 +4,7 @@ import { StatusBadge } from '../../components/ui/Badge'
 import { Modal } from '../../components/ui/Modal'
 import { formatDate } from '../../lib/utils'
 import { mockApplicants, mockJobPostings } from '../../data/mockData'
-import type { Applicant } from '../../types'
+import type { Applicant, UserRole } from '../../types'
 
 const STAGES = ['applied','screening','interview','offered','offer_accepted','confirmed'] as const
 type Stage = typeof STAGES[number]
@@ -23,7 +23,10 @@ const STAGE_COLORS: Record<string, string> = {
   confirmed: 'bg-navy',
 }
 
-export default function RecruitmentPage() {
+const CAN_MANAGE_JOBS: UserRole[] = ['superadmin', 'admin_manager']
+
+export default function RecruitmentPage({ role }: { role: UserRole }) {
+  const canManage = CAN_MANAGE_JOBS.includes(role)
   const [tab, setTab] = useState<'pipeline'|'postings'|'dss'>('pipeline')
   const [selectedJob, setSelectedJob] = useState(mockJobPostings[0].job_id)
   const [dssModal, setDssModal] = useState<Applicant | null>(null)
@@ -90,7 +93,7 @@ export default function RecruitmentPage() {
                 </button>
               ))}
             </div>
-            <button className="btn-primary"><Plus className="w-4 h-4" /> Post Job</button>
+            {canManage && <button className="btn-primary"><Plus className="w-4 h-4" /> Post Job</button>}
           </div>
 
           <p className="text-xs text-navy/40 flex items-center gap-1">
@@ -174,9 +177,11 @@ export default function RecruitmentPage() {
       {/* Job postings tab */}
       {tab === 'postings' && (
         <div className="space-y-4">
-          <div className="flex justify-end">
-            <button className="btn-primary"><Plus className="w-4 h-4" /> New Job Posting</button>
-          </div>
+          {canManage && (
+            <div className="flex justify-end">
+              <button className="btn-primary"><Plus className="w-4 h-4" /> New Job Posting</button>
+            </div>
+          )}
           <div className="card p-0 overflow-hidden">
             <table className="table">
               <thead><tr><th>Title</th><th>Specialization</th><th>Applicants</th><th>Status</th><th>Created</th></tr></thead>
