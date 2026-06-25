@@ -4,7 +4,7 @@ import type { UserRole } from '../../types'
 import {
   LayoutDashboard, Users, Briefcase, FileText, CreditCard,
   Clock, BarChart2, AlertTriangle, MessageSquare, UserCheck,
-  Settings, ChevronLeft, Scissors, LogOut,
+  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -19,8 +19,10 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/attendance', icon: Clock, label: 'Attendance & Payroll' },
     { to: '/performance', icon: BarChart2, label: 'Performance KPI' },
     { to: '/disputes', icon: AlertTriangle, label: 'Disputes' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
     { to: '/offboarding', icon: UserCheck, label: 'Offboarding' },
+    { to: '/audit', icon: Shield, label: 'Audit Trail' },
   ],
   admin_manager: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -33,6 +35,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/projects', icon: Briefcase, label: 'My Projects' },
     { to: '/contracts', icon: FileText, label: 'Contracts' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
     { to: '/ess', icon: UserCheck, label: 'Self Service' },
     { to: '/attendance', icon: Clock, label: 'Attendance' },
   ],
@@ -40,6 +43,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/projects', icon: Briefcase, label: 'My Projects' },
     { to: '/contracts', icon: FileText, label: 'Contracts' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
     { to: '/payments', icon: CreditCard, label: 'Payments' },
     { to: '/disputes', icon: AlertTriangle, label: 'Disputes' },
@@ -53,6 +57,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/payments', icon: CreditCard, label: 'Escrow & Finance' },
     { to: '/attendance', icon: Clock, label: 'Payroll' },
+    { to: '/audit', icon: Shield, label: 'Audit Trail' },
   ],
 }
 

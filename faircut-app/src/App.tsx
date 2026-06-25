@@ -17,6 +17,8 @@ import ESSPage from './pages/ess/ESSPage'
 import ChatPage from './pages/chat/ChatPage'
 import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
+import DeliverablesPage from './pages/deliverables/DeliverablesPage'
+import AuditTrailPage from './pages/audit/AuditTrailPage'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -62,6 +64,8 @@ function AppRoutes() {
                 <Route path="/disputes" element={<DisputesPage />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/ess" element={<ESSPage />} />
+                <Route path="/deliverables" element={<DeliverablesPage />} />
+                <Route path="/audit" element={<AuditTrailPage />} />
                 <Route path="/offboarding" element={<OffboardingPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />

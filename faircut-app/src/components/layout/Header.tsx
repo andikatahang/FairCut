@@ -13,6 +13,8 @@ const pageTitles: Record<string, string> = {
   '/chat': 'In-App Chat',
   '/ess': 'Employee Self-Service',
   '/offboarding': 'Offboarding',
+  '/deliverables': 'Deliverable Integrity',
+  '/audit': 'Audit Trail',
   '/settings': 'Settings',
 }
 
