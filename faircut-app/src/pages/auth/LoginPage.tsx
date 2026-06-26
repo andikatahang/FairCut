@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Scissors, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight } from 'lucide-react'
+import logoLight from '../../assets/logo-light.png'
+import logoDark from '../../assets/logo-dark.png'
 import type { UserRole } from '../../types'
 
 const roles: { value: UserRole; label: string; desc: string }[] = [
@@ -23,12 +25,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen bg-primary flex">
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-[44%] bg-navy p-12">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center">
-            <Scissors className="w-5 h-5 text-navy" />
-          </div>
-          <span className="text-white font-bold text-xl">FairCut</span>
-        </div>
+        <img src={logoLight} alt="FairCut" className="h-8 w-auto object-contain object-left" />
         <div>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
             Fair revisions.<br />Fair pay.<br />Fair outcomes.
@@ -50,11 +47,8 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 mb-10">
-            <div className="w-9 h-9 bg-navy rounded-xl flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-navy font-bold text-xl">FairCut</span>
+          <div className="lg:hidden mb-10">
+            <img src={logoDark} alt="FairCut" className="h-8 w-auto object-contain object-left" />
           </div>
 
           <h1 className="text-3xl font-bold text-navy mb-1">Welcome back</h1>

@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 import type { UserRole } from '../../types'
+import logoLight from '../../assets/logo-light.png'
 import {
   LayoutDashboard, Users, Briefcase, FileText, CreditCard,
   Clock, BarChart2, AlertTriangle, MessageSquare, UserCheck,
-  Settings, ChevronLeft, Scissors, LogOut, PackageCheck, Shield, X, Search,
+  Settings, ChevronLeft, LogOut, PackageCheck, Shield, X, Search,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -100,17 +101,10 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobil
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-              <Scissors className="w-4 h-4 text-navy" />
-            </div>
-            <span className="text-white font-bold text-lg tracking-tight">FairCut</span>
-          </div>
+          <img src={logoLight} alt="FairCut" className="h-7 w-auto object-contain object-left" />
         )}
         {collapsed && (
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center mx-auto">
-            <Scissors className="w-4 h-4 text-navy" />
-          </div>
+          <img src={logoLight} alt="FairCut" className="h-7 w-auto object-contain mx-auto" />
         )}
         <div className="flex items-center gap-1">
           {/* Mobile close */}
