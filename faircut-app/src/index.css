@@ -13,8 +13,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    background-color: #FBFBFB;
-    color: #0A1628;
+    background-color: #F8F8F8;
+    color: #1a1a1a;
     margin: 0;
   }
   #root {
@@ -24,18 +24,18 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-navy text-white px-5 py-2.5 rounded-xl font-medium text-sm
-           hover:bg-navy-600 active:bg-navy-700
+    @apply bg-[#2b2b2b] text-white px-5 py-2.5 rounded-xl font-medium text-sm
+           hover:bg-[#1a1a1a] active:bg-[#111111]
            transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
   }
   .btn-secondary {
-    @apply bg-white text-navy border border-navy/20 px-5 py-2.5 rounded-xl font-medium text-sm
-           hover:bg-navy-50 active:bg-navy-100
+    @apply bg-white text-[#2b2b2b] border border-[#e4e4e4] px-5 py-2.5 rounded-xl font-medium text-sm
+           hover:bg-[#f5f5f5] active:bg-[#ebebeb]
            transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
   }
   .btn-ghost {
-    @apply text-navy/70 px-4 py-2 rounded-xl font-medium text-sm
-           hover:bg-navy-50 hover:text-navy
+    @apply text-[#555] px-4 py-2 rounded-xl font-medium text-sm
+           hover:bg-[#f0f0f0] hover:text-[#1a1a1a]
            transition-colors duration-150 inline-flex items-center gap-2 cursor-pointer;
   }
   .btn-danger {
@@ -55,7 +55,7 @@
            placeholder:text-gray-400 transition-all duration-150;
   }
   .label {
-    @apply block text-sm font-medium text-navy/80 mb-1.5;
+    @apply block text-sm font-medium text-[#333] mb-1.5;
   }
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;

@@ -1,4 +1,4 @@
-import { Briefcase, Users, AlertTriangle, CreditCard, TrendingUp, Clock } from 'lucide-react'
+import { Briefcase, Users, AlertTriangle, CreditCard, TrendingUp, Clock, Search, MessageSquare, CheckCircle2 } from 'lucide-react'
 import { StatCard } from '../../components/ui/StatCard'
 import { StatusBadge } from '../../components/ui/Badge'
 import { formatCurrency, formatDate } from '../../lib/utils'
@@ -17,7 +17,96 @@ const projectData = [
   { month: 'May', completed: 10, cancelled: 1 }, { month: 'Jun', completed: 9, cancelled: 0 },
 ]
 
+function ClientDashboardView() {
+  const activeProjects = mockProjects.filter(p => ['in_progress', 'in_review', 'revision'].includes(p.status))
+  const pendingReview = mockProjects.filter(p => p.status === 'in_review')
+  const openDisputes = mockDisputes.filter(d => d.status !== 'resolved')
+  const totalSpent = mockTransactions
+    .filter(t => ['dp_payment', 'final_payment'].includes(t.type) && t.status === 'success')
+    .reduce((s, t) => s + t.amount, 0)
+
+  return (
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Active Projects', value: activeProjects.length, color: 'text-[#1a1a1a]' },
+          { label: 'Ready to Review', value: pendingReview.length, color: 'text-[#16a34a]' },
+          { label: 'Open Disputes', value: openDisputes.length, color: openDisputes.length > 0 ? 'text-[#ca8a04]' : 'text-[#1a1a1a]' },
+          { label: 'Total Spent', value: formatCurrency(totalSpent), color: 'text-[#1a1a1a]', small: true },
+        ].map(s => (
+          <div key={s.label} className="bg-white border border-[#e4e4e4] rounded-2xl p-5">
+            <p className={`${s.small ? 'text-xl' : 'text-3xl'} font-bold ${s.color} leading-none`}>{s.value}</p>
+            <p className="text-sm text-[#888] mt-2">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick actions */}
+      <div className="flex flex-wrap gap-3">
+        <a href="/browse-editors" className="flex items-center gap-2 bg-[#2b2b2b] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a1a1a] transition-colors">
+          <Search className="w-4 h-4" /> Browse Editors
+        </a>
+        <a href="/projects" className="flex items-center gap-2 border border-[#e4e4e4] text-[#1a1a1a] px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-[#f0f0f0] transition-colors bg-white">
+          <Briefcase className="w-4 h-4" /> My Projects
+        </a>
+        <a href="/chat" className="flex items-center gap-2 border border-[#e4e4e4] text-[#1a1a1a] px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-[#f0f0f0] transition-colors bg-white">
+          <MessageSquare className="w-4 h-4" /> Chat
+        </a>
+      </div>
+
+      {/* Recent projects + disputes */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-[#e4e4e4] rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-[#1a1a1a]">My Projects</h3>
+            <a href="/projects" className="text-xs text-[#888] hover:text-[#1a1a1a] transition-colors">View all →</a>
+          </div>
+          <div className="space-y-0">
+            {mockProjects.slice(0, 5).map(p => (
+              <div key={p.project_id} className="flex items-center justify-between py-3 border-b border-[#f0f0f0] last:border-0">
+                <div className="min-w-0 mr-3">
+                  <p className="text-sm font-medium text-[#1a1a1a] truncate">{p.title}</p>
+                  <p className="text-xs text-[#999] mt-0.5">{p.editor_name}</p>
+                </div>
+                <StatusBadge status={p.status} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#e4e4e4] rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-[#1a1a1a]">Disputes & Alerts</h3>
+            <a href="/disputes" className="text-xs text-[#888] hover:text-[#1a1a1a] transition-colors">View all →</a>
+          </div>
+          {openDisputes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-[#bbb]">
+              <CheckCircle2 className="w-8 h-8 mb-2 opacity-50" />
+              <p className="text-sm">No active disputes</p>
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {openDisputes.slice(0, 4).map(d => (
+                <div key={d.dispute_id} className="flex items-start gap-3 py-3 border-b border-[#f0f0f0] last:border-0">
+                  <AlertTriangle className="w-4 h-4 text-[#ca8a04] mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[#1a1a1a] truncate">{d.project_title}</p>
+                    <p className="text-xs text-[#999] mt-0.5 line-clamp-1">{d.reason}</p>
+                  </div>
+                  <StatusBadge status={d.status} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardPage({ role }: { role: UserRole }) {
+  if (role === 'client') return <ClientDashboardView />
   const activeProjects = mockProjects.filter(p => ['in_progress','in_review','revision'].includes(p.status)).length
   const openDisputes = mockDisputes.filter(d => d.status === 'open' || d.status === 'in_mediation').length
   const totalRevenue = mockTransactions.filter(t => t.type === 'escrow_release' && t.status === 'success').reduce((s, t) => s + t.amount, 0)
