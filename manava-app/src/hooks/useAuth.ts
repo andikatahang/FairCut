@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { User, UserRole } from '../types'
 import { mockUsers } from '../data/mockData'
 
-const SESSION_KEY = 'faircut_role'
+const SESSION_KEY = 'manava_role'
 
 function getPersistedUser(): User | null {
   try {

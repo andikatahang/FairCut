@@ -19,13 +19,13 @@ interface LoginPageProps { onLogin: (role: UserRole) => void }
 export default function LoginPage({ onLogin }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRole, setSelectedRole] = useState<UserRole>('superadmin')
-  const [email, setEmail] = useState('admin@faircut.id')
+  const [email, setEmail] = useState('admin@manava.id')
 
   return (
     <div className="min-h-screen bg-primary flex">
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-[44%] bg-navy p-12">
-        <img src={logoLight} alt="FairCut" className="h-8 w-auto object-contain object-left" />
+        <img src={logoLight} alt="Manava" className="h-8 w-auto object-contain object-left" />
         <div>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
             Fair revisions.<br />Fair pay.<br />Fair outcomes.
@@ -48,7 +48,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-10">
-            <img src={logoDark} alt="FairCut" className="h-8 w-auto object-contain object-left" />
+            <img src={logoDark} alt="Manava" className="h-8 w-auto object-contain object-left" />
           </div>
 
           <h1 className="text-3xl font-bold text-navy mb-1">Welcome back</h1>
@@ -57,7 +57,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           <div className="space-y-5">
             <div>
               <label className="label">Email address</label>
-              <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@faircut.id" />
+              <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@manava.id" />
             </div>
             <div>
               <label className="label">Password</label>

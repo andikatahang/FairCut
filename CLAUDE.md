@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**FairCut** is an Enterprise Resource Planning (ERP) platform for professional visual services companies (photo retouching studios, video editing houses, color grading labs). It unifies Human Resource Management (HRM) and Sales of Services (SoS) operations to provide:
+**Manava** is an Enterprise Resource Planning (ERP) platform for professional visual services companies (photo retouching studios, video editing houses, color grading labs). It unifies Human Resource Management (HRM) and Sales of Services (SoS) operations to provide:
 
 - **Fair revision limits** with objective scope definition and revision classification
 - **Transparent compensation** tied to performance metrics
@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Current Status
 
-This is a **planning/design phase** project. All architectural and business logic design is documented in `faircut-prd.md`. Reference UI designs are in `referensi-tampilan/` directory.
+This is a **planning/design phase** project. All architectural and business logic design is documented in `prd.md`. Reference UI designs are in `referensi-tampilan/` directory.
 
 **No production code yet.** When implementation begins:
 1. Technology stack will be determined (likely web-based, full-stack)
@@ -209,7 +209,7 @@ Once deployment strategy is finalized, document:
 
 ## Important Files & References
 
-- **`faircut-prd.md`** — Complete Product Requirements Document; describes all workflows, KPIs, and success metrics
+- **`prd.md`** — Complete Product Requirements Document; describes all workflows, KPIs, and success metrics
 - **`referensi-tampilan/`** — UI design references for landing page, authentication, dashboard, and mobile layouts
 - **`.claude/settings.json`** — Claude-specific plugin configuration (frontend-design enabled)
 
@@ -275,7 +275,7 @@ When implementing:
 
 ## Escalation & Support
 
-- **Questions about product/business logic**: Refer to `faircut-prd.md` (sections 1-4 cover objectives, workflows, KPIs)
+- **Questions about product/business logic**: Refer to `prd.md` (sections 1-4 cover objectives, workflows, KPIs)
 - **Questions about UI/design intent**: Review reference designs in `referensi-tampilan/`
 - **Team coordination**: Daily standups should sync cross-module integration points (HR + Sales + Finance)
 - **Architectural decisions**: Document in commit message & PRD amendments as needed

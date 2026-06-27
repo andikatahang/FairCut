@@ -94,7 +94,7 @@ interface HeaderProps {
 }
 
 export function Header({ pathname, role, onMenuClick }: HeaderProps) {
-  const title = pageTitles[pathname] ?? 'FairCut'
+  const title = pageTitles[pathname] ?? 'Manava'
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState<Notification[]>(() => NOTIFS_BY_ROLE[role] ?? [])
   const unread = notifs.filter(n => !n.read).length

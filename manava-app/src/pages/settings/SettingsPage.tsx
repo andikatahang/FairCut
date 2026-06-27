@@ -40,7 +40,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
 
   // General
-  const [company, setCompany] = useState('FairCut Visual Services')
+  const [company, setCompany] = useState('Manava Visual Services')
   const [timezone, setTimezone] = useState('Asia/Jakarta')
   const [currency, setCurrency] = useState('IDR')
 

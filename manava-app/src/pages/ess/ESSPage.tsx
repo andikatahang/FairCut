@@ -17,7 +17,7 @@ const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
 const MY_EDITOR = {
   editor_id: 'e1',
   full_name: 'Budi Santoso',
-  email: 'budi@faircut.id',
+  email: 'budi@manava.id',
   department: 'Photo Retouching',
   specialization: ['Product Retouch', 'Color Correction'],
   base_salary: 8000000,

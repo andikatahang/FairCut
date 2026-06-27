@@ -1,4 +1,4 @@
-# **FairCut - Comprehensive Product Requirements Document**
+# **Manava - Comprehensive Product Requirements Document**
 ## **v2.2 Final - Detailed Module & Workflow Specification**
 
 **Integrated Enterprise Resource Planning (ERP) Platform**  
@@ -18,7 +18,7 @@
 
 ## **EXECUTIVE SUMMARY**
 
-FairCut is a Small Integrated ERP system that unifies Human Resource Management (HRM) and Sales of Services (SoS) operations for professional visual services companies. The platform eliminates operational silos between HR (recruitment, attendance, compensation, performance) and Sales (project booking, scope definition, revision control, payment). 
+Manava is a Small Integrated ERP system that unifies Human Resource Management (HRM) and Sales of Services (SoS) operations for professional visual services companies. The platform eliminates operational silos between HR (recruitment, attendance, compensation, performance) and Sales (project booking, scope definition, revision control, payment). 
 
 **Core Value Proposition:**
 - Editors: Fair revision limits, transparent compensation, autonomous HR operations

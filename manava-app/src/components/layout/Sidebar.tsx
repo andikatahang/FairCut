@@ -101,10 +101,10 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobil
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
         {!collapsed && (
-          <img src={logoLight} alt="FairCut" className="h-7 w-auto object-contain object-left" />
+          <img src={logoLight} alt="Manava" className="h-7 w-auto object-contain object-left" />
         )}
         {collapsed && (
-          <img src={logoLight} alt="FairCut" className="h-7 w-auto object-contain mx-auto" />
+          <img src={logoLight} alt="Manava" className="h-7 w-auto object-contain mx-auto" />
         )}
         <div className="flex items-center gap-1">
           {/* Mobile close */}

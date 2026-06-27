@@ -103,7 +103,7 @@ function Nav() {
   return (
     <header className="sticky top-0 z-50 bg-[#FBFBFB]/85 backdrop-blur-md border-b border-[#EDEDED]">
       <nav aria-label="Main navigation" className="max-w-[1140px] mx-auto px-6 h-[64px] flex items-center justify-between">
-        <img src={logoDark} alt="FairCut" className="h-7 w-auto object-contain object-left" />
+        <img src={logoDark} alt="Manava" className="h-7 w-auto object-contain object-left" />
         <div className="hidden md:flex items-center gap-0.5">
           {['Platform', 'How it works', 'Roles', 'FAQ'].map(item => (
             <a
@@ -158,7 +158,7 @@ function Hero() {
         </h1>
 
         <p className="text-[clamp(1rem,1.8vw,1.18rem)] text-[#9aa3bd] max-w-[560px] mx-auto mb-10 leading-[1.65]">
-          FairCut unifies HR, service delivery, and finance for visual studios — scope
+          Manava unifies HR, service delivery, and finance for visual studios — scope
           certainty, secure escrow payments, and objective dispute resolution.
         </p>
 
@@ -356,7 +356,7 @@ function FaqSection() {
         <SectionHead
           eyebrow="FAQ"
           title="Everything to know before you start."
-          subtitle="The short version of how FairCut keeps work and pay fair."
+          subtitle="The short version of how Manava keeps work and pay fair."
         />
         <div className="divide-y divide-[#EDEDED] border-y border-[#EDEDED]">
           {faqs.map(({ q, a }, i) => {
@@ -414,7 +414,7 @@ function FinalCta() {
           to="/login"
           className="group inline-flex items-center gap-2.5 bg-[#D0F100] hover:brightness-95 text-[#021526] font-semibold px-8 py-4 rounded-full text-[15px] transition-all duration-200"
         >
-          Launch FairCut Demo
+          Launch Manava Demo
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-150" />
         </Link>
       </div>
@@ -427,11 +427,11 @@ function Footer() {
   return (
     <footer className="bg-[#021526] border-t border-white/[0.08] py-12">
       <div className="max-w-[1140px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-5">
-        <img src={logoLight} alt="FairCut" className="h-6 w-auto object-contain object-left" />
+        <img src={logoLight} alt="Manava" className="h-6 w-auto object-contain object-left" />
         <p className="text-white/40 text-[12px] text-center">
           Kelompok 5 · Universitas Islam Indonesia · ISD Project v2.2
         </p>
-        <p className="text-white/40 text-[12px]">© 2026 FairCut</p>
+        <p className="text-white/40 text-[12px]">© 2026 Manava</p>
       </div>
     </footer>
   )

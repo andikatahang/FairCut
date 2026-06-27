@@ -3,26 +3,26 @@ import type { User, Editor, Applicant, JobPosting, Project, Dispute, EditorMetri
 export const currentUser: User = {
   user_id: 'u1',
   full_name: 'Ahmad Superadmin',
-  email: 'admin@faircut.id',
+  email: 'admin@manava.id',
   role: 'superadmin',
   is_active: true,
 }
 
 export const mockUsers: Record<string, User> = {
-  superadmin: { user_id: 'u1', full_name: 'Ahmad Superadmin', email: 'admin@faircut.id', role: 'superadmin', is_active: true },
-  editor: { user_id: 'u2', full_name: 'Budi Editor', email: 'budi@faircut.id', role: 'editor', is_active: true },
+  superadmin: { user_id: 'u1', full_name: 'Ahmad Superadmin', email: 'admin@manava.id', role: 'superadmin', is_active: true },
+  editor: { user_id: 'u2', full_name: 'Budi Editor', email: 'budi@manava.id', role: 'editor', is_active: true },
   client: { user_id: 'u3', full_name: 'Citra Client', email: 'citra@client.com', role: 'client', is_active: true },
-  mediator: { user_id: 'u4', full_name: 'Dewi Mediator', email: 'dewi@faircut.id', role: 'mediator', is_active: true },
-  admin_manager: { user_id: 'u5', full_name: 'Eko Manager', email: 'eko@faircut.id', role: 'admin_manager', is_active: true },
-  finance: { user_id: 'u6', full_name: 'Fani Finance', email: 'fani@faircut.id', role: 'finance', is_active: true },
+  mediator: { user_id: 'u4', full_name: 'Dewi Mediator', email: 'dewi@manava.id', role: 'mediator', is_active: true },
+  admin_manager: { user_id: 'u5', full_name: 'Eko Manager', email: 'eko@manava.id', role: 'admin_manager', is_active: true },
+  finance: { user_id: 'u6', full_name: 'Fani Finance', email: 'fani@manava.id', role: 'finance', is_active: true },
 }
 
 export const mockEditors: Editor[] = [
-  { editor_id: 'e1', user_id: 'u2', full_name: 'Budi Santoso', email: 'budi@faircut.id', department: 'Photo Retouching', specialization: ['product_retouch', 'color_correction'], base_salary: 8000000, status: 'active', onboarded_at: '2026-01-15', rating: 4.8, completion_rate: 94, active_projects: 2, performance_band: 'excellent' },
-  { editor_id: 'e2', user_id: 'u7', full_name: 'Sari Dewi', email: 'sari@faircut.id', department: 'Video Editing', specialization: ['video_edit', 'color_grading'], base_salary: 9000000, status: 'active', onboarded_at: '2026-02-01', rating: 4.5, completion_rate: 88, active_projects: 1, performance_band: 'good' },
-  { editor_id: 'e3', user_id: 'u8', full_name: 'Andi Kurniawan', email: 'andi@faircut.id', department: 'Photo Retouching', specialization: ['portrait_retouch', 'background_removal'], base_salary: 7500000, status: 'active', onboarded_at: '2026-03-10', rating: 3.9, completion_rate: 75, active_projects: 3, performance_band: 'good' },
-  { editor_id: 'e4', user_id: 'u9', full_name: 'Maya Putri', email: 'maya@faircut.id', department: 'Color Grading', specialization: ['color_grading', 'vfx'], base_salary: 10000000, status: 'active', onboarded_at: '2026-01-05', rating: 4.9, completion_rate: 97, active_projects: 2, performance_band: 'excellent' },
-  { editor_id: 'e5', user_id: 'u10', full_name: 'Rizky Hakim', email: 'rizky@faircut.id', department: 'Video Editing', specialization: ['video_edit', 'motion_graphics'], base_salary: 8500000, status: 'suspended', onboarded_at: '2026-02-20', rating: 2.8, completion_rate: 60, active_projects: 0, performance_band: 'needs_improvement' },
+  { editor_id: 'e1', user_id: 'u2', full_name: 'Budi Santoso', email: 'budi@manava.id', department: 'Photo Retouching', specialization: ['product_retouch', 'color_correction'], base_salary: 8000000, status: 'active', onboarded_at: '2026-01-15', rating: 4.8, completion_rate: 94, active_projects: 2, performance_band: 'excellent' },
+  { editor_id: 'e2', user_id: 'u7', full_name: 'Sari Dewi', email: 'sari@manava.id', department: 'Video Editing', specialization: ['video_edit', 'color_grading'], base_salary: 9000000, status: 'active', onboarded_at: '2026-02-01', rating: 4.5, completion_rate: 88, active_projects: 1, performance_band: 'good' },
+  { editor_id: 'e3', user_id: 'u8', full_name: 'Andi Kurniawan', email: 'andi@manava.id', department: 'Photo Retouching', specialization: ['portrait_retouch', 'background_removal'], base_salary: 7500000, status: 'active', onboarded_at: '2026-03-10', rating: 3.9, completion_rate: 75, active_projects: 3, performance_band: 'good' },
+  { editor_id: 'e4', user_id: 'u9', full_name: 'Maya Putri', email: 'maya@manava.id', department: 'Color Grading', specialization: ['color_grading', 'vfx'], base_salary: 10000000, status: 'active', onboarded_at: '2026-01-05', rating: 4.9, completion_rate: 97, active_projects: 2, performance_band: 'excellent' },
+  { editor_id: 'e5', user_id: 'u10', full_name: 'Rizky Hakim', email: 'rizky@manava.id', department: 'Video Editing', specialization: ['video_edit', 'motion_graphics'], base_salary: 8500000, status: 'suspended', onboarded_at: '2026-02-20', rating: 2.8, completion_rate: 60, active_projects: 0, performance_band: 'needs_improvement' },
 ]
 
 export const mockJobPostings: JobPosting[] = [

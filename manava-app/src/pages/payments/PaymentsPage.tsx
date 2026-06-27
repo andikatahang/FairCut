@@ -295,7 +295,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            {[['Project', selected.project_title], ['Client', selected.client_name], ['Amount', formatCurrency(selected.held_balance)], ['Target', 'FairCut Company IDR Account']].map(([l, v]) => (
+            {[['Project', selected.project_title], ['Client', selected.client_name], ['Amount', formatCurrency(selected.held_balance)], ['Target', 'Manava Company IDR Account']].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1.5 border-b border-border last:border-0">
                 <span className="text-navy/60">{l}</span><span className="font-medium text-navy">{v}</span>
               </div>
