@@ -14,11 +14,15 @@ const STATUS_STYLE: Record<string, string> = {
   leave:   'bg-blue-100  text-blue-700  border-blue-200',
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  present: 'Hadir', absent: 'Absen', partial: 'Sebagian', leave: 'Cuti',
+}
+
 const CAL_YEAR = 2026
 const CAL_MONTH = 6
 const DAYS_IN_MONTH = new Date(CAL_YEAR, CAL_MONTH, 0).getDate()      // 30
 const FIRST_DOW     = new Date(CAL_YEAR, CAL_MONTH - 1, 1).getDay()   // 1 (Mon)
-const WEEK_HEADERS  = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const WEEK_HEADERS  = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
 
 const recordMap = Object.fromEntries(mockAttendance.map(a => [a.date, a]))
 
@@ -70,13 +74,13 @@ export default function AttendancePage({ role }: { role: UserRole }) {
     <div className="space-y-6">
       {payrollToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-navy text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />Payroll run initiated for June 2026.
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />Proses penggajian Juni 2026 dimulai.
         </div>
       )}
 
       {/* Tab bar */}
       <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit flex-wrap">
-        {([['attendance', 'Attendance'], ['leave', 'Leave Requests'], ['payroll', 'Payroll & Payslips']] as const).map(([v, l]) => (
+        {([['attendance', 'Absensi'], ['leave', 'Permohonan Cuti'], ['payroll', 'Penggajian & Slip Gaji']] as const).map(([v, l]) => (
           <button key={v} onClick={() => setTab(v)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === v ? 'bg-navy text-white' : 'text-navy/60 hover:text-navy'}`}>
             {l}
@@ -91,38 +95,38 @@ export default function AttendancePage({ role }: { role: UserRole }) {
       {tab === 'attendance' && (
         <div className="space-y-6">
           <div className="grid sm:grid-cols-4 gap-4">
-            <StatCard label="Days Present" value={present} icon={CheckCircle}  accent="bg-emerald-50" />
-            <StatCard label="Days Absent"  value={absent}  icon={XCircle}      accent="bg-red-50" />
-            <StatCard label="On Leave"     value={onLeave} icon={Calendar}     accent="bg-blue-50" />
-            <StatCard label="Partial Days" value={partial} icon={AlertCircle}  accent="bg-amber-50" />
+            <StatCard label="Hari Hadir"   value={present} icon={CheckCircle}  accent="bg-emerald-50" />
+            <StatCard label="Hari Absen"   value={absent}  icon={XCircle}      accent="bg-red-50" />
+            <StatCard label="Cuti"         value={onLeave} icon={Calendar}     accent="bg-blue-50" />
+            <StatCard label="Hari Sebagian" value={partial} icon={AlertCircle}  accent="bg-amber-50" />
           </div>
 
           {/* Today widget */}
           <div className="card flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-sm text-navy/50 mb-1">
-                Today — {new Date(TODAY + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+                Hari ini — {new Date(TODAY + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
               </p>
               <div className="flex items-center gap-3">
                 <p className="text-2xl font-bold text-navy">{todayRec?.clock_in ?? '--:--'}</p>
                 {todayRec?.clock_out
                   ? <><span className="text-navy/30">→</span><p className="text-2xl font-bold text-navy">{todayRec.clock_out}</p></>
-                  : todayRec?.clock_in && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Clocked In</span>
+                  : todayRec?.clock_in && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Sudah Masuk</span>
                 }
               </div>
             </div>
             <div className="flex gap-3">
-              <button className="btn-primary"><Clock className="w-4 h-4" />Clock In</button>
-              <button className="btn-secondary"><Clock className="w-4 h-4" />Clock Out</button>
+              <button className="btn-primary"><Clock className="w-4 h-4" />Masuk</button>
+              <button className="btn-secondary"><Clock className="w-4 h-4" />Keluar</button>
             </div>
           </div>
 
           {/* Calendar */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-navy">June 2026 Attendance</h3>
+              <h3 className="font-semibold text-navy">Absensi Juni 2026</h3>
               <div className="flex items-center gap-1.5 text-xs text-navy/50">
-                <span className="w-3 h-3 rounded-sm border-2 border-navy inline-block" />Today
+                <span className="w-3 h-3 rounded-sm border-2 border-navy inline-block" />Hari Ini
               </div>
             </div>
             <div className="grid grid-cols-7 gap-1.5">
@@ -161,7 +165,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
               {Object.entries(STATUS_STYLE).map(([k, v]) => (
                 <div key={k} className="flex items-center gap-1.5 text-xs text-navy/60">
                   <span className={`w-3 h-3 rounded-sm border ${v}`} />
-                  {k.charAt(0).toUpperCase() + k.slice(1)}
+                  {STATUS_LABELS[k] ?? k}
                 </div>
               ))}
             </div>
@@ -174,10 +178,10 @@ export default function AttendancePage({ role }: { role: UserRole }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">
-              {isManager ? 'All Leave Requests' : 'My Leave Requests'}
+              {isManager ? 'Semua Permohonan Cuti' : 'Permohonan Cuti Saya'}
             </p>
             <button onClick={() => setLeaveModal(true)} className="btn-primary text-sm">
-              <Calendar className="w-4 h-4" />Request Leave
+              <Calendar className="w-4 h-4" />Ajukan Cuti
             </button>
           </div>
 
@@ -185,8 +189,8 @@ export default function AttendancePage({ role }: { role: UserRole }) {
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-amber-800">{pendingCount} pending request{pendingCount > 1 ? 's' : ''} awaiting approval</p>
-                <p className="text-xs text-amber-700 mt-0.5">Review each request below and approve or reject.</p>
+                <p className="text-sm font-semibold text-amber-800">{pendingCount} permohonan menunggu persetujuan</p>
+                <p className="text-xs text-amber-700 mt-0.5">Tinjau tiap permohonan di bawah dan setujui atau tolak.</p>
               </div>
             </div>
           )}
@@ -202,7 +206,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
                     <div>
                       <p className="text-sm font-semibold text-navy">{l.editor_name}</p>
                       <p className="text-xs text-navy/50 capitalize">{l.leave_type} · {formatDate(l.start_date)} – {formatDate(l.end_date)}</p>
-                      <p className="text-xs text-navy/40 mt-0.5">Submitted {formatDate(l.created_at)}</p>
+                      <p className="text-xs text-navy/40 mt-0.5">Diajukan {formatDate(l.created_at)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -211,11 +215,11 @@ export default function AttendancePage({ role }: { role: UserRole }) {
                       <>
                         <button onClick={() => approveLeave(l.leave_id)}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium transition-colors">
-                          <CheckCircle2 className="w-3.5 h-3.5" />Approve
+                          <CheckCircle2 className="w-3.5 h-3.5" />Setujui
                         </button>
                         <button onClick={() => rejectLeave(l.leave_id)}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-medium transition-colors">
-                          <XCircle className="w-3.5 h-3.5" />Reject
+                          <XCircle className="w-3.5 h-3.5" />Tolak
                         </button>
                       </>
                     )}
@@ -232,9 +236,9 @@ export default function AttendancePage({ role }: { role: UserRole }) {
         <div className="space-y-4">
           {(isManager || isFinance) && (
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">June 2026 Payroll</p>
+              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Penggajian Juni 2026</p>
               <button onClick={handleRunPayroll} className="btn-primary text-sm">
-                <Play className="w-3.5 h-3.5" />Run Payroll
+                <Play className="w-3.5 h-3.5" />Jalankan Penggajian
               </button>
             </div>
           )}
@@ -257,9 +261,9 @@ export default function AttendancePage({ role }: { role: UserRole }) {
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2">
                   {[
-                    { label: 'Base Salary',          value: formatCurrency(ps.base_salary),            color: 'text-navy' },
-                    { label: 'Project Bonus',         value: `+${formatCurrency(ps.project_bonus)}`,   color: 'text-emerald-600' },
-                    { label: 'Attendance Deduction',  value: `-${formatCurrency(ps.attendance_deduction)}`, color: ps.attendance_deduction > 0 ? 'text-red-600' : 'text-navy/40' },
+                    { label: 'Gaji Pokok',            value: formatCurrency(ps.base_salary),            color: 'text-navy' },
+                    { label: 'Bonus Proyek',          value: `+${formatCurrency(ps.project_bonus)}`,   color: 'text-emerald-600' },
+                    { label: 'Potongan Absensi',      value: `-${formatCurrency(ps.attendance_deduction)}`, color: ps.attendance_deduction > 0 ? 'text-red-600' : 'text-navy/40' },
                     { label: 'Reimbursement',         value: formatCurrency(ps.reimbursement_total),   color: 'text-navy' },
                   ].map(row => (
                     <div key={row.label} className="flex justify-between py-1 border-b border-border last:border-0">
@@ -270,7 +274,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
                 </div>
                 <div className="flex items-center justify-center bg-navy rounded-2xl p-6">
                   <div className="text-center">
-                    <p className="text-white/60 text-sm mb-1">Net Salary</p>
+                    <p className="text-white/60 text-sm mb-1">Gaji Bersih</p>
                     <p className="text-white text-2xl font-bold">{formatCurrency(ps.net_salary)}</p>
                   </div>
                 </div>
@@ -286,14 +290,14 @@ export default function AttendancePage({ role }: { role: UserRole }) {
                   )}
                 </div>
                 <div className="flex gap-3 mt-1.5 flex-wrap">
-                  <span className="flex items-center gap-1 text-xs text-navy/50"><span className="w-2 h-2 rounded-sm bg-navy inline-block" />Base</span>
+                  <span className="flex items-center gap-1 text-xs text-navy/50"><span className="w-2 h-2 rounded-sm bg-navy inline-block" />Pokok</span>
                   <span className="flex items-center gap-1 text-xs text-navy/50"><span className="w-2 h-2 rounded-sm bg-emerald-400 inline-block" />Bonus</span>
-                  {ps.attendance_deduction > 0 && <span className="flex items-center gap-1 text-xs text-navy/50"><span className="w-2 h-2 rounded-sm bg-red-400 inline-block" />Deduction</span>}
+                  {ps.attendance_deduction > 0 && <span className="flex items-center gap-1 text-xs text-navy/50"><span className="w-2 h-2 rounded-sm bg-red-400 inline-block" />Potongan</span>}
                 </div>
               </div>
 
               <button className="btn-secondary w-full justify-center">
-                <FileText className="w-4 h-4" />Download Payslip PDF
+                <FileText className="w-4 h-4" />Unduh Slip Gaji PDF
               </button>
             </div>
           ))}
@@ -301,12 +305,12 @@ export default function AttendancePage({ role }: { role: UserRole }) {
       )}
 
       {/* Leave request modal */}
-      <Modal open={leaveModal} onClose={() => setLeaveModal(false)} title="Request Leave">
+      <Modal open={leaveModal} onClose={() => setLeaveModal(false)} title="Ajukan Cuti">
         <div className="space-y-4">
           <div>
-            <label className="label">Leave Type</label>
+            <label className="label">Jenis Cuti</label>
             <div className="grid grid-cols-2 gap-2">
-              {([['cuti', 'Cuti Tahunan', 'Annual leave entitlement'], ['izin', 'Izin / Sakit', 'Permission or sick day']] as const).map(([v, l, d]) => (
+              {([['cuti', 'Cuti Tahunan', 'Hak cuti tahunan'], ['izin', 'Izin / Sakit', 'Izin atau hari sakit']] as const).map(([v, l, d]) => (
                 <button key={v} onClick={() => setLeaveForm(f => ({ ...f, type: v }))}
                   className={`p-3 rounded-xl border text-left transition-all ${leaveForm.type === v ? 'border-navy bg-navy/5' : 'border-border'}`}>
                   <p className={`text-sm font-semibold ${leaveForm.type === v ? 'text-navy' : 'text-navy/60'}`}>{l}</p>
@@ -317,26 +321,26 @@ export default function AttendancePage({ role }: { role: UserRole }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Start Date</label>
+              <label className="label">Tanggal Mulai</label>
               <input type="date" value={leaveForm.start} onChange={e => setLeaveForm(f => ({ ...f, start: e.target.value }))} className="input" />
             </div>
             <div>
-              <label className="label">End Date</label>
+              <label className="label">Tanggal Selesai</label>
               <input type="date" value={leaveForm.end} onChange={e => setLeaveForm(f => ({ ...f, end: e.target.value }))} className="input" />
             </div>
           </div>
           {leaveDuration() > 0 && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
-              Duration: <span className="font-semibold">{leaveDuration()} day{leaveDuration() > 1 ? 's' : ''}</span>
+              Durasi: <span className="font-semibold">{leaveDuration()} hari</span>
             </div>
           )}
           <div className="flex justify-end gap-2">
-            <button onClick={() => setLeaveModal(false)} className="btn-secondary">Cancel</button>
+            <button onClick={() => setLeaveModal(false)} className="btn-secondary">Batal</button>
             <button
               disabled={!leaveForm.start || !leaveForm.end || leaveDuration() <= 0}
               onClick={() => setLeaveModal(false)}
               className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed">
-              <Calendar className="w-4 h-4" />Submit Request
+              <Calendar className="w-4 h-4" />Kirim Permohonan
             </button>
           </div>
         </div>

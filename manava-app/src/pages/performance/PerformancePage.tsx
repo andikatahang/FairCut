@@ -10,9 +10,9 @@ import { mockEditorMetrics, mockKpiHistory } from '../../data/mockData'
 import type { EditorMetrics, UserRole } from '../../types'
 
 const BAND_META: Record<string, { color: string; bg: string; label: string }> = {
-  excellent:        { color: 'text-emerald-700', bg: 'bg-emerald-50',  label: 'Excellent' },
-  good:             { color: 'text-blue-700',    bg: 'bg-blue-50',     label: 'Good' },
-  needs_improvement:{ color: 'text-red-700',     bg: 'bg-red-50',      label: 'Needs Improvement' },
+  excellent:        { color: 'text-emerald-700', bg: 'bg-emerald-50',  label: 'Sangat Baik' },
+  good:             { color: 'text-blue-700',    bg: 'bg-blue-50',     label: 'Baik' },
+  needs_improvement:{ color: 'text-red-700',     bg: 'bg-red-50',      label: 'Perlu Peningkatan' },
 }
 
 const RANK_BADGE = ['bg-amber-400 text-white', 'bg-gray-300 text-gray-700', 'bg-amber-600 text-white']
@@ -75,16 +75,16 @@ export default function PerformancePage({ role }: { role: UserRole }) {
   const prevSnapshot = history[history.length - 2]
 
   const radarData = [
-    { metric: 'Client Rating', value: (selected.avg_client_rating / 5) * 100 },
-    { metric: 'Completion Rate', value: selected.completion_rate },
-    { metric: 'Manager Rating', value: (selected.manager_rating / 5) * 100 },
+    { metric: 'Rating Klien', value: (selected.avg_client_rating / 5) * 100 },
+    { metric: 'Tingkat Penyelesaian', value: selected.completion_rate },
+    { metric: 'Rating Manajer', value: (selected.manager_rating / 5) * 100 },
   ]
 
   const trendData = history.map(h => ({
     quarter: h.quarter,
     KPI: h.kpi_average,
-    'Client Rating': h.avg_client_rating,
-    'Completion %': +(h.completion_rate / 20).toFixed(2), // scale to 0–5
+    'Rating Klien': h.avg_client_rating,
+    '% Penyelesaian': +(h.completion_rate / 20).toFixed(2), // scale to 0–5
   }))
 
   const bandMeta = BAND_META[selected.performance_band] ?? BAND_META.good
@@ -95,15 +95,15 @@ export default function PerformancePage({ role }: { role: UserRole }) {
       <div className="grid grid-cols-3 gap-4">
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-emerald-600">{mockEditorMetrics.filter(e => e.performance_band === 'excellent').length}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Excellent</p>
+          <p className="text-xs text-navy/60 mt-0.5">Sangat Baik</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-blue-600">{mockEditorMetrics.filter(e => e.performance_band === 'good').length}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Good</p>
+          <p className="text-xs text-navy/60 mt-0.5">Baik</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-red-600">{mockEditorMetrics.filter(e => e.performance_band === 'needs_improvement').length}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Needs Improvement</p>
+          <p className="text-xs text-navy/60 mt-0.5">Perlu Peningkatan</p>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
         {isManager ? (
           <div className="space-y-2">
             <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider px-1 mb-3">
-              <Users className="w-3.5 h-3.5 inline mr-1" />Rankings — Q2 2026
+              <Users className="w-3.5 h-3.5 inline mr-1" />Peringkat — Q2 2026
             </p>
             {sorted.map((e, i) => (
               <button
@@ -146,7 +146,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
         ) : (
           <div className="space-y-4">
             <div className="card text-center">
-              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Your KPI Score</p>
+              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Skor KPI Anda</p>
               <KpiGauge value={selected.kpi_average} />
               <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mt-3 ${bandMeta.bg} ${bandMeta.color}`}>
                 <Award className="w-3.5 h-3.5" /> {bandMeta.label}
@@ -259,7 +259,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
                   <Tooltip />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
                   <Line type="monotone" dataKey="KPI" stroke="#022E57" strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="Client Rating" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3 }} strokeDasharray="4 2" />
+                  <Line type="monotone" dataKey="Rating Klien" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 3 }} strokeDasharray="4 2" />
                 </LineChart>
               </ResponsiveContainer>
             </div>

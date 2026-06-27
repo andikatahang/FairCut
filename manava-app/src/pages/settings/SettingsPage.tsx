@@ -65,10 +65,10 @@ export default function SettingsPage() {
   const [auditLog, setAuditLog] = useState(true)
 
   const TABS: { id: Tab; label: string; icon: typeof Settings }[] = [
-    { id: 'general', label: 'General', icon: Building2 },
-    { id: 'projects', label: 'Project Defaults', icon: Settings },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'privacy', label: 'Data & Privacy', icon: Shield },
+    { id: 'general', label: 'Umum', icon: Building2 },
+    { id: 'projects', label: 'Default Proyek', icon: Settings },
+    { id: 'notifications', label: 'Notifikasi', icon: Bell },
+    { id: 'privacy', label: 'Data & Privasi', icon: Shield },
   ]
 
   function handleSave() {
@@ -91,11 +91,11 @@ export default function SettingsPage() {
       {/* General */}
       {tab === 'general' && (
         <div className="space-y-5">
-          <Section title="Company">
-            <FieldRow label="Company Name" desc="Shown on invoices and contracts">
+          <Section title="Perusahaan">
+            <FieldRow label="Nama Perusahaan" desc="Tampil di faktur dan kontrak">
               <input value={company} onChange={e => setCompany(e.target.value)} className="input w-56 py-2 text-sm" />
             </FieldRow>
-            <FieldRow label="Timezone" desc="Used for all timestamps and SLA calculations">
+            <FieldRow label="Zona Waktu" desc="Dipakai untuk semua waktu dan perhitungan SLA">
               <select value={timezone} onChange={e => setTimezone(e.target.value)} className="input w-44 py-2 text-sm">
                 <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
                 <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
                 <option value="UTC">UTC</option>
               </select>
             </FieldRow>
-            <FieldRow label="Currency" desc="Base currency for all transactions">
+            <FieldRow label="Mata Uang" desc="Mata uang dasar untuk semua transaksi">
               <select value={currency} onChange={e => setCurrency(e.target.value)} className="input w-32 py-2 text-sm">
                 <option value="IDR">IDR — Rupiah</option>
                 <option value="USD">USD — Dollar</option>
@@ -118,36 +118,36 @@ export default function SettingsPage() {
       {tab === 'projects' && (
         <div className="space-y-5">
           <Section title="Revision Envelope">
-            <FieldRow label="Default Free Allowance" desc="Free revision rounds included in every new project">
+            <FieldRow label="Allowance Gratis Default" desc="Putaran revisi gratis di setiap proyek baru">
               <div className="flex items-center gap-2">
                 <input type="number" min="0" max="20" value={allowance} onChange={e => setAllowance(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">rounds</span>
+                <span className="text-sm text-navy/50">putaran</span>
               </div>
             </FieldRow>
-            <FieldRow label="AI Confidence Threshold" desc="Below this % triggers mediator escalation">
+            <FieldRow label="Ambang Keyakinan AI" desc="Di bawah % ini memicu eskalasi ke mediator">
               <div className="flex items-center gap-2">
                 <input type="number" min="50" max="100" value={aiThreshold} onChange={e => setAiThreshold(e.target.value)} className="input w-20 py-2 text-sm text-center" />
                 <span className="text-sm text-navy/50">%</span>
               </div>
             </FieldRow>
           </Section>
-          <Section title="SLA Timers">
-            <FieldRow label="Top-up Timeout" desc="Hours client has to pay for a MAJOR revision">
+          <Section title="Timer SLA">
+            <FieldRow label="Batas Waktu Top-up" desc="Jam bagi klien untuk membayar revisi MAJOR">
               <div className="flex items-center gap-2">
                 <input type="number" min="1" max="168" value={topupTimeout} onChange={e => setTopupTimeout(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">hours</span>
+                <span className="text-sm text-navy/50">jam</span>
               </div>
             </FieldRow>
-            <FieldRow label="Mediator SLA" desc="Hours mediator has to resolve a dispute">
+            <FieldRow label="SLA Mediator" desc="Jam bagi mediator untuk menyelesaikan sengketa">
               <div className="flex items-center gap-2">
                 <input type="number" min="1" max="168" value={mediatorSla} onChange={e => setMediatorSla(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">hours</span>
+                <span className="text-sm text-navy/50">jam</span>
               </div>
             </FieldRow>
-            <FieldRow label="Escrow Release SLA" desc="Hours to release escrow after final payment received">
+            <FieldRow label="SLA Pencairan Escrow" desc="Jam untuk mencairkan escrow setelah pembayaran akhir diterima">
               <div className="flex items-center gap-2">
                 <input type="number" min="0" max="24" value={escrowSla} onChange={e => setEscrowSla(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">hour(s)</span>
+                <span className="text-sm text-navy/50">jam</span>
               </div>
             </FieldRow>
           </Section>
@@ -157,25 +157,25 @@ export default function SettingsPage() {
       {/* Notifications */}
       {tab === 'notifications' && (
         <div className="space-y-5">
-          <Section title="In-App Alerts">
-            <FieldRow label="Revision Submitted" desc="When a client submits a new revision request">
+          <Section title="Peringatan Aplikasi">
+            <FieldRow label="Revisi Dikirim" desc="Saat klien mengirim permintaan revisi baru">
               <Toggle checked={notifRevision} onChange={setNotifRevision} />
             </FieldRow>
-            <FieldRow label="Escrow Movement" desc="DP received, final payment, release events">
+            <FieldRow label="Pergerakan Escrow" desc="DP diterima, pembayaran akhir, pencairan">
               <Toggle checked={notifEscrow} onChange={setNotifEscrow} />
             </FieldRow>
-            <FieldRow label="Dispute Opened" desc="When a dispute is raised on any project">
+            <FieldRow label="Sengketa Dibuka" desc="Saat sengketa diajukan pada proyek mana pun">
               <Toggle checked={notifDispute} onChange={setNotifDispute} />
             </FieldRow>
-            <FieldRow label="Leave Request" desc="When an editor submits a leave request">
+            <FieldRow label="Permohonan Cuti" desc="Saat editor mengajukan permohonan cuti">
               <Toggle checked={notifLeave} onChange={setNotifLeave} />
             </FieldRow>
-            <FieldRow label="Payroll Generated" desc="When monthly payslips are generated">
+            <FieldRow label="Penggajian Dibuat" desc="Saat slip gaji bulanan dibuat">
               <Toggle checked={notifPayroll} onChange={setNotifPayroll} />
             </FieldRow>
           </Section>
           <Section title="Email">
-            <FieldRow label="Daily Digest" desc="Summary email of all activity sent at 08:00">
+            <FieldRow label="Ringkasan Harian" desc="Email ringkasan semua aktivitas dikirim pukul 08:00">
               <Toggle checked={emailDigest} onChange={setEmailDigest} />
             </FieldRow>
           </Section>
@@ -185,22 +185,22 @@ export default function SettingsPage() {
       {/* Privacy */}
       {tab === 'privacy' && (
         <div className="space-y-5">
-          <Section title="Data Retention">
-            <FieldRow label="Finance Records" desc="Years to retain invoices, escrow logs, and payroll records (IFRS 15 minimum: 7 years)">
+          <Section title="Retensi Data">
+            <FieldRow label="Catatan Keuangan" desc="Tahun penyimpanan faktur, log escrow, dan catatan penggajian (minimum IFRS 15: 7 tahun)">
               <div className="flex items-center gap-2">
                 <input type="number" min="5" max="15" value={retention} onChange={e => setRetention(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">years</span>
+                <span className="text-sm text-navy/50">tahun</span>
               </div>
             </FieldRow>
-            <FieldRow label="Post-Offboarding Anonymization" desc="Days after offboarding before editor PII is anonymized">
+            <FieldRow label="Anonimisasi Pasca-Pengakhiran" desc="Hari setelah pengakhiran sebelum data pribadi editor dianonimkan">
               <div className="flex items-center gap-2">
                 <input type="number" min="30" max="365" value={anonDays} onChange={e => setAnonDays(e.target.value)} className="input w-20 py-2 text-sm text-center" />
-                <span className="text-sm text-navy/50">days</span>
+                <span className="text-sm text-navy/50">hari</span>
               </div>
             </FieldRow>
           </Section>
           <Section title="Audit">
-            <FieldRow label="Immutable Audit Log" desc="Record all scope changes, revision classifications, and payment events (cannot be disabled in production)">
+            <FieldRow label="Log Audit Permanen" desc="Catat semua perubahan lingkup, klasifikasi revisi, dan peristiwa pembayaran (tidak bisa dinonaktifkan di produksi)">
               <Toggle checked={auditLog} onChange={setAuditLog} />
             </FieldRow>
           </Section>
@@ -208,8 +208,8 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               <Database className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-amber-800">IFRS 15 Compliance Active</p>
-                <p className="text-xs text-amber-700 mt-0.5">Revenue recognition events are logged immutably and cannot be altered. Contact your compliance officer before modifying retention settings.</p>
+                <p className="text-sm font-semibold text-amber-800">Kepatuhan IFRS 15 Aktif</p>
+                <p className="text-xs text-amber-700 mt-0.5">Peristiwa pengakuan pendapatan dicatat permanen dan tidak bisa diubah. Hubungi petugas kepatuhan Anda sebelum mengubah pengaturan retensi.</p>
               </div>
             </div>
           </div>
@@ -219,9 +219,9 @@ export default function SettingsPage() {
       {/* Save button */}
       <div className="flex items-center gap-3">
         <button onClick={handleSave} className="btn-primary">
-          <Save className="w-4 h-4" />{saved ? 'Saved!' : 'Save Changes'}
+          <Save className="w-4 h-4" />{saved ? 'Tersimpan!' : 'Simpan Perubahan'}
         </button>
-        {saved && <span className="text-sm text-emerald-600 font-medium">Settings updated successfully.</span>}
+        {saved && <span className="text-sm text-emerald-600 font-medium">Pengaturan berhasil diperbarui.</span>}
       </div>
     </div>
   )

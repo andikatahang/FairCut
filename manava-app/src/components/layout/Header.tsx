@@ -4,19 +4,19 @@ import type { UserRole } from '../../types'
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
-  '/recruitment': 'Recruitment & Onboarding',
-  '/projects': 'Projects',
-  '/contracts': 'Contracts & Briefs',
-  '/payments': 'Escrow & Payments',
-  '/attendance': 'Attendance, Leave & Payroll',
-  '/performance': 'Performance KPI',
-  '/disputes': 'Dispute Resolution',
-  '/chat': 'In-App Chat',
-  '/ess': 'Employee Self-Service',
-  '/offboarding': 'Offboarding',
-  '/deliverables': 'Deliverable Integrity',
-  '/audit': 'Audit Trail',
-  '/settings': 'Settings',
+  '/recruitment': 'Rekrutmen & Onboarding',
+  '/projects': 'Proyek',
+  '/contracts': 'Kontrak & Brief',
+  '/payments': 'Escrow & Pembayaran',
+  '/attendance': 'Absensi, Cuti & Penggajian',
+  '/performance': 'KPI Kinerja',
+  '/disputes': 'Penyelesaian Sengketa',
+  '/chat': 'Chat Aplikasi',
+  '/ess': 'Layanan Mandiri Karyawan',
+  '/offboarding': 'Pengakhiran Kerja',
+  '/deliverables': 'Integritas Hasil Kerja',
+  '/audit': 'Jejak Audit',
+  '/settings': 'Pengaturan',
 }
 
 type NotifIcon = 'alert' | 'contract' | 'payment' | 'user' | 'clock' | 'package'
@@ -50,40 +50,40 @@ const ICON_COLORS: Record<NotifIcon, string> = {
 
 const NOTIFS_BY_ROLE: Record<UserRole, Notification[]> = {
   superadmin: [
-    { id: 'n1', icon: 'alert', title: 'Dispute escalated', body: 'Project #PRJ-005 dispute has exceeded SLA — 2h remaining', time: '5m ago', read: false },
-    { id: 'n2', icon: 'user', title: '3 new applicants', body: 'Senior Photo Retoucher role received 3 applications today', time: '1h ago', read: false },
-    { id: 'n3', icon: 'payment', title: 'Escrow release pending', body: 'IDR 12,500,000 ready for release — project #PRJ-002 completed', time: '2h ago', read: false },
-    { id: 'n4', icon: 'contract', title: 'Contract signed', body: 'Client Artisan Studio signed Brief #BRF-009', time: '4h ago', read: true },
-    { id: 'n5', icon: 'clock', title: 'Leave request', body: 'Ahmad Rizki requested 2 days leave starting Mon 30 Jun', time: '6h ago', read: true },
+    { id: 'n1', icon: 'alert', title: 'Sengketa dieskalasi', body: 'Sengketa Proyek #PRJ-005 melewati SLA — sisa 2 jam', time: '5 mnt lalu', read: false },
+    { id: 'n2', icon: 'user', title: '3 pelamar baru', body: 'Posisi Senior Photo Retoucher menerima 3 lamaran hari ini', time: '1 jam lalu', read: false },
+    { id: 'n3', icon: 'payment', title: 'Pencairan escrow tertunda', body: 'IDR 12.500.000 siap dicairkan — proyek #PRJ-002 selesai', time: '2 jam lalu', read: false },
+    { id: 'n4', icon: 'contract', title: 'Kontrak ditandatangani', body: 'Klien Artisan Studio menandatangani Brief #BRF-009', time: '4 jam lalu', read: true },
+    { id: 'n5', icon: 'clock', title: 'Permohonan cuti', body: 'Ahmad Rizki mengajukan cuti 2 hari mulai Sen 30 Jun', time: '6 jam lalu', read: true },
   ],
   admin_manager: [
-    { id: 'n1', icon: 'user', title: '3 new applicants', body: 'Senior Photo Retoucher role received 3 applications today', time: '1h ago', read: false },
-    { id: 'n2', icon: 'clock', title: 'Leave request', body: 'Ahmad Rizki requested 2 days leave starting Mon 30 Jun', time: '2h ago', read: false },
-    { id: 'n3', icon: 'alert', title: 'KPI alert', body: 'Budi Santoso completion rate dropped to 72% this month', time: '5h ago', read: true },
-    { id: 'n4', icon: 'user', title: 'Offboarding initiated', body: 'Diana Permata offboarding checklist pending your approval', time: '1d ago', read: true },
+    { id: 'n1', icon: 'user', title: '3 pelamar baru', body: 'Posisi Senior Photo Retoucher menerima 3 lamaran hari ini', time: '1 jam lalu', read: false },
+    { id: 'n2', icon: 'clock', title: 'Permohonan cuti', body: 'Ahmad Rizki mengajukan cuti 2 hari mulai Sen 30 Jun', time: '2 jam lalu', read: false },
+    { id: 'n3', icon: 'alert', title: 'Peringatan KPI', body: 'Tingkat penyelesaian Budi Santoso turun ke 72% bulan ini', time: '5 jam lalu', read: true },
+    { id: 'n4', icon: 'user', title: 'Pengakhiran kerja dimulai', body: 'Checklist pengakhiran kerja Diana Permata menunggu persetujuan Anda', time: '1 hr lalu', read: true },
   ],
   editor: [
-    { id: 'n1', icon: 'contract', title: 'New revision request', body: 'Client requested major revision on Campaign Pack #PRJ-003', time: '15m ago', read: false },
-    { id: 'n2', icon: 'package', title: 'Deliverable feedback', body: 'Your v3 submission received a 4.8 ★ client rating', time: '2h ago', read: false },
-    { id: 'n3', icon: 'clock', title: 'Payslip ready', body: 'Your June 2026 payslip is available to download', time: '1d ago', read: true },
-    { id: 'n4', icon: 'contract', title: 'Brief assigned', body: 'New project Brief #BRF-012 assigned — deadline Jul 10', time: '2d ago', read: true },
+    { id: 'n1', icon: 'contract', title: 'Permintaan revisi baru', body: 'Klien meminta revisi major pada Campaign Pack #PRJ-003', time: '15 mnt lalu', read: false },
+    { id: 'n2', icon: 'package', title: 'Umpan balik hasil kerja', body: 'Kiriman v3 Anda mendapat rating klien 4.8 ★', time: '2 jam lalu', read: false },
+    { id: 'n3', icon: 'clock', title: 'Slip gaji siap', body: 'Slip gaji Juni 2026 Anda siap diunduh', time: '1 hr lalu', read: true },
+    { id: 'n4', icon: 'contract', title: 'Brief ditugaskan', body: 'Brief proyek baru #BRF-012 ditugaskan — tenggat 10 Jul', time: '2 hr lalu', read: true },
   ],
   client: [
-    { id: 'n1', icon: 'package', title: 'Deliverable ready', body: 'Your v3 for Campaign Pack is ready for review', time: '30m ago', read: false },
-    { id: 'n2', icon: 'payment', title: 'Escrow top-up required', body: 'Major revision approved — IDR 350,000 top-up needed', time: '3h ago', read: false },
-    { id: 'n3', icon: 'contract', title: 'Revision classified', body: 'Your revision request was classified as MINOR — free', time: '1d ago', read: true },
-    { id: 'n4', icon: 'payment', title: 'Payment received', body: 'Your DP payment of IDR 6,250,000 has been confirmed', time: '3d ago', read: true },
+    { id: 'n1', icon: 'package', title: 'Hasil kerja siap', body: 'v3 untuk Campaign Pack siap ditinjau', time: '30 mnt lalu', read: false },
+    { id: 'n2', icon: 'payment', title: 'Perlu top-up escrow', body: 'Revisi major disetujui — perlu top-up IDR 350.000', time: '3 jam lalu', read: false },
+    { id: 'n3', icon: 'contract', title: 'Revisi diklasifikasi', body: 'Permintaan revisi Anda diklasifikasi sebagai MINOR — gratis', time: '1 hr lalu', read: true },
+    { id: 'n4', icon: 'payment', title: 'Pembayaran diterima', body: 'Pembayaran DP Anda sebesar IDR 6.250.000 telah dikonfirmasi', time: '3 hr lalu', read: true },
   ],
   mediator: [
-    { id: 'n1', icon: 'alert', title: 'New dispute assigned', body: 'Dispute #DSP-003 assigned to you — SLA: 48h', time: '1h ago', read: false },
-    { id: 'n2', icon: 'alert', title: 'SLA warning', body: 'Dispute #DSP-001 — only 2 hours remaining on SLA', time: '2h ago', read: false },
-    { id: 'n3', icon: 'contract', title: 'Evidence submitted', body: 'Client uploaded 3 new files to Dispute #DSP-002', time: '4h ago', read: true },
+    { id: 'n1', icon: 'alert', title: 'Sengketa baru ditugaskan', body: 'Sengketa #DSP-003 ditugaskan ke Anda — SLA: 48 jam', time: '1 jam lalu', read: false },
+    { id: 'n2', icon: 'alert', title: 'Peringatan SLA', body: 'Sengketa #DSP-001 — sisa SLA hanya 2 jam', time: '2 jam lalu', read: false },
+    { id: 'n3', icon: 'contract', title: 'Bukti dikirim', body: 'Klien mengunggah 3 berkas baru ke Sengketa #DSP-002', time: '4 jam lalu', read: true },
   ],
   finance: [
-    { id: 'n1', icon: 'payment', title: 'Escrow release ready', body: 'IDR 12,500,000 ready for release — project #PRJ-002', time: '30m ago', read: false },
-    { id: 'n2', icon: 'payment', title: 'Payroll batch due', body: 'June 2026 payroll batch pending approval — 12 editors', time: '2h ago', read: false },
-    { id: 'n3', icon: 'payment', title: 'DP received', body: 'Client Artisan Studio DP IDR 6,250,000 confirmed', time: '1d ago', read: true },
-    { id: 'n4', icon: 'clock', title: 'Monthly reconciliation', body: 'May 2026 escrow ↔ payroll reconciliation report ready', time: '3d ago', read: true },
+    { id: 'n1', icon: 'payment', title: 'Pencairan escrow siap', body: 'IDR 12.500.000 siap dicairkan — proyek #PRJ-002', time: '30 mnt lalu', read: false },
+    { id: 'n2', icon: 'payment', title: 'Batch penggajian jatuh tempo', body: 'Batch penggajian Juni 2026 menunggu persetujuan — 12 editor', time: '2 jam lalu', read: false },
+    { id: 'n3', icon: 'payment', title: 'DP diterima', body: 'DP Klien Artisan Studio IDR 6.250.000 dikonfirmasi', time: '1 hr lalu', read: true },
+    { id: 'n4', icon: 'clock', title: 'Rekonsiliasi bulanan', body: 'Laporan rekonsiliasi escrow ↔ penggajian Mei 2026 siap', time: '3 hr lalu', read: true },
   ],
 }
 
@@ -137,7 +137,7 @@ export function Header({ pathname, role, onMenuClick }: HeaderProps) {
           <Search className="absolute left-3 w-4 h-4 text-navy/30" />
           <input
             type="text"
-            placeholder="Search…"
+            placeholder="Cari…"
             className="pl-9 pr-4 py-2 text-sm bg-primary-200 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-navy/20 w-52 text-navy placeholder:text-navy/30"
           />
         </div>
@@ -163,16 +163,16 @@ export function Header({ pathname, role, onMenuClick }: HeaderProps) {
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-navy">Notifications</span>
+                  <span className="text-sm font-semibold text-navy">Notifikasi</span>
                   {unread > 0 && (
-                    <span className="text-xs bg-red-100 text-red-600 font-semibold px-1.5 py-0.5 rounded-full">{unread} new</span>
+                    <span className="text-xs bg-red-100 text-red-600 font-semibold px-1.5 py-0.5 rounded-full">{unread} baru</span>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
                   {unread > 0 && (
                     <button onClick={markAllRead} className="flex items-center gap-1 text-xs text-navy/50 hover:text-navy transition-colors px-2 py-1 rounded-lg hover:bg-navy-50">
                       <CheckCheck className="w-3.5 h-3.5" />
-                      Mark all read
+                      Tandai semua dibaca
                     </button>
                   )}
                   <button onClick={() => setOpen(false)} className="p-1 rounded-lg text-navy/30 hover:text-navy hover:bg-navy-50 transition-colors">
@@ -210,7 +210,7 @@ export function Header({ pathname, role, onMenuClick }: HeaderProps) {
               {/* Footer */}
               <div className="px-4 py-2.5 border-t border-border bg-primary-200/60">
                 <p className="text-xs text-center text-navy/40">
-                  {notifs.length} notification{notifs.length !== 1 ? 's' : ''} · Only current session
+                  {notifs.length} notifikasi · Hanya sesi ini
                 </p>
               </div>
             </div>

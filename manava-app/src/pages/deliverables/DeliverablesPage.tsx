@@ -19,13 +19,13 @@ interface DeliverableVersion {
 
 const mockVersions: Record<string, DeliverableVersion[]> = {
   p1: [
-    { version: 3, uploaded_at: '2026-06-24T10:30:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v3.psd', file_size: '142 MB', status: 'pending_review', ai_diff_score: 12, ai_change_type: 'minor', ai_confidence: 94, change_summary: 'Color temperature adjusted +200K, minor skin retouching on subject 2' },
-    { version: 2, uploaded_at: '2026-06-22T14:15:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v2.psd', file_size: '139 MB', status: 'revision_requested', ai_diff_score: 67, ai_change_type: 'major', ai_confidence: 89, change_summary: 'Background replacement detected — scope change vs. original brief' },
-    { version: 1, uploaded_at: '2026-06-18T09:00:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v1.psd', file_size: '136 MB', status: 'approved', ai_diff_score: 0, ai_change_type: 'new', ai_confidence: 100, change_summary: 'Initial delivery' },
+    { version: 3, uploaded_at: '2026-06-24T10:30:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v3.psd', file_size: '142 MB', status: 'pending_review', ai_diff_score: 12, ai_change_type: 'minor', ai_confidence: 94, change_summary: 'Suhu warna disesuaikan +200K, retouch kulit minor pada subjek 2' },
+    { version: 2, uploaded_at: '2026-06-22T14:15:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v2.psd', file_size: '139 MB', status: 'revision_requested', ai_diff_score: 67, ai_change_type: 'major', ai_confidence: 89, change_summary: 'Terdeteksi penggantian latar — perubahan lingkup dari brief asli' },
+    { version: 1, uploaded_at: '2026-06-18T09:00:00Z', uploaded_by: 'Budi Santoso', file_name: 'wedding_hero_v1.psd', file_size: '136 MB', status: 'approved', ai_diff_score: 0, ai_change_type: 'new', ai_confidence: 100, change_summary: 'Pengiriman awal' },
   ],
   p2: [
-    { version: 2, uploaded_at: '2026-06-20T16:00:00Z', uploaded_by: 'Sari Dewi', file_name: 'product_catalog_v2.psd', file_size: '88 MB', status: 'approved', ai_diff_score: 8, ai_change_type: 'minor', ai_confidence: 97, change_summary: 'Shadow adjustments, slight exposure correction on 3 SKUs' },
-    { version: 1, uploaded_at: '2026-06-15T11:30:00Z', uploaded_by: 'Sari Dewi', file_name: 'product_catalog_v1.psd', file_size: '85 MB', status: 'revision_requested', ai_diff_score: 0, ai_change_type: 'new', ai_confidence: 100, change_summary: 'Initial delivery' },
+    { version: 2, uploaded_at: '2026-06-20T16:00:00Z', uploaded_by: 'Sari Dewi', file_name: 'product_catalog_v2.psd', file_size: '88 MB', status: 'approved', ai_diff_score: 8, ai_change_type: 'minor', ai_confidence: 97, change_summary: 'Penyesuaian bayangan, koreksi eksposur ringan pada 3 SKU' },
+    { version: 1, uploaded_at: '2026-06-15T11:30:00Z', uploaded_by: 'Sari Dewi', file_name: 'product_catalog_v1.psd', file_size: '85 MB', status: 'revision_requested', ai_diff_score: 0, ai_change_type: 'new', ai_confidence: 100, change_summary: 'Pengiriman awal' },
   ],
 }
 
@@ -66,9 +66,9 @@ export default function DeliverablesPage() {
         {/* Version history */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-navy">Version History</h2>
+            <h2 className="font-semibold text-navy">Riwayat Versi</h2>
             <button className="btn-primary text-sm py-2">
-              <Upload className="w-4 h-4" /> Upload New Version
+              <Upload className="w-4 h-4" /> Unggah Versi Baru
             </button>
           </div>
 
@@ -82,10 +82,10 @@ export default function DeliverablesPage() {
                     <span className="font-semibold text-navy">v{v.version}</span>
                     <span className="text-sm text-navy/50 truncate">{v.file_name}</span>
                     <span className="text-xs text-navy/40">{v.file_size}</span>
-                    {i === 0 && <span className="text-xs bg-navy text-white px-2 py-0.5 rounded-full">Latest</span>}
+                    {i === 0 && <span className="text-xs bg-navy text-white px-2 py-0.5 rounded-full">Terbaru</span>}
                   </div>
                   <p className="text-xs text-navy/50 mt-1">
-                    Uploaded by {v.uploaded_by} · {formatDateTime(v.uploaded_at)}
+                    Diunggah oleh {v.uploaded_by} · {formatDateTime(v.uploaded_at)}
                   </p>
 
                   {/* AI diff analysis */}
@@ -93,29 +93,29 @@ export default function DeliverablesPage() {
                     <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-border">
                       <div className="flex items-center gap-2 mb-2">
                         <Bot className="w-4 h-4 text-purple-500" />
-                        <span className="text-xs font-semibold text-purple-700">AI Change Detection</span>
-                        <span className="text-xs text-navy/40">· {v.ai_confidence}% confidence</span>
+                        <span className="text-xs font-semibold text-purple-700">Deteksi Perubahan AI</span>
+                        <span className="text-xs text-navy/40">· {v.ai_confidence}% keyakinan</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${diffColor(v.ai_diff_score)}`}>
                           {v.ai_diff_score}% delta
                         </span>
                         <span className={`text-xs font-semibold uppercase tracking-wide ${v.ai_change_type === 'minor' ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {v.ai_change_type} change
+                          perubahan {v.ai_change_type}
                         </span>
                       </div>
                       <p className="text-xs text-navy/60 mt-2">{v.change_summary}</p>
                     </div>
                   )}
                   {v.ai_change_type === 'new' && (
-                    <p className="text-xs text-navy/40 mt-2 italic">Initial delivery — no diff available</p>
+                    <p className="text-xs text-navy/40 mt-2 italic">Pengiriman awal — tidak ada diff</p>
                   )}
                 </div>
 
                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
                   <StatusBadge status={v.status} />
                   <button className="btn-ghost text-xs py-1.5 px-3">
-                    <Eye className="w-3.5 h-3.5" /> Preview
+                    <Eye className="w-3.5 h-3.5" /> Pratinjau
                   </button>
                 </div>
               </div>
@@ -124,13 +124,13 @@ export default function DeliverablesPage() {
               {v.status === 'pending_review' && (
                 <div className="flex gap-2 mt-4 pt-4 border-t border-border">
                   <button className="flex-1 justify-center btn-primary py-2 text-sm">
-                    <CheckCircle className="w-4 h-4" /> Approve Delivery
+                    <CheckCircle className="w-4 h-4" /> Setujui Pengiriman
                   </button>
                   <button className="flex-1 justify-center btn-secondary py-2 text-sm text-amber-600 border-amber-200">
-                    <Clock className="w-4 h-4" /> Request Revision
+                    <Clock className="w-4 h-4" /> Minta Revisi
                   </button>
                   <button className="flex-1 justify-center btn-secondary py-2 text-sm text-red-600 border-red-200">
-                    <XCircle className="w-4 h-4" /> Reject
+                    <XCircle className="w-4 h-4" /> Tolak
                   </button>
                 </div>
               )}
@@ -141,15 +141,15 @@ export default function DeliverablesPage() {
         {/* Project integrity summary */}
         <div className="space-y-4">
           <div className="card">
-            <h3 className="font-semibold text-navy mb-4">Integrity Summary</h3>
+            <h3 className="font-semibold text-navy mb-4">Ringkasan Integritas</h3>
             <div className="space-y-3">
               {[
-                ['Project', project.title],
-                ['Client', project.client_name],
+                ['Proyek', project.title],
+                ['Klien', project.client_name],
                 ['Editor', project.editor_name],
-                ['Total Versions', String(activeVersions.length)],
-                ['Approved', String(activeVersions.filter(v => v.status === 'approved').length)],
-                ['Pending Review', String(activeVersions.filter(v => v.status === 'pending_review').length)],
+                ['Total Versi', String(activeVersions.length)],
+                ['Disetujui', String(activeVersions.filter(v => v.status === 'approved').length)],
+                ['Menunggu Tinjauan', String(activeVersions.filter(v => v.status === 'pending_review').length)],
               ].map(([l, v]) => (
                 <div key={l} className="flex justify-between text-sm py-1.5 border-b border-border last:border-0">
                   <span className="text-navy/50">{l}</span>
@@ -160,12 +160,12 @@ export default function DeliverablesPage() {
           </div>
 
           <div className="card">
-            <h3 className="font-semibold text-navy mb-3">AI Classifier Legend</h3>
+            <h3 className="font-semibold text-navy mb-3">Legenda Klasifikasi AI</h3>
             <div className="space-y-2 text-sm">
               {[
-                ['bg-emerald-50 text-emerald-700', '0–15% delta', 'MINOR — within ALLOWANCE, free'],
-                ['bg-amber-50 text-amber-700', '16–40% delta', 'REVIEW — borderline, flagged'],
-                ['bg-red-50 text-red-700', '41%+ delta', 'MAJOR — paid revision required'],
+                ['bg-emerald-50 text-emerald-700', '0–15% delta', 'MINOR — dalam ALLOWANCE, gratis'],
+                ['bg-amber-50 text-amber-700', '16–40% delta', 'REVIEW — ambang, ditandai'],
+                ['bg-red-50 text-red-700', '41%+ delta', 'MAJOR — perlu revisi berbayar'],
               ].map(([cls, range, label]) => (
                 <div key={range} className="flex items-start gap-2">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-md flex-shrink-0 ${cls}`}>{range}</span>
@@ -173,7 +173,7 @@ export default function DeliverablesPage() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-navy/40 mt-3">Target accuracy ≥ 85%. Low-confidence results escalate to mediator review.</p>
+            <p className="text-xs text-navy/40 mt-3">Target akurasi ≥ 85%. Hasil keyakinan rendah dieskalasi ke tinjauan mediator.</p>
           </div>
         </div>
       </div>

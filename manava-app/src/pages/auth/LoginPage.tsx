@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 import logoLight from '../../assets/logo-light.png'
 import logoDark from '../../assets/logo-dark.png'
 import type { UserRole } from '../../types'
 
 const roles: { value: UserRole; label: string; desc: string }[] = [
-  { value: 'superadmin',    label: 'Superadmin',     desc: 'Full platform control' },
-  { value: 'editor',        label: 'Editor',          desc: 'Manage projects & HR' },
-  { value: 'client',        label: 'Client',          desc: 'Book & track services' },
-  { value: 'mediator',      label: 'Mediator',        desc: 'Resolve disputes' },
-  { value: 'admin_manager', label: 'Admin Manager',   desc: 'Team & leave approval' },
-  { value: 'finance',       label: 'Finance',         desc: 'Escrow & payroll' },
+  { value: 'superadmin',    label: 'Superadmin',     desc: 'Kendali penuh platform' },
+  { value: 'editor',        label: 'Editor',          desc: 'Kelola proyek & HR' },
+  { value: 'client',        label: 'Klien',           desc: 'Pesan & lacak layanan' },
+  { value: 'mediator',      label: 'Mediator',        desc: 'Selesaikan sengketa' },
+  { value: 'admin_manager', label: 'Manajer Admin',   desc: 'Persetujuan tim & cuti' },
+  { value: 'finance',       label: 'Keuangan',        desc: 'Escrow & penggajian' },
 ]
 
 interface LoginPageProps { onLogin: (role: UserRole) => void }
@@ -20,28 +21,43 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRole, setSelectedRole] = useState<UserRole>('superadmin')
   const [email, setEmail] = useState('admin@manava.id')
+  const reduceMotion = useReducedMotion()
 
   return (
     <div className="min-h-screen bg-primary flex">
       {/* Left panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[44%] bg-navy p-12">
-        <img src={logoLight} alt="Manava" className="h-8 w-auto object-contain object-left" />
-        <div>
-          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
-            Fair revisions.<br />Fair pay.<br />Fair outcomes.
+      <div className="relative hidden lg:flex flex-col justify-between w-[44%] bg-navy p-12 overflow-hidden">
+        {/* ambient auto-rotating glow */}
+        {!reduceMotion && (
+          <>
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2"
+              style={{
+                background:
+                  'conic-gradient(from 0deg at 50% 50%, rgba(0,80,248,0) 0deg, rgba(0,80,248,0.38) 110deg, rgba(208,241,0,0.14) 210deg, rgba(0,80,248,0) 340deg)',
+                filter: 'blur(60px)',
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 38, repeat: Infinity, ease: 'linear' }}
+            />
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(208,241,0,0.16) 0%, rgba(2,21,38,0) 70%)' }}
+              animate={{ y: [0, -28, 0], scale: [1, 1.12, 1] }}
+              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </>
+        )}
+
+        <img src={logoLight} alt="Manava" className="relative z-10 h-8 w-auto object-contain object-left" />
+        <div className="relative z-10">
+          <h2 className="text-4xl font-extrabold text-white leading-tight mb-5">
+            Revisi yang adil.<br />Bayaran yang adil.<br />Hasil yang adil.
           </h2>
-          <p className="text-white/50 text-lg leading-relaxed max-w-sm">
-            The integrated ERP that connects HR, service delivery, and finance for professional visual services companies.
-          </p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          {[['11', 'Modules'], ['6', 'User roles'], ['≥85%', 'AI accuracy'], ['48h', 'Dispute SLA']].map(([v, l]) => (
-            <div key={l} className="bg-white/10 rounded-xl p-4">
-              <p className="text-white text-2xl font-bold">{v}</p>
-              <p className="text-white/50 text-sm">{l}</p>
-            </div>
-          ))}
-        </div>
+        <div className="relative z-10 h-8" />
       </div>
 
       {/* Right panel */}
@@ -51,16 +67,16 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             <img src={logoDark} alt="Manava" className="h-8 w-auto object-contain object-left" />
           </div>
 
-          <h1 className="text-3xl font-bold text-navy mb-1">Welcome back</h1>
-          <p className="text-navy/50 text-sm mb-8">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-navy mb-1">Selamat datang kembali</h1>
+          <p className="text-navy/50 text-sm mb-8">Masuk ke akun Anda</p>
 
           <div className="space-y-5">
             <div>
-              <label className="label">Email address</label>
-              <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@manava.id" />
+              <label className="label">Alamat email</label>
+              <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="anda@manava.id" />
             </div>
             <div>
-              <label className="label">Password</label>
+              <label className="label">Kata sandi</label>
               <div className="relative">
                 <input type={showPassword ? 'text' : 'password'} className="input pr-11" defaultValue="••••••••" />
                 <button type="button" onClick={() => setShowPassword(p => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
@@ -71,7 +87,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
             {/* Role selector */}
             <div>
-              <label className="label">Demo role</label>
+              <label className="label">Peran demo</label>
               <div className="grid grid-cols-2 gap-2">
                 {roles.map(r => (
                   <button
@@ -88,13 +104,13 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             </div>
 
             <button onClick={() => onLogin(selectedRole)} className="btn-primary w-full justify-center py-3 text-base mt-2">
-              Sign in as {roles.find(r => r.value === selectedRole)?.label} <ArrowRight className="w-5 h-5" />
+              Masuk sebagai {roles.find(r => r.value === selectedRole)?.label} <ArrowRight className="w-5 h-5" />
             </button>
           </div>
 
           <p className="text-center text-sm text-navy/50 mt-6">
-            Don't have an account?{' '}
-            <Link to="/login" className="text-navy font-medium hover:underline">Apply as Editor</Link>
+            Belum punya akun?{' '}
+            <Link to="/login" className="text-navy font-medium hover:underline">Daftar sebagai Editor</Link>
           </p>
         </div>
       </div>

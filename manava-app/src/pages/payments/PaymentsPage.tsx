@@ -11,31 +11,31 @@ import type { UserRole } from '../../types'
 type TxFilter = 'all' | 'dp_payment' | 'final_payment' | 'escrow_release' | 'refund'
 
 const TYPE_META: Record<string, { label: string; icon: typeof ArrowUpRight; color: string }> = {
-  dp_payment:     { label: 'DP Payment',    icon: ArrowUpRight,  color: 'text-emerald-600' },
-  final_payment:  { label: 'Final Payment', icon: ArrowUpRight,  color: 'text-emerald-600' },
-  major_topup:    { label: 'Top-up',        icon: ArrowUpRight,  color: 'text-blue-600' },
-  escrow_hold:    { label: 'Escrow Hold',   icon: RefreshCw,     color: 'text-navy/60' },
-  escrow_release: { label: 'Released',      icon: TrendingUp,    color: 'text-emerald-600' },
-  refund:         { label: 'Refund',        icon: ArrowDownLeft, color: 'text-red-600' },
-  payroll:        { label: 'Payroll',       icon: ArrowDownLeft, color: 'text-navy/60' },
+  dp_payment:     { label: 'Pembayaran DP',    icon: ArrowUpRight,  color: 'text-emerald-600' },
+  final_payment:  { label: 'Pembayaran Akhir', icon: ArrowUpRight,  color: 'text-emerald-600' },
+  major_topup:    { label: 'Top-up',           icon: ArrowUpRight,  color: 'text-blue-600' },
+  escrow_hold:    { label: 'Tahan Escrow',     icon: RefreshCw,     color: 'text-navy/60' },
+  escrow_release: { label: 'Dicairkan',        icon: TrendingUp,    color: 'text-emerald-600' },
+  refund:         { label: 'Pengembalian',     icon: ArrowDownLeft, color: 'text-red-600' },
+  payroll:        { label: 'Penggajian',       icon: ArrowDownLeft, color: 'text-navy/60' },
 }
 
 const PIPELINE = [
-  { label: 'DP 50%',    desc: 'Down payment received' },
-  { label: 'Final 50%', desc: 'Delivery approved' },
-  { label: 'Released',  desc: 'Transferred to company' },
+  { label: 'DP 50%',    desc: 'Uang muka diterima' },
+  { label: 'Final 50%', desc: 'Hasil disetujui' },
+  { label: 'Dicairkan', desc: 'Ditransfer ke perusahaan' },
 ]
 
 const FILTER_TABS: { key: TxFilter; label: string }[] = [
-  { key: 'all',           label: 'All' },
+  { key: 'all',           label: 'Semua' },
   { key: 'dp_payment',    label: 'DP' },
   { key: 'final_payment', label: 'Final' },
-  { key: 'escrow_release',label: 'Released' },
-  { key: 'refund',        label: 'Refund' },
+  { key: 'escrow_release',label: 'Dicairkan' },
+  { key: 'refund',        label: 'Pengembalian' },
 ]
 
 const chartData = ['2026-05', '2026-06'].map(m => {
-  const label = m === '2026-05' ? 'May' : 'Jun'
+  const label = m === '2026-05' ? 'Mei' : 'Jun'
   const inflow = mockTransactions
     .filter(t => t.created_at.startsWith(m) && ['dp_payment','final_payment','major_topup'].includes(t.type) && t.status === 'success')
     .reduce((s, t) => s + t.amount, 0)
@@ -92,17 +92,17 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
 
       {/* Stats */}
       <div className="grid sm:grid-cols-4 gap-4">
-        <StatCard label="Held in Escrow"       value={formatCurrency(totalHeld)}     icon={CreditCard}  accent="bg-amber-50"   change="Across active projects" />
-        <StatCard label="Released to Company"  value={formatCurrency(totalReleased)} icon={TrendingUp}  accent="bg-emerald-50" change="+8M this month" changeType="up" />
-        <StatCard label="Total Refunded"       value={formatCurrency(totalRefunded)} icon={ArrowDownLeft} accent="bg-red-50" />
-        <StatCard label="Total Volume"         value={formatCurrency(totalVolume)}   icon={BarChart2}   accent="bg-blue-50"    change="All time inflow" />
+        <StatCard label="Ditahan di Escrow"     value={formatCurrency(totalHeld)}     icon={CreditCard}  accent="bg-amber-50"   change="Lintas proyek aktif" />
+        <StatCard label="Dicairkan ke Perusahaan" value={formatCurrency(totalReleased)} icon={TrendingUp}  accent="bg-emerald-50" change="+8M bulan ini" changeType="up" />
+        <StatCard label="Total Dikembalikan"    value={formatCurrency(totalRefunded)} icon={ArrowDownLeft} accent="bg-red-50" />
+        <StatCard label="Total Volume"          value={formatCurrency(totalVolume)}   icon={BarChart2}   accent="bg-blue-50"    change="Total pemasukan" />
       </div>
 
       {/* Master-detail */}
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Left: accounts + chart */}
         <div className="lg:col-span-2 space-y-3">
-          <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Escrow Accounts</p>
+          <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Akun Escrow</p>
           {mockEscrowAccounts.map(e => {
             const step = getPipelineStep(e)
             const active = e.escrow_id === selectedId
@@ -121,9 +121,9 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
                     <p className="text-sm font-semibold text-navy truncate">{e.project_title}</p>
                     <p className="text-xs text-navy/50 mb-1.5">{e.client_name}</p>
                     <div className="flex flex-wrap gap-2">
-                      {e.held_balance     > 0 && <span className="text-xs text-amber-600 font-medium">Held {formatCurrency(e.held_balance)}</span>}
-                      {e.released_balance > 0 && <span className="text-xs text-emerald-600 font-medium">Released {formatCurrency(e.released_balance)}</span>}
-                      {e.refunded_balance > 0 && <span className="text-xs text-red-500 font-medium">Refunded {formatCurrency(e.refunded_balance)}</span>}
+                      {e.held_balance     > 0 && <span className="text-xs text-amber-600 font-medium">Ditahan {formatCurrency(e.held_balance)}</span>}
+                      {e.released_balance > 0 && <span className="text-xs text-emerald-600 font-medium">Dicairkan {formatCurrency(e.released_balance)}</span>}
+                      {e.refunded_balance > 0 && <span className="text-xs text-red-500 font-medium">Dikembalikan {formatCurrency(e.refunded_balance)}</span>}
                     </div>
                   </div>
                 </div>
@@ -133,20 +133,20 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
 
           {/* Revenue chart */}
           <div className="card mt-2">
-            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Monthly Cash Flow (Rp M)</p>
+            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Arus Kas Bulanan (Rp Jt)</p>
             <ResponsiveContainer width="100%" height={140}>
               <BarChart data={chartData} barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6B7280' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: '#6B7280' }} axisLine={false} tickLine={false} unit="M" />
-                <Tooltip formatter={(v) => [`Rp ${Number(v).toFixed(1)}M`, '']} />
-                <Bar dataKey="inflow"   fill="#10B981" radius={[4,4,0,0]} name="Inflow" />
-                <Bar dataKey="released" fill="#1E3A5F" radius={[4,4,0,0]} name="Released" />
+                <YAxis tick={{ fontSize: 10, fill: '#6B7280' }} axisLine={false} tickLine={false} unit="Jt" />
+                <Tooltip formatter={(v) => [`Rp ${Number(v).toFixed(1)} Jt`, '']} />
+                <Bar dataKey="inflow"   fill="#10B981" radius={[4,4,0,0]} name="Pemasukan" />
+                <Bar dataKey="released" fill="#1E3A5F" radius={[4,4,0,0]} name="Dicairkan" />
               </BarChart>
             </ResponsiveContainer>
             <div className="flex gap-4 mt-2">
-              <div className="flex items-center gap-1.5 text-xs text-navy/60"><span className="w-3 h-3 rounded-sm bg-emerald-500 inline-block" />Inflow</div>
-              <div className="flex items-center gap-1.5 text-xs text-navy/60"><span className="w-3 h-3 rounded-sm bg-navy inline-block" />Released</div>
+              <div className="flex items-center gap-1.5 text-xs text-navy/60"><span className="w-3 h-3 rounded-sm bg-emerald-500 inline-block" />Pemasukan</div>
+              <div className="flex items-center gap-1.5 text-xs text-navy/60"><span className="w-3 h-3 rounded-sm bg-navy inline-block" />Dicairkan</div>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-navy">{selected.project_title}</p>
-                <p className="text-xs text-navy/50">{selected.client_name} · Updated {formatDate(selected.updated_at)}</p>
+                <p className="text-xs text-navy/50">{selected.client_name} · Diperbarui {formatDate(selected.updated_at)}</p>
               </div>
               {projectStatus && <StatusBadge status={projectStatus} />}
             </div>
@@ -185,15 +185,15 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
             {/* Balance breakdown */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="bg-amber-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-amber-700 mb-1">Held</p>
+                <p className="text-xs text-amber-700 mb-1">Ditahan</p>
                 <p className="text-base font-bold text-amber-700">{formatCurrency(selected.held_balance)}</p>
               </div>
               <div className="bg-emerald-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-emerald-700 mb-1">Released</p>
+                <p className="text-xs text-emerald-700 mb-1">Dicairkan</p>
                 <p className="text-base font-bold text-emerald-700">{formatCurrency(selected.released_balance)}</p>
               </div>
               <div className="bg-red-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-red-600 mb-1">Refunded</p>
+                <p className="text-xs text-red-600 mb-1">Dikembalikan</p>
                 <p className="text-base font-bold text-red-600">{formatCurrency(selected.refunded_balance)}</p>
               </div>
             </div>
@@ -203,16 +203,16 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
               <div className="flex gap-2 pt-3 border-t border-border">
                 {['in_review','completed'].includes(projectStatus ?? '') && (
                   <button onClick={() => setReleaseModal(true)} className="btn-primary flex-1 justify-center">
-                    <TrendingUp className="w-4 h-4" />Release Escrow
+                    <TrendingUp className="w-4 h-4" />Cairkan Escrow
                   </button>
                 )}
                 {projectStatus === 'disputed' && (
                   <button onClick={() => setRefundModal(true)} className="btn-danger flex-1 justify-center">
-                    <ArrowDownLeft className="w-4 h-4" />Issue Refund
+                    <ArrowDownLeft className="w-4 h-4" />Terbitkan Pengembalian
                   </button>
                 )}
                 {!['in_review','completed','disputed'].includes(projectStatus ?? '') && (
-                  <p className="text-xs text-navy/40 italic">Actions available once project reaches review stage</p>
+                  <p className="text-xs text-navy/40 italic">Aksi tersedia setelah proyek mencapai tahap tinjauan</p>
                 )}
               </div>
             )}
@@ -220,9 +220,9 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
 
           {/* Project-level transactions */}
           <div className="card">
-            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Project Transactions</p>
+            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Transaksi Proyek</p>
             {projectTxs.length === 0
-              ? <p className="text-sm text-navy/30 text-center py-4">No transactions yet</p>
+              ? <p className="text-sm text-navy/30 text-center py-4">Belum ada transaksi</p>
               : <div className="space-y-2">
                   {projectTxs.map(t => {
                     const meta = TYPE_META[t.type] ?? { label: t.type, icon: RefreshCw, color: 'text-navy/60' }
@@ -252,7 +252,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
       {/* Transaction ledger */}
       <div className="card">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h3 className="font-semibold text-navy">Transaction Ledger</h3>
+          <h3 className="font-semibold text-navy">Buku Transaksi</h3>
           <div className="flex gap-1 flex-wrap">
             {FILTER_TABS.map(f => (
               <button key={f.key} onClick={() => setTxFilter(f.key)}
@@ -264,7 +264,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
         </div>
         <div className="table-wrapper">
           <table className="table">
-            <thead><tr><th>Type</th><th>Project</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <thead><tr><th>Jenis</th><th>Proyek</th><th>Jumlah</th><th>Status</th><th>Tanggal</th></tr></thead>
             <tbody>
               {filteredTxs.map(t => {
                 const meta = TYPE_META[t.type] ?? { label: t.type, icon: RefreshCw, color: 'text-navy/60' }
@@ -285,52 +285,52 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
       </div>
 
       {/* Release modal */}
-      <Modal open={releaseModal} onClose={() => setReleaseModal(false)} title="Release Escrow">
+      <Modal open={releaseModal} onClose={() => setReleaseModal(false)} title="Cairkan Escrow">
         <div className="space-y-4">
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex gap-3">
             <TrendingUp className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-emerald-800">Confirm Escrow Release</p>
-              <p className="text-xs text-emerald-700 mt-1">Funds will be transferred to the company account within 1 hour per SLA. This action is logged in the audit trail.</p>
+              <p className="text-sm font-semibold text-emerald-800">Konfirmasi Pencairan Escrow</p>
+              <p className="text-xs text-emerald-700 mt-1">Dana akan ditransfer ke rekening perusahaan dalam 1 jam sesuai SLA. Aksi ini dicatat di jejak audit.</p>
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            {[['Project', selected.project_title], ['Client', selected.client_name], ['Amount', formatCurrency(selected.held_balance)], ['Target', 'Manava Company IDR Account']].map(([l, v]) => (
+            {[['Proyek', selected.project_title], ['Klien', selected.client_name], ['Jumlah', formatCurrency(selected.held_balance)], ['Tujuan', 'Rekening IDR Perusahaan Manava']].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1.5 border-b border-border last:border-0">
                 <span className="text-navy/60">{l}</span><span className="font-medium text-navy">{v}</span>
               </div>
             ))}
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setReleaseModal(false)} className="btn-secondary">Cancel</button>
-            <button onClick={() => { setReleaseModal(false); showToast('Escrow released. Funds transferred to company account.') }} className="btn-primary">
-              <TrendingUp className="w-4 h-4" />Release
+            <button onClick={() => setReleaseModal(false)} className="btn-secondary">Batal</button>
+            <button onClick={() => { setReleaseModal(false); showToast('Escrow dicairkan. Dana ditransfer ke rekening perusahaan.') }} className="btn-primary">
+              <TrendingUp className="w-4 h-4" />Cairkan
             </button>
           </div>
         </div>
       </Modal>
 
       {/* Refund modal */}
-      <Modal open={refundModal} onClose={() => setRefundModal(false)} title="Issue Refund">
+      <Modal open={refundModal} onClose={() => setRefundModal(false)} title="Terbitkan Pengembalian">
         <div className="space-y-4">
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3">
             <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-red-800">This will refund the client</p>
-              <p className="text-xs text-red-700 mt-1">Held escrow balance will be returned to the client's original payment method. This action is logged and cannot be undone.</p>
+              <p className="text-sm font-semibold text-red-800">Ini akan mengembalikan dana ke klien</p>
+              <p className="text-xs text-red-700 mt-1">Saldo escrow yang ditahan akan dikembalikan ke metode pembayaran asli klien. Aksi ini dicatat dan tidak bisa dibatalkan.</p>
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            {[['Project', selected.project_title], ['Client', selected.client_name], ['Refund Amount', formatCurrency(selected.held_balance)], ['Method', 'Original payment method']].map(([l, v]) => (
+            {[['Proyek', selected.project_title], ['Klien', selected.client_name], ['Jumlah Pengembalian', formatCurrency(selected.held_balance)], ['Metode', 'Metode pembayaran asli']].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1.5 border-b border-border last:border-0">
                 <span className="text-navy/60">{l}</span><span className="font-medium text-navy">{v}</span>
               </div>
             ))}
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setRefundModal(false)} className="btn-secondary">Cancel</button>
-            <button onClick={() => { setRefundModal(false); showToast('Refund initiated. Client will receive funds within 1–3 business days.') }} className="btn-danger">
-              <ArrowDownLeft className="w-4 h-4" />Issue Refund
+            <button onClick={() => setRefundModal(false)} className="btn-secondary">Batal</button>
+            <button onClick={() => { setRefundModal(false); showToast('Pengembalian dimulai. Klien menerima dana dalam 1–3 hari kerja.') }} className="btn-danger">
+              <ArrowDownLeft className="w-4 h-4" />Terbitkan Pengembalian
             </button>
           </div>
         </div>

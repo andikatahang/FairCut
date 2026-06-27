@@ -13,65 +13,65 @@ interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
 const navByRole: Record<UserRole, NavItem[]> = {
   superadmin: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/recruitment', icon: Users, label: 'Recruitment' },
-    { to: '/projects', icon: Briefcase, label: 'Projects' },
-    { to: '/contracts', icon: FileText, label: 'Contracts' },
-    { to: '/payments', icon: CreditCard, label: 'Escrow & Payments' },
-    { to: '/attendance', icon: Clock, label: 'Attendance & Payroll' },
-    { to: '/performance', icon: BarChart2, label: 'Performance KPI' },
-    { to: '/disputes', icon: AlertTriangle, label: 'Disputes' },
-    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
+    { to: '/recruitment', icon: Users, label: 'Rekrutmen' },
+    { to: '/projects', icon: Briefcase, label: 'Proyek' },
+    { to: '/contracts', icon: FileText, label: 'Kontrak' },
+    { to: '/payments', icon: CreditCard, label: 'Escrow & Pembayaran' },
+    { to: '/attendance', icon: Clock, label: 'Absensi & Penggajian' },
+    { to: '/performance', icon: BarChart2, label: 'KPI Kinerja' },
+    { to: '/disputes', icon: AlertTriangle, label: 'Sengketa' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Hasil Kerja' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
-    { to: '/offboarding', icon: UserCheck, label: 'Offboarding' },
-    { to: '/audit', icon: Shield, label: 'Audit Trail' },
+    { to: '/offboarding', icon: UserCheck, label: 'Pengakhiran Kerja' },
+    { to: '/audit', icon: Shield, label: 'Jejak Audit' },
   ],
   admin_manager: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/recruitment', icon: Users, label: 'Recruitment' },
-    { to: '/attendance', icon: Clock, label: 'Attendance & Leave' },
-    { to: '/performance', icon: BarChart2, label: 'Performance KPI' },
-    { to: '/projects', icon: Briefcase, label: 'Projects' },
-    { to: '/offboarding', icon: UserCheck, label: 'Offboarding' },
+    { to: '/recruitment', icon: Users, label: 'Rekrutmen' },
+    { to: '/attendance', icon: Clock, label: 'Absensi & Cuti' },
+    { to: '/performance', icon: BarChart2, label: 'KPI Kinerja' },
+    { to: '/projects', icon: Briefcase, label: 'Proyek' },
+    { to: '/offboarding', icon: UserCheck, label: 'Pengakhiran Kerja' },
   ],
   editor: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/projects', icon: Briefcase, label: 'My Projects' },
-    { to: '/contracts', icon: FileText, label: 'Contracts' },
+    { to: '/projects', icon: Briefcase, label: 'Proyek Saya' },
+    { to: '/contracts', icon: FileText, label: 'Kontrak' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
-    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
-    { to: '/ess', icon: UserCheck, label: 'Self Service' },
-    { to: '/attendance', icon: Clock, label: 'Attendance' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Hasil Kerja' },
+    { to: '/ess', icon: UserCheck, label: 'Layanan Mandiri' },
+    { to: '/attendance', icon: Clock, label: 'Absensi' },
   ],
   client: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/browse-editors', icon: Search, label: 'Browse Editors' },
-    { to: '/projects', icon: Briefcase, label: 'My Projects' },
-    { to: '/contracts', icon: FileText, label: 'Contracts' },
-    { to: '/deliverables', icon: PackageCheck, label: 'Deliverables' },
+    { to: '/browse-editors', icon: Search, label: 'Cari Editor' },
+    { to: '/projects', icon: Briefcase, label: 'Proyek Saya' },
+    { to: '/contracts', icon: FileText, label: 'Kontrak' },
+    { to: '/deliverables', icon: PackageCheck, label: 'Hasil Kerja' },
     { to: '/chat', icon: MessageSquare, label: 'Chat' },
-    { to: '/payments', icon: CreditCard, label: 'Payments' },
-    { to: '/disputes', icon: AlertTriangle, label: 'Disputes' },
+    { to: '/payments', icon: CreditCard, label: 'Pembayaran' },
+    { to: '/disputes', icon: AlertTriangle, label: 'Sengketa' },
   ],
   mediator: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/disputes', icon: AlertTriangle, label: 'Disputes' },
-    { to: '/projects', icon: Briefcase, label: 'Projects' },
+    { to: '/disputes', icon: AlertTriangle, label: 'Sengketa' },
+    { to: '/projects', icon: Briefcase, label: 'Proyek' },
   ],
   finance: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/payments', icon: CreditCard, label: 'Escrow & Finance' },
-    { to: '/attendance', icon: Clock, label: 'Payroll' },
-    { to: '/audit', icon: Shield, label: 'Audit Trail' },
+    { to: '/payments', icon: CreditCard, label: 'Escrow & Keuangan' },
+    { to: '/attendance', icon: Clock, label: 'Penggajian' },
+    { to: '/audit', icon: Shield, label: 'Jejak Audit' },
   ],
 }
 
 const roleLabels: Record<UserRole, string> = {
   superadmin: 'Superadmin',
-  admin_manager: 'Admin Manager',
+  admin_manager: 'Manajer Admin',
   editor: 'Editor',
-  client: 'Client',
+  client: 'Klien',
   mediator: 'Mediator',
-  finance: 'Finance',
+  finance: 'Keuangan',
 }
 
 interface SidebarProps {
@@ -178,10 +178,10 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobil
             'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors',
             collapsed && 'lg:justify-center'
           )}
-          title={collapsed ? 'Logout' : undefined}
+          title={collapsed ? 'Keluar' : undefined}
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
-          <span className={cn(collapsed && 'lg:hidden')}>Logout</span>
+          <span className={cn(collapsed && 'lg:hidden')}>Keluar</span>
         </button>
         <NavLink
           to="/settings"
@@ -190,10 +190,10 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobil
             isActive ? 'text-white bg-white/15' : 'text-white/60 hover:text-white hover:bg-white/10',
             collapsed && 'lg:justify-center'
           )}
-          title={collapsed ? 'Settings' : undefined}
+          title={collapsed ? 'Pengaturan' : undefined}
         >
           <Settings className="w-4 h-4 flex-shrink-0" />
-          <span className={cn(collapsed && 'lg:hidden')}>Settings</span>
+          <span className={cn(collapsed && 'lg:hidden')}>Pengaturan</span>
         </NavLink>
       </div>
     </aside>

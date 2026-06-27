@@ -10,8 +10,8 @@ const STAGES = ['applied','screening','interview','offered','offer_accepted','co
 type Stage = typeof STAGES[number]
 
 const STAGE_LABELS: Record<string, string> = {
-  applied: 'Applied', screening: 'Screening', interview: 'Interview',
-  offered: 'Offered', offer_accepted: 'Offer Accepted', confirmed: 'Confirmed',
+  applied: 'Melamar', screening: 'Seleksi', interview: 'Wawancara',
+  offered: 'Ditawari', offer_accepted: 'Tawaran Diterima', confirmed: 'Terkonfirmasi',
 }
 
 const STAGE_COLORS: Record<string, string> = {
@@ -73,7 +73,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
     <div className="space-y-6">
       {/* Tabs */}
       <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit">
-        {[['pipeline','ATS Pipeline'], ['postings','Job Postings'], ['dss','DSS Scoring']].map(([v, l]) => (
+        {[['pipeline','Pipeline ATS'], ['postings','Lowongan'], ['dss','Penilaian DSS']].map(([v, l]) => (
           <button key={v} onClick={() => setTab(v as typeof tab)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === v ? 'bg-navy text-white shadow-sm' : 'text-navy/60 hover:text-navy'}`}>
             {l}
@@ -93,12 +93,12 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
                 </button>
               ))}
             </div>
-            {canManage && <button className="btn-primary"><Plus className="w-4 h-4" /> Post Job</button>}
+            {canManage && <button className="btn-primary"><Plus className="w-4 h-4" /> Pasang Lowongan</button>}
           </div>
 
           <p className="text-xs text-navy/40 flex items-center gap-1">
             <GripVertical className="w-3 h-3" />
-            Drag cards between columns to move candidates through the pipeline
+            Seret kartu antar kolom untuk memindahkan kandidat di pipeline
           </p>
 
           {/* Kanban */}
@@ -162,7 +162,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
                       ))}
                       {cards.length === 0 && (
                         <div className={`border-2 border-dashed rounded-xl p-4 text-center transition-colors ${isOver ? 'border-navy/40 bg-navy-50' : 'border-border'}`}>
-                          <p className="text-xs text-navy/30">{isOver ? 'Drop here' : 'Empty'}</p>
+                          <p className="text-xs text-navy/30">{isOver ? 'Taruh di sini' : 'Kosong'}</p>
                         </div>
                       )}
                     </div>
@@ -179,12 +179,12 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
         <div className="space-y-4">
           {canManage && (
             <div className="flex justify-end">
-              <button className="btn-primary"><Plus className="w-4 h-4" /> New Job Posting</button>
+              <button className="btn-primary"><Plus className="w-4 h-4" /> Lowongan Baru</button>
             </div>
           )}
           <div className="card p-0 overflow-hidden"><div className="overflow-x-auto">
             <table className="table">
-              <thead><tr><th>Title</th><th>Specialization</th><th>Applicants</th><th>Status</th><th>Created</th></tr></thead>
+              <thead><tr><th>Judul</th><th>Spesialisasi</th><th>Pelamar</th><th>Status</th><th>Dibuat</th></tr></thead>
               <tbody>
                 {mockJobPostings.map(j => (
                   <tr key={j.job_id}>
@@ -205,14 +205,14 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
       {tab === 'dss' && (
         <div className="grid md:grid-cols-2 gap-6">
           <div className="card">
-            <h3 className="font-semibold text-navy mb-1">DSS Scoring Formula</h3>
-            <p className="text-sm text-navy/50 mb-4">Deterministic department recommendation engine</p>
+            <h3 className="font-semibold text-navy mb-1">Formula Penilaian DSS</h3>
+            <p className="text-sm text-navy/50 mb-4">Mesin rekomendasi departemen yang deterministik</p>
             <div className="space-y-3">
               {[
-                { label: 'Skill Match', weight: '40%', desc: 'Specialization overlap with department targets', color: 'bg-navy' },
-                { label: 'Capacity', weight: '25%', desc: 'Current vs target editor count in department', color: 'bg-blue-400' },
-                { label: 'Workload', weight: '20%', desc: 'Avg active projects per editor in department', color: 'bg-emerald-400' },
-                { label: 'Growth', weight: '15%', desc: 'Recent hires in last 3 months', color: 'bg-amber-400' },
+                { label: 'Kecocokan Keahlian', weight: '40%', desc: 'Irisan spesialisasi dengan target departemen', color: 'bg-navy' },
+                { label: 'Kapasitas', weight: '25%', desc: 'Jumlah editor saat ini vs target di departemen', color: 'bg-blue-400' },
+                { label: 'Beban Kerja', weight: '20%', desc: 'Rata-rata proyek aktif per editor di departemen', color: 'bg-emerald-400' },
+                { label: 'Pertumbuhan', weight: '15%', desc: 'Perekrutan dalam 3 bulan terakhir', color: 'bg-amber-400' },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-4 p-3 bg-primary-200 rounded-xl">
                   <div className={`w-10 h-10 ${item.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
@@ -227,7 +227,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
             </div>
           </div>
           <div className="card">
-            <h3 className="font-semibold text-navy mb-4">Department Rankings (Example)</h3>
+            <h3 className="font-semibold text-navy mb-4">Peringkat Departemen (Contoh)</h3>
             <div className="space-y-3">
               {[
                 { dept: 'Photo Retouching', score: 92, skill: 100, capacity: 75, workload: 100, growth: 100 },
@@ -253,7 +253,7 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
       )}
 
       {/* DSS modal */}
-      <Modal open={!!dssModal} onClose={() => setDssModal(null)} title="DSS Department Assignment" size="md">
+      <Modal open={!!dssModal} onClose={() => setDssModal(null)} title="Penempatan Departemen DSS" size="md">
         {dssModal && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 bg-primary-200 rounded-xl">
@@ -262,10 +262,10 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
               </div>
               <div>
                 <p className="font-semibold text-navy">{dssModal.name}</p>
-                <p className="text-sm text-navy/50">Score: {dssModal.score ?? 'N/A'}</p>
+                <p className="text-sm text-navy/50">Skor: {dssModal.score ?? 'N/A'}</p>
               </div>
             </div>
-            <p className="text-sm text-navy/60">AI-recommended department assignment:</p>
+            <p className="text-sm text-navy/60">Rekomendasi penempatan departemen oleh AI:</p>
             <div className="space-y-2">
               {[{ dept: 'Photo Retouching', score: 92 }, { dept: 'Video Editing', score: 85 }, { dept: 'Color Grading', score: 78 }].map((d, i) => (
                 <div key={d.dept} className={`flex items-center justify-between p-3 rounded-xl border ${i===0?'border-navy bg-navy-50':'border-border'}`}>
@@ -275,8 +275,8 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
               ))}
             </div>
             <div className="flex gap-3 pt-2">
-              <button className="btn-primary flex-1" onClick={() => setDssModal(null)}>Assign to Photo Retouching</button>
-              <button className="btn-secondary flex-1" onClick={() => setDssModal(null)}>Cancel</button>
+              <button className="btn-primary flex-1" onClick={() => setDssModal(null)}>Tempatkan ke Photo Retouching</button>
+              <button className="btn-secondary flex-1" onClick={() => setDssModal(null)}>Batal</button>
             </div>
           </div>
         )}

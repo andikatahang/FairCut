@@ -20,16 +20,16 @@ interface AuditEvent {
 }
 
 const mockAuditEvents: AuditEvent[] = [
-  { id: 'a01', timestamp: '2026-06-24T10:31:05Z', actor_name: 'System', actor_role: 'system', action: 'classified', entity_type: 'revision', entity_id: 'r3', entity_label: 'Revision #3 – Wedding Package Hero', detail: 'AI classifier: MINOR (94% confidence) · delta 12%', ip: '—', immutable: true },
-  { id: 'a02', timestamp: '2026-06-24T09:15:22Z', actor_name: 'Andika Rahman', actor_role: 'admin_manager', action: 'approved', entity_type: 'contract', entity_id: 'c2', entity_label: 'Contract #C-2026-002', detail: 'Contract approved; DP escrow tranche triggered', ip: '192.168.1.12', immutable: true },
-  { id: 'a03', timestamp: '2026-06-23T16:44:10Z', actor_name: 'Citra Lestari', actor_role: 'finance', action: 'released', entity_type: 'payment', entity_id: 'tx7', entity_label: 'Escrow ESC-003 final release', detail: 'IDR 12,500,000 released to company — SLA 00:32m', ip: '10.0.0.5', immutable: true },
-  { id: 'a04', timestamp: '2026-06-23T14:20:00Z', actor_name: 'Budi Santoso', actor_role: 'editor', action: 'updated', entity_type: 'project', entity_id: 'p1', entity_label: 'Wedding Package – Hartono Family', detail: 'Deliverable v3 uploaded (142 MB)', ip: '203.0.113.5', immutable: true },
-  { id: 'a05', timestamp: '2026-06-23T11:05:33Z', actor_name: 'Reza Mediator', actor_role: 'mediator', action: 'approved', entity_type: 'dispute', entity_id: 'd1', entity_label: 'Dispute DIS-2026-001', detail: 'Resolved: partial refund 30% approved. Note: AI evidence accepted', ip: '10.0.0.8', immutable: true },
-  { id: 'a06', timestamp: '2026-06-22T08:30:15Z', actor_name: 'PT Maju Jaya', actor_role: 'client', action: 'created', entity_type: 'revision', entity_id: 'r2', entity_label: 'Revision request – Product Catalog', detail: 'Client requested background swap — flagged as MAJOR by AI (89%)', ip: '180.244.1.1', immutable: true },
-  { id: 'a07', timestamp: '2026-06-21T17:00:00Z', actor_name: 'System', actor_role: 'system', action: 'released', entity_type: 'payment', entity_id: 'tx5', entity_label: 'Escrow ESC-002 auto-release', detail: 'Final 50% auto-released — delivery accepted, SLA 00:18m', ip: '—', immutable: true },
-  { id: 'a08', timestamp: '2026-06-20T13:22:44Z', actor_name: 'Andika Rahman', actor_role: 'admin_manager', action: 'created', entity_type: 'user', entity_id: 'u6', entity_label: 'New editor: Sari Dewi', detail: 'Onboarding completed; DSS score 82/100; assigned Product dept.', ip: '192.168.1.12', immutable: true },
-  { id: 'a09', timestamp: '2026-06-19T09:10:00Z', actor_name: 'Budi Santoso', actor_role: 'editor', action: 'logged_in', entity_type: 'user', entity_id: 'u2', entity_label: 'Session start', detail: 'Login from new device — browser: Chrome 126 macOS', ip: '203.0.113.5', immutable: true },
-  { id: 'a10', timestamp: '2026-06-18T15:30:00Z', actor_name: 'PT Maju Jaya', actor_role: 'client', action: 'approved', entity_type: 'contract', entity_id: 'c1', entity_label: 'Contract #C-2026-001', detail: 'Brief digitally signed; DP IDR 10,000,000 escrowed', ip: '180.244.1.1', immutable: true },
+  { id: 'a01', timestamp: '2026-06-24T10:31:05Z', actor_name: 'Sistem', actor_role: 'system', action: 'classified', entity_type: 'revision', entity_id: 'r3', entity_label: 'Revisi #3 – Wedding Package Hero', detail: 'Klasifikasi AI: MINOR (keyakinan 94%) · delta 12%', ip: '—', immutable: true },
+  { id: 'a02', timestamp: '2026-06-24T09:15:22Z', actor_name: 'Andika Rahman', actor_role: 'admin_manager', action: 'approved', entity_type: 'contract', entity_id: 'c2', entity_label: 'Kontrak #C-2026-002', detail: 'Kontrak disetujui; tahap DP escrow dipicu', ip: '192.168.1.12', immutable: true },
+  { id: 'a03', timestamp: '2026-06-23T16:44:10Z', actor_name: 'Citra Lestari', actor_role: 'finance', action: 'released', entity_type: 'payment', entity_id: 'tx7', entity_label: 'Pencairan akhir Escrow ESC-003', detail: 'IDR 12.500.000 dicairkan ke perusahaan — SLA 00:32m', ip: '10.0.0.5', immutable: true },
+  { id: 'a04', timestamp: '2026-06-23T14:20:00Z', actor_name: 'Budi Santoso', actor_role: 'editor', action: 'updated', entity_type: 'project', entity_id: 'p1', entity_label: 'Wedding Package – Keluarga Hartono', detail: 'Hasil kerja v3 diunggah (142 MB)', ip: '203.0.113.5', immutable: true },
+  { id: 'a05', timestamp: '2026-06-23T11:05:33Z', actor_name: 'Reza Mediator', actor_role: 'mediator', action: 'approved', entity_type: 'dispute', entity_id: 'd1', entity_label: 'Sengketa DIS-2026-001', detail: 'Diselesaikan: pengembalian sebagian 30% disetujui. Catatan: bukti AI diterima', ip: '10.0.0.8', immutable: true },
+  { id: 'a06', timestamp: '2026-06-22T08:30:15Z', actor_name: 'PT Maju Jaya', actor_role: 'client', action: 'created', entity_type: 'revision', entity_id: 'r2', entity_label: 'Permintaan revisi – Product Catalog', detail: 'Klien meminta ganti latar — ditandai MAJOR oleh AI (89%)', ip: '180.244.1.1', immutable: true },
+  { id: 'a07', timestamp: '2026-06-21T17:00:00Z', actor_name: 'Sistem', actor_role: 'system', action: 'released', entity_type: 'payment', entity_id: 'tx5', entity_label: 'Pencairan otomatis Escrow ESC-002', detail: '50% akhir dicairkan otomatis — hasil diterima, SLA 00:18m', ip: '—', immutable: true },
+  { id: 'a08', timestamp: '2026-06-20T13:22:44Z', actor_name: 'Andika Rahman', actor_role: 'admin_manager', action: 'created', entity_type: 'user', entity_id: 'u6', entity_label: 'Editor baru: Sari Dewi', detail: 'Onboarding selesai; skor DSS 82/100; ditugaskan ke dept. Product', ip: '192.168.1.12', immutable: true },
+  { id: 'a09', timestamp: '2026-06-19T09:10:00Z', actor_name: 'Budi Santoso', actor_role: 'editor', action: 'logged_in', entity_type: 'user', entity_id: 'u2', entity_label: 'Mulai sesi', detail: 'Login dari perangkat baru — browser: Chrome 126 macOS', ip: '203.0.113.5', immutable: true },
+  { id: 'a10', timestamp: '2026-06-18T15:30:00Z', actor_name: 'PT Maju Jaya', actor_role: 'client', action: 'approved', entity_type: 'contract', entity_id: 'c1', entity_label: 'Kontrak #C-2026-001', detail: 'Brief ditandatangani digital; DP IDR 10.000.000 masuk escrow', ip: '180.244.1.1', immutable: true },
 ]
 
 const entityColors: Record<string, string> = {
@@ -80,10 +80,10 @@ export default function AuditTrailPage() {
       {/* Stats bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          ['Total Events', String(mockAuditEvents.length), 'text-navy'],
-          ['Immutable Records', String(mockAuditEvents.filter(e => e.immutable).length), 'text-emerald-600'],
-          ['System Actions', String(mockAuditEvents.filter(e => e.actor_role === 'system').length), 'text-purple-600'],
-          ['Today', String(mockAuditEvents.filter(e => e.timestamp.startsWith('2026-06-24')).length), 'text-blue-600'],
+          ['Total Peristiwa', String(mockAuditEvents.length), 'text-navy'],
+          ['Catatan Permanen', String(mockAuditEvents.filter(e => e.immutable).length), 'text-emerald-600'],
+          ['Aksi Sistem', String(mockAuditEvents.filter(e => e.actor_role === 'system').length), 'text-purple-600'],
+          ['Hari Ini', String(mockAuditEvents.filter(e => e.timestamp.startsWith('2026-06-24')).length), 'text-blue-600'],
         ].map(([l, v, cls]) => (
           <div key={l} className="card-sm text-center">
             <p className={`text-2xl font-bold ${cls}`}>{v}</p>
@@ -97,18 +97,18 @@ export default function AuditTrailPage() {
         <div className="relative flex-1 min-w-48">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-navy/40" />
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search actor, entity, or detail…" className="input pl-9" />
+            placeholder="Cari aktor, entitas, atau detail…" className="input pl-9" />
         </div>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-navy/40" />
           <select value={entityFilter} onChange={e => setEntityFilter(e.target.value as EntityType)} className="input py-2 w-auto">
             {(['all','project','revision','payment','contract','user','dispute'] as EntityType[]).map(v => (
-              <option key={v} value={v}>{v === 'all' ? 'All entities' : v}</option>
+              <option key={v} value={v}>{v === 'all' ? 'Semua entitas' : v}</option>
             ))}
           </select>
           <select value={actionFilter} onChange={e => setActionFilter(e.target.value as ActionType)} className="input py-2 w-auto">
             {(['all','created','updated','approved','rejected','released','classified','logged_in'] as ActionType[]).map(v => (
-              <option key={v} value={v}>{v === 'all' ? 'All actions' : v}</option>
+              <option key={v} value={v}>{v === 'all' ? 'Semua aksi' : v}</option>
             ))}
           </select>
         </div>
@@ -119,13 +119,13 @@ export default function AuditTrailPage() {
         <table className="table w-full text-sm">
           <thead>
             <tr>
-              <th>Timestamp</th>
-              <th>Actor</th>
-              <th>Action</th>
-              <th>Entity</th>
+              <th>Waktu</th>
+              <th>Aktor</th>
+              <th>Aksi</th>
+              <th>Entitas</th>
               <th>Detail</th>
               <th>IP</th>
-              <th className="text-center">Integrity</th>
+              <th className="text-center">Integritas</th>
             </tr>
           </thead>
           <tbody>
@@ -166,12 +166,12 @@ export default function AuditTrailPage() {
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <div className="py-12 text-center text-sm text-navy/40">No events match your filters.</div>
+          <div className="py-12 text-center text-sm text-navy/40">Tidak ada peristiwa yang cocok dengan filter.</div>
         )}
       </div>
 
       <p className="text-xs text-navy/40">
-        All audit events are immutable and append-only. Records are retained for 7 years per IFRS 15 compliance requirements.
+        Semua peristiwa audit bersifat permanen dan hanya bisa ditambahkan. Catatan disimpan selama 7 tahun sesuai persyaratan kepatuhan IFRS 15.
       </p>
     </div>
   )

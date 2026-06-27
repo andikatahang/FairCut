@@ -50,7 +50,7 @@ export default function ChatPage() {
       {/* Project list */}
       <div className="w-64 flex-shrink-0 border-r border-border flex flex-col">
         <div className="p-4 border-b border-border">
-          <p className="text-xs font-semibold text-navy/40 uppercase tracking-wider">Projects</p>
+          <p className="text-xs font-semibold text-navy/40 uppercase tracking-wider">Proyek</p>
         </div>
         <div className="flex-1 overflow-y-auto">
           {mockProjects.filter(p=>!['draft','cancelled'].includes(p.status)).map(p=>(
@@ -70,13 +70,13 @@ export default function ChatPage() {
           <p className="text-xs text-navy/50">{mockProjects.find(p=>p.project_id===activeProject)?.client_name}</p>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length===0 ? <p className="text-center text-sm text-navy/30 pt-10">No messages yet</p> : messages.map(renderMsg)}
+          {messages.length===0 ? <p className="text-center text-sm text-navy/30 pt-10">Belum ada pesan</p> : messages.map(renderMsg)}
         </div>
         <div className="p-4 border-t border-border flex gap-3 items-end">
           <button className="p-2.5 rounded-xl border border-border text-navy/40 hover:text-navy hover:bg-primary-200 transition-colors flex-shrink-0">
             <Paperclip className="w-4 h-4"/>
           </button>
-          <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Type a message…"
+          <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Ketik pesan…"
             className="flex-1 input py-2.5" onKeyDown={e=>e.key==='Enter'&&setInput('')}/>
           <button onClick={()=>setInput('')} className="btn-primary py-2.5 px-4 flex-shrink-0">
             <Send className="w-4 h-4"/>
