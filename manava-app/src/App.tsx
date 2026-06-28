@@ -15,6 +15,7 @@ import DisputesPage from './pages/disputes/DisputesPage'
 import ProjectsPage from './pages/projects/ProjectsPage'
 import ProjectDetailPage from './pages/projects/ProjectDetailPage'
 import ESSPage from './pages/ess/ESSPage'
+import ProfilePage from './pages/profile/ProfilePage'
 import ChatPage from './pages/chat/ChatPage'
 import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
@@ -26,14 +27,14 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
   superadmin: [
     '/dashboard', '/recruitment', '/projects', '/contracts', '/payments',
     '/attendance', '/performance', '/disputes', '/deliverables', '/chat',
-    '/offboarding', '/audit', '/settings', '/ess',
+    '/offboarding', '/audit', '/settings', '/ess', '/profile',
   ],
   admin_manager: [
     '/dashboard', '/recruitment', '/attendance', '/performance', '/projects',
     '/settings', '/offboarding',
   ],
   editor: [
-    '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings',
+    '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings', '/profile',
   ],
   client: [
     '/dashboard', '/browse-editors', '/projects', '/settings',
@@ -91,6 +92,7 @@ function AppRoutes() {
         <Route path="/audit" element={<RoleGuard role={role}><AuditTrailPage /></RoleGuard>} />
         <Route path="/chat" element={<RoleGuard role={role}><ChatPage /></RoleGuard>} />
         <Route path="/ess" element={<RoleGuard role={role}><ESSPage /></RoleGuard>} />
+        <Route path="/profile" element={<RoleGuard role={role}><ProfilePage /></RoleGuard>} />
         <Route path="/offboarding" element={<RoleGuard role={role}><OffboardingPage /></RoleGuard>} />
         <Route path="/browse-editors" element={<RoleGuard role={role}><BrowseEditorsPage /></RoleGuard>} />
         <Route path="/settings" element={<SettingsPage />} />

@@ -69,6 +69,9 @@ export const mockPayslips: Payslip[] = [
   { payslip_id: 'ps1', editor_id: 'e1', editor_name: 'Budi Santoso', period_start: '2026-06-01', period_end: '2026-06-30', base_salary: 8000000, attendance_deduction: 0, project_bonus: 800000, reimbursement_total: 0, net_salary: 8800000, status: 'paid', generated_at: '2026-07-01T00:00:00' },
   { payslip_id: 'ps2', editor_id: 'e2', editor_name: 'Sari Dewi', period_start: '2026-06-01', period_end: '2026-06-30', base_salary: 9000000, attendance_deduction: 300000, project_bonus: 600000, reimbursement_total: 0, net_salary: 9300000, status: 'paid', generated_at: '2026-07-01T00:00:00' },
   { payslip_id: 'ps3', editor_id: 'e3', editor_name: 'Andi Kurniawan', period_start: '2026-06-01', period_end: '2026-06-30', base_salary: 7500000, attendance_deduction: 500000, project_bonus: 160000, reimbursement_total: 0, net_salary: 7160000, status: 'finalized', generated_at: '2026-07-01T00:00:00' },
+  // Budi Santoso (e1) — previous months, for the self-service history view
+  { payslip_id: 'ps1-may', editor_id: 'e1', editor_name: 'Budi Santoso', period_start: '2026-05-01', period_end: '2026-05-31', base_salary: 8000000, attendance_deduction: 200000, project_bonus: 600000, reimbursement_total: 150000, net_salary: 8550000, status: 'paid', generated_at: '2026-06-01T00:00:00' },
+  { payslip_id: 'ps1-apr', editor_id: 'e1', editor_name: 'Budi Santoso', period_start: '2026-04-01', period_end: '2026-04-30', base_salary: 8000000, attendance_deduction: 0, project_bonus: 400000, reimbursement_total: 0, net_salary: 8400000, status: 'paid', generated_at: '2026-05-01T00:00:00' },
 ]
 
 export const mockAttendance: AttendanceRecord[] = [
@@ -90,6 +93,21 @@ export const mockAttendance: AttendanceRecord[] = [
   { date: '2026-06-23', clock_in: '08:00', clock_out: '17:00', status: 'present' },
   { date: '2026-06-24', clock_in: '08:05', clock_out: '17:00', status: 'present' },
   { date: '2026-06-25', clock_in: '08:00', status: 'present' },
+  // May 2026 — previous month, surfaced in the attendance history view
+  { date: '2026-05-04', clock_in: '08:00', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-05', clock_in: '08:10', clock_out: '17:05', status: 'present' },
+  { date: '2026-05-06', clock_in: '08:00', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-07', clock_in: '09:20', clock_out: '17:00', status: 'partial' },
+  { date: '2026-05-08', status: 'absent' },
+  { date: '2026-05-11', clock_in: '08:05', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-12', clock_in: '08:00', clock_out: '17:10', status: 'present' },
+  { date: '2026-05-13', clock_in: '08:00', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-14', status: 'leave' },
+  { date: '2026-05-15', clock_in: '08:00', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-19', clock_in: '08:02', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-20', clock_in: '08:00', clock_out: '17:00', status: 'present' },
+  { date: '2026-05-21', clock_in: '08:08', clock_out: '17:05', status: 'present' },
+  { date: '2026-05-22', clock_in: '08:00', clock_out: '17:00', status: 'present' },
 ]
 
 export const mockLeaveRequests: LeaveRequest[] = [

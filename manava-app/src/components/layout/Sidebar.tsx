@@ -5,7 +5,7 @@ import logoLight from '../../assets/logo-light.png'
 import {
   LayoutDashboard, Users, Briefcase, FileText, CreditCard,
   Clock, BarChart2, AlertTriangle, MessageSquare, UserCheck,
-  Settings, ChevronLeft, LogOut, PackageCheck, Shield, X, Search,
+  Settings, ChevronLeft, LogOut, PackageCheck, Shield, X, Search, User,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -37,7 +37,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/projects', icon: Briefcase, label: 'Proyek Saya' },
     { to: '/ess', icon: UserCheck, label: 'Layanan Mandiri' },
-    { to: '/attendance', icon: Clock, label: 'Absensi' },
   ],
   client: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -164,6 +163,28 @@ export function Sidebar({ role, userName, collapsed, onCollapse, onLogout, mobil
             </div>
           </div>
         )}
+
+        {/* Account section — sits directly above the logout button */}
+        {role === 'editor' && (
+          <>
+            {!collapsed && (
+              <p className="px-3 pt-1 pb-0.5 text-white/30 text-[11px] font-semibold uppercase tracking-wider">Akun</p>
+            )}
+            <NavLink
+              to="/profile"
+              className={({ isActive }) => cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                isActive ? 'text-white bg-white/15' : 'text-white/60 hover:text-white hover:bg-white/10',
+                collapsed && 'lg:justify-center'
+              )}
+              title={collapsed ? 'Profil' : undefined}
+            >
+              <User className="w-4 h-4 flex-shrink-0" />
+              <span className={cn(collapsed && 'lg:hidden')}>Profil</span>
+            </NavLink>
+          </>
+        )}
+
         <button
           onClick={onLogout}
           className={cn(
