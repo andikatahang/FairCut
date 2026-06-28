@@ -6,7 +6,7 @@ import { Card } from '../../components/ui/Card'
 import {
   Sparkles, ArrowRight, ChevronRight, Check, Plus, Minus,
   Users, FileText, Shield, BarChart2, ScanLine, Scale,
-  FileCheck2, PackageCheck, BadgeDollarSign,
+  FileCheck2, PackageCheck, BadgeDollarSign, Briefcase,
 } from 'lucide-react'
 
 /* ──────────────────────────────────────────────────────────
@@ -495,16 +495,24 @@ function Footer() {
   return (
     <footer className="bg-[#021526] text-white">
       <div className="max-w-[1140px] mx-auto px-6">
-        {/* logo + live status */}
-        <div className="flex items-center justify-between py-12">
+        {/* logo + careers CTA + live status */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 py-12">
           <img src={logoLight} alt="Manava" className="h-7 w-auto object-contain object-left" />
-          <span className="inline-flex items-center gap-2.5 text-[13px] text-white/70">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-60 animate-ping motion-reduce:animate-none" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#10B981]" />
+          <div className="flex items-center gap-5">
+            <Link
+              to="/apply"
+              className="inline-flex items-center gap-2 bg-[#D0F100] hover:brightness-95 text-[#021526] font-semibold px-5 py-2.5 rounded-full text-[14px] transition-all duration-200"
+            >
+              <Briefcase className="w-4 h-4" /> Lowongan Pekerjaan
+            </Link>
+            <span className="hidden sm:inline-flex items-center gap-2.5 text-[13px] text-white/70">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-60 animate-ping motion-reduce:animate-none" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#10B981]" />
+              </span>
+              Semua sistem beroperasi
             </span>
-            Semua sistem beroperasi
-          </span>
+          </div>
         </div>
 
         <div className="h-px bg-white/10" />

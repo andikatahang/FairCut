@@ -4,6 +4,7 @@ import { useAuth } from './hooks/useAuth'
 import { AppLayout } from './components/layout/AppLayout'
 import LandingPage from './pages/landing/LandingPage'
 import LoginPage from './pages/auth/LoginPage'
+import ApplyPage from './pages/apply/ApplyPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import RecruitmentPage from './pages/recruitment/RecruitmentPage'
 import ContractsPage from './pages/contracts/ContractsPage'
@@ -63,6 +64,7 @@ function AppRoutes() {
     return (
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/apply" element={<ApplyPage />} />
         <Route path="/login" element={<LoginPage onLogin={(role: UserRole) => login(role)} />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

@@ -1,286 +1,245 @@
-import { useState, useRef } from 'react'
-import { Plus, ExternalLink, ChevronRight, GripVertical } from 'lucide-react'
+import { useState } from 'react'
+import {
+  Mail, Phone, GraduationCap, CalendarClock, FileText, Sparkles,
+  CheckCircle2, XCircle, CalendarPlus, Video, MapPin, User,
+} from 'lucide-react'
 import { StatusBadge } from '../../components/ui/Badge'
 import { Modal } from '../../components/ui/Modal'
-import { formatDate } from '../../lib/utils'
-import { mockApplicants, mockJobPostings } from '../../data/mockData'
-import type { Applicant, UserRole } from '../../types'
+import { formatDate, formatDateTime } from '../../lib/utils'
+import {
+  getApplications, updateApplication,
+  type JobApplication, type ApplicationStatus, type InterviewInfo,
+} from '../../lib/applications'
+import type { UserRole } from '../../types'
+import { ApplicantCard } from './ApplicantCard'
+import { InterviewForm } from './InterviewForm'
 
-const STAGES = ['applied','screening','interview','offered','offer_accepted','confirmed'] as const
-type Stage = typeof STAGES[number]
-
-const STAGE_LABELS: Record<string, string> = {
-  applied: 'Melamar', screening: 'Seleksi', interview: 'Wawancara',
-  offered: 'Ditawari', offer_accepted: 'Tawaran Diterima', confirmed: 'Terkonfirmasi',
+const STATUSES: ApplicationStatus[] = ['pending', 'interview', 'accepted', 'rejected']
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  pending: 'Menunggu', interview: 'Wawancara', accepted: 'Diterima', rejected: 'Ditolak',
 }
 
-const STAGE_COLORS: Record<string, string> = {
-  applied: 'bg-slate-400',
-  screening: 'bg-blue-400',
-  interview: 'bg-amber-400',
-  offered: 'bg-purple-400',
-  offer_accepted: 'bg-emerald-500',
-  confirmed: 'bg-navy',
-}
+const CAN_MANAGE: UserRole[] = ['superadmin', 'admin_manager']
 
-const CAN_MANAGE_JOBS: UserRole[] = ['superadmin', 'admin_manager']
+// Primary card action depends on where the application is in the flow.
+function primaryFor(status: ApplicationStatus): string | null {
+  if (status === 'pending') return 'Atur Interview'
+  if (status === 'interview') return 'Putuskan'
+  return null // accepted / rejected are terminal
+}
 
 export default function RecruitmentPage({ role }: { role: UserRole }) {
-  const canManage = CAN_MANAGE_JOBS.includes(role)
-  const [tab, setTab] = useState<'pipeline'|'postings'|'dss'>('pipeline')
-  const [selectedJob, setSelectedJob] = useState(mockJobPostings[0].job_id)
-  const [dssModal, setDssModal] = useState<Applicant | null>(null)
-  const [liveApplicants, setLiveApplicants] = useState<Applicant[]>(mockApplicants)
-  const [dragOverStage, setDragOverStage] = useState<Stage | null>(null)
-  const draggedId = useRef<string | null>(null)
+  const canManage = CAN_MANAGE.includes(role)
+  const [apps, setApps] = useState<JobApplication[]>(() => getApplications())
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all')
+  const [detail, setDetail] = useState<JobApplication | null>(null)
+  const [interviewTarget, setInterviewTarget] = useState<JobApplication | null>(null)
 
-  const applicantsForJob = liveApplicants.filter(
-    a => a.job_id === selectedJob && !['rejected','offer_expired'].includes(a.tahap)
-  )
+  const visible = statusFilter === 'all' ? apps : apps.filter(a => a.status === statusFilter)
 
-  function handleDragStart(e: React.DragEvent, applicantId: string) {
-    draggedId.current = applicantId
-    e.dataTransfer.effectAllowed = 'move'
+  function refresh(next: JobApplication[]) {
+    setApps(next)
+    // keep the open detail panel in sync with the freshly-written record
+    setDetail(d => (d ? next.find(a => a.id === d.id) ?? null : null))
   }
 
-  function handleDragOver(e: React.DragEvent, stage: Stage) {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setDragOverStage(stage)
+  function setStatus(id: string, status: ApplicationStatus) {
+    refresh(updateApplication(id, { status }))
   }
 
-  function handleDragLeave() {
-    setDragOverStage(null)
+  function submitInterview(info: InterviewInfo) {
+    if (!interviewTarget) return
+    refresh(updateApplication(interviewTarget.id, { status: 'interview', interview: info }))
+    setInterviewTarget(null)
   }
 
-  function handleDrop(e: React.DragEvent, targetStage: Stage) {
-    e.preventDefault()
-    setDragOverStage(null)
-    const id = draggedId.current
-    if (!id) return
-    draggedId.current = null
-    setLiveApplicants(prev =>
-      prev.map(a => a.applicant_id === id ? { ...a, tahap: targetStage } : a)
-    )
-  }
-
-  function handleDragEnd() {
-    draggedId.current = null
-    setDragOverStage(null)
+  // Card primary button: pending → open interview form, interview → open detail to decide.
+  function handlePrimary(app: JobApplication) {
+    if (app.status === 'pending') setInterviewTarget(app)
+    else setDetail(app)
   }
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
-      <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit">
-        {[['pipeline','Pipeline ATS'], ['postings','Lowongan'], ['dss','Penilaian DSS']].map(([v, l]) => (
-          <button key={v} onClick={() => setTab(v as typeof tab)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === v ? 'bg-navy text-white shadow-sm' : 'text-navy/60 hover:text-navy'}`}>
-            {l}
-          </button>
-        ))}
+      {/* Vacancy header */}
+      <div className="card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-navy">
+            <Sparkles className="w-4 h-4 text-[#0050F8]" />
+            <h2 className="text-base font-semibold">Lowongan Editor — Lamaran Masuk</h2>
+          </div>
+          <p className="text-sm text-navy/50 mt-1">
+            Tinjau pelamar yang mendaftar lewat formulir publik, lalu kirim undangan interview atau putuskan hasil seleksi.
+          </p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-2xl font-bold text-navy leading-none">{apps.length}</p>
+          <p className="text-xs text-navy/50 mt-1">Total Pelamar</p>
+        </div>
       </div>
 
-      {/* Pipeline tab */}
-      {tab === 'pipeline' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2 flex-wrap">
-              {mockJobPostings.filter(j => j.status === 'open').map(j => (
-                <button key={j.job_id} onClick={() => setSelectedJob(j.job_id)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${selectedJob === j.job_id ? 'bg-navy text-white border-navy' : 'bg-white text-navy/70 border-border hover:border-navy/30'}`}>
-                  {j.title} <span className="ml-1 opacity-60">({j.applicant_count})</span>
-                </button>
-              ))}
-            </div>
-            {canManage && <button className="btn-primary"><Plus className="w-4 h-4" /> Pasang Lowongan</button>}
-          </div>
+      {/* Status filter chips */}
+      <div className="flex gap-2 flex-wrap">
+        <FilterChip
+          active={statusFilter === 'all'}
+          onClick={() => setStatusFilter('all')}
+          label={`Semua (${apps.length})`}
+        />
+        {STATUSES.map(s => {
+          const count = apps.filter(a => a.status === s).length
+          return (
+            <FilterChip
+              key={s}
+              active={statusFilter === s}
+              onClick={() => setStatusFilter(statusFilter === s ? 'all' : s)}
+              label={`${STATUS_LABELS[s]} (${count})`}
+            />
+          )
+        })}
+      </div>
 
-          <p className="text-xs text-navy/40 flex items-center gap-1">
-            <GripVertical className="w-3 h-3" />
-            Seret kartu antar kolom untuk memindahkan kandidat di pipeline
-          </p>
-
-          {/* Kanban */}
-          <div className="overflow-x-auto pb-2">
-            <div className="flex gap-4" style={{ minWidth: '960px' }}>
-              {STAGES.map(stage => {
-                const cards = applicantsForJob.filter(a => a.tahap === stage)
-                const isOver = dragOverStage === stage
-                return (
-                  <div
-                    key={stage}
-                    className={`flex-1 min-w-[160px] rounded-xl transition-colors duration-150 ${isOver ? 'bg-navy-50 ring-2 ring-navy/30' : ''}`}
-                    onDragOver={e => handleDragOver(e, stage)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={e => handleDrop(e, stage)}
-                  >
-                    <div className="flex items-center justify-between mb-3 px-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-2 h-2 rounded-full ${STAGE_COLORS[stage]}`} />
-                        <h3 className="text-xs font-semibold text-navy/50 uppercase tracking-wider">{STAGE_LABELS[stage]}</h3>
-                      </div>
-                      <span className="text-xs bg-navy-50 text-navy font-medium px-2 py-0.5 rounded-full">{cards.length}</span>
-                    </div>
-
-                    <div className="space-y-3 min-h-[80px]">
-                      {cards.map(a => (
-                        <div
-                          key={a.applicant_id}
-                          draggable
-                          onDragStart={e => handleDragStart(e, a.applicant_id)}
-                          onDragEnd={handleDragEnd}
-                          className="card-sm cursor-grab active:cursor-grabbing hover:shadow-card-md hover:border-navy/20 transition-all active:opacity-50 select-none group"
-                        >
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <div className="flex items-center gap-1.5">
-                              <GripVertical className="w-3 h-3 text-navy/20 group-hover:text-navy/40 transition-colors flex-shrink-0" />
-                              <div className="w-7 h-7 rounded-full bg-navy text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
-                                {a.name.split(' ').map((n: string) => n[0]).slice(0,2).join('')}
-                              </div>
-                            </div>
-                            {a.score && <span className="text-xs font-semibold text-navy bg-navy-50 px-2 py-0.5 rounded-full">{a.score}</span>}
-                          </div>
-                          <p className="text-sm font-medium text-navy leading-tight">{a.name}</p>
-                          <p className="text-xs text-navy/50 truncate mt-0.5">{a.email}</p>
-                          <div className="flex items-center justify-between mt-3">
-                            <span className="text-xs text-navy/40">{formatDate(a.created_at)}</span>
-                            <div className="flex gap-1">
-                              <a href={a.portfolio_url} target="_blank" rel="noreferrer"
-                                className="p-1 rounded hover:bg-navy-50 text-navy/40 hover:text-navy transition-colors">
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                              {stage === 'offer_accepted' && (
-                                <button onClick={() => setDssModal(a)}
-                                  className="p-1 rounded hover:bg-navy-50 text-navy/40 hover:text-navy transition-colors">
-                                  <ChevronRight className="w-3 h-3" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {cards.length === 0 && (
-                        <div className={`border-2 border-dashed rounded-xl p-4 text-center transition-colors ${isOver ? 'border-navy/40 bg-navy-50' : 'border-border'}`}>
-                          <p className="text-xs text-navy/30">{isOver ? 'Taruh di sini' : 'Kosong'}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+      {/* Card grid */}
+      {visible.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <p className="text-sm font-medium text-[#888]">Belum ada pelamar pada tahap ini</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {visible.map(a => (
+            <ApplicantCard
+              key={a.id}
+              application={a}
+              statusLabel={STATUS_LABELS[a.status]}
+              primaryLabel={canManage ? primaryFor(a.status) : null}
+              terminalTone={a.status === 'accepted' ? 'accepted' : a.status === 'rejected' ? 'rejected' : undefined}
+              onDetail={setDetail}
+              onPrimary={handlePrimary}
+            />
+          ))}
         </div>
       )}
 
-      {/* Job postings tab */}
-      {tab === 'postings' && (
-        <div className="space-y-4">
-          {canManage && (
-            <div className="flex justify-end">
-              <button className="btn-primary"><Plus className="w-4 h-4" /> Lowongan Baru</button>
+      {/* Applicant detail modal */}
+      <Modal open={!!detail} onClose={() => setDetail(null)} title="Detail Pelamar" size="md">
+        {detail && (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-semibold text-navy text-lg leading-tight truncate">{detail.full_name}</p>
+                <p className="text-sm text-navy/50">Melamar {formatDate(detail.submitted_at)}</p>
+              </div>
+              <StatusBadge status={detail.status} />
             </div>
-          )}
-          <div className="card p-0 overflow-hidden"><div className="overflow-x-auto">
-            <table className="table">
-              <thead><tr><th>Judul</th><th>Spesialisasi</th><th>Pelamar</th><th>Status</th><th>Dibuat</th></tr></thead>
-              <tbody>
-                {mockJobPostings.map(j => (
-                  <tr key={j.job_id}>
-                    <td className="font-medium text-navy">{j.title}</td>
-                    <td><div className="flex flex-wrap gap-1">{j.specialization.map(s => <span key={s} className="badge-navy text-xs px-2 py-0.5 rounded-full bg-navy-50 text-navy">{s.replace('_',' ')}</span>)}</div></td>
-                    <td><span className="font-medium">{j.applicant_count}</span></td>
-                    <td><StatusBadge status={j.status} /></td>
-                    <td className="text-navy/60">{formatDate(j.created_at)}</td>
-                  </tr>
+
+            <div className="grid sm:grid-cols-2 gap-x-5 gap-y-3 text-sm">
+              <Fact icon={<Mail className="w-4 h-4" />} label="Email" value={detail.email} />
+              <Fact icon={<Phone className="w-4 h-4" />} label="No. Handphone" value={detail.phone} />
+              <Fact icon={<User className="w-4 h-4" />} label="Usia" value={`${detail.age} tahun`} />
+              <Fact icon={<GraduationCap className="w-4 h-4" />} label="Pendidikan" value={detail.education} />
+              <Fact icon={<Sparkles className="w-4 h-4" />} label="IPK" value={detail.gpa.toFixed(2)} />
+              <Fact icon={<CalendarClock className="w-4 h-4" />} label="Tahun Lulus" value={String(detail.graduation_year)} />
+            </div>
+
+            <div>
+              <p className="text-[13px] font-medium text-navy mb-2">Skill</p>
+              <div className="flex flex-wrap gap-2">
+                {detail.skills.map(s => (
+                  <span key={s} className="px-3 py-1 rounded-full text-xs font-medium bg-navy-50 text-navy">{s}</span>
                 ))}
-              </tbody>
-            </table>
-          </div></div>
-        </div>
-      )}
-
-      {/* DSS tab */}
-      {tab === 'dss' && (
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="card">
-            <h3 className="font-semibold text-navy mb-1">Formula Penilaian DSS</h3>
-            <p className="text-sm text-navy/50 mb-4">Mesin rekomendasi departemen yang deterministik</p>
-            <div className="space-y-3">
-              {[
-                { label: 'Kecocokan Keahlian', weight: '40%', desc: 'Irisan spesialisasi dengan target departemen', color: 'bg-navy' },
-                { label: 'Kapasitas', weight: '25%', desc: 'Jumlah editor saat ini vs target di departemen', color: 'bg-blue-400' },
-                { label: 'Beban Kerja', weight: '20%', desc: 'Rata-rata proyek aktif per editor di departemen', color: 'bg-emerald-400' },
-                { label: 'Pertumbuhan', weight: '15%', desc: 'Perekrutan dalam 3 bulan terakhir', color: 'bg-amber-400' },
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-4 p-3 bg-primary-200 rounded-xl">
-                  <div className={`w-10 h-10 ${item.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <span className="text-white text-sm font-bold">{item.weight}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-navy">{item.label}</p>
-                    <p className="text-xs text-navy/50">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="card">
-            <h3 className="font-semibold text-navy mb-4">Peringkat Departemen (Contoh)</h3>
-            <div className="space-y-3">
-              {[
-                { dept: 'Photo Retouching', score: 92, skill: 100, capacity: 75, workload: 100, growth: 100 },
-                { dept: 'Video Editing', score: 87, skill: 100, capacity: 100, workload: 50, growth: 100 },
-                { dept: 'Color Grading', score: 79, skill: 75, capacity: 75, workload: 100, growth: 50 },
-              ].map((d, i) => (
-                <div key={d.dept} className={`p-4 rounded-xl border ${i === 0 ? 'border-navy bg-navy-50' : 'border-border'}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-navy text-white' : 'bg-border text-navy/60'}`}>{i+1}</span>
-                      <span className="text-sm font-semibold text-navy">{d.dept}</span>
-                    </div>
-                    <span className="text-lg font-bold text-navy">{d.score}</span>
-                  </div>
-                  <div className="w-full bg-white rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-navy h-1.5 rounded-full" style={{ width: `${d.score}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DSS modal */}
-      <Modal open={!!dssModal} onClose={() => setDssModal(null)} title="Penempatan Departemen DSS" size="md">
-        {dssModal && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-primary-200 rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-navy text-white font-bold flex items-center justify-center">
-                {dssModal.name.split(' ').map((n: string) => n[0]).slice(0,2).join('')}
-              </div>
-              <div>
-                <p className="font-semibold text-navy">{dssModal.name}</p>
-                <p className="text-sm text-navy/50">Skor: {dssModal.score ?? 'N/A'}</p>
               </div>
             </div>
-            <p className="text-sm text-navy/60">Rekomendasi penempatan departemen oleh AI:</p>
-            <div className="space-y-2">
-              {[{ dept: 'Photo Retouching', score: 92 }, { dept: 'Video Editing', score: 85 }, { dept: 'Color Grading', score: 78 }].map((d, i) => (
-                <div key={d.dept} className={`flex items-center justify-between p-3 rounded-xl border ${i===0?'border-navy bg-navy-50':'border-border'}`}>
-                  <span className="text-sm font-medium text-navy">{d.dept}</span>
-                  <span className="font-bold text-navy">{d.score}</span>
+
+            <div>
+              <p className="text-[13px] font-medium text-navy mb-2">Lampiran CV</p>
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-primary-200">
+                <FileText className="w-4 h-4 text-[#0050F8] shrink-0" />
+                <span className="text-sm text-navy truncate">{detail.cv_name}</span>
+              </div>
+            </div>
+
+            {/* Interview summary, once scheduled */}
+            {detail.interview && (
+              <div className="rounded-xl border border-navy/15 bg-navy-50 p-4 space-y-2">
+                <p className="text-[13px] font-semibold text-navy flex items-center gap-1.5">
+                  <CalendarPlus className="w-4 h-4" /> Interview Terjadwal
+                </p>
+                <div className="text-sm text-navy/70 space-y-1">
+                  <p className="flex items-center gap-2"><User className="w-3.5 h-3.5 text-navy/40" /> {detail.interview.interviewer}</p>
+                  <p className="flex items-center gap-2"><CalendarClock className="w-3.5 h-3.5 text-navy/40" /> {formatDateTime(detail.interview.datetime)}</p>
+                  <p className="flex items-center gap-2">
+                    {detail.interview.mode === 'online'
+                      ? <><Video className="w-3.5 h-3.5 text-navy/40" /> Online</>
+                      : <><MapPin className="w-3.5 h-3.5 text-navy/40" /> Offline · {detail.interview.location}</>}
+                  </p>
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3 pt-2">
-              <button className="btn-primary flex-1" onClick={() => setDssModal(null)}>Tempatkan ke Photo Retouching</button>
-              <button className="btn-secondary flex-1" onClick={() => setDssModal(null)}>Batal</button>
-            </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            {canManage && detail.status !== 'accepted' && detail.status !== 'rejected' && (
+              <div className="flex flex-col gap-2 pt-1">
+                <button
+                  className="btn-primary w-full justify-center"
+                  onClick={() => { setInterviewTarget(detail); setDetail(null) }}
+                >
+                  <CalendarPlus className="w-4 h-4" />
+                  {detail.interview ? 'Ubah Jadwal Interview' : 'Kirim Form Interview'}
+                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                    onClick={() => setStatus(detail.id, 'accepted')}
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Terima
+                  </button>
+                  <button
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
+                    onClick={() => setStatus(detail.id, 'rejected')}
+                  >
+                    <XCircle className="w-4 h-4" /> Tolak
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
+
+      {/* Interview form modal */}
+      <Modal open={!!interviewTarget} onClose={() => setInterviewTarget(null)} title="Kirim Form Interview" size="md">
+        {interviewTarget && (
+          <InterviewForm
+            application={interviewTarget}
+            onSubmit={submitInterview}
+            onCancel={() => setInterviewTarget(null)}
+          />
+        )}
+      </Modal>
+    </div>
+  )
+}
+
+function FilterChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+        active ? 'bg-navy text-white' : 'bg-[#f2f2f2] text-[#555] hover:bg-[#e8e8e8]'
+      }`}
+    >
+      {label}
+    </button>
+  )
+}
+
+function Fact({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <span className="text-navy/40 mt-0.5 shrink-0">{icon}</span>
+      <span className="min-w-0">
+        <span className="block text-xs text-navy/50">{label}</span>
+        <span className="block font-medium text-navy truncate">{value}</span>
+      </span>
     </div>
   )
 }

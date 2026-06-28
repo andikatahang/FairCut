@@ -36,6 +36,7 @@ export interface Applicant {
   portfolio_url: string
   created_at: string
   offer_accepted_at?: string
+  avatar?: string
 }
 
 export interface JobPosting {

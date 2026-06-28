@@ -32,14 +32,14 @@ export const mockJobPostings: JobPosting[] = [
 ]
 
 export const mockApplicants: Applicant[] = [
-  { applicant_id: 'a1', job_id: 'j1', name: 'Fajar Nugroho', email: 'fajar@mail.com', tahap: 'applied', portfolio_url: 'https://portfolio.fajar.com', created_at: '2026-06-12' },
-  { applicant_id: 'a2', job_id: 'j1', name: 'Lina Sari', email: 'lina@mail.com', tahap: 'screening', score: 78, portfolio_url: 'https://linasari.com', created_at: '2026-06-11' },
-  { applicant_id: 'a3', job_id: 'j1', name: 'Hendra Wijaya', email: 'hendra@mail.com', tahap: 'interview', score: 85, portfolio_url: 'https://hendra.portfolio.id', created_at: '2026-06-10' },
-  { applicant_id: 'a4', job_id: 'j1', name: 'Nita Amalia', email: 'nita@mail.com', tahap: 'offered', score: 91, portfolio_url: 'https://nita.design', created_at: '2026-06-08' },
-  { applicant_id: 'a5', job_id: 'j1', name: 'Bagas Prasetyo', email: 'bagas@mail.com', tahap: 'offer_accepted', score: 91, portfolio_url: 'https://bagas.com', created_at: '2026-06-05', offer_accepted_at: '2026-06-18' },
-  { applicant_id: 'a6', job_id: 'j2', name: 'Candra Halim', email: 'candra@mail.com', tahap: 'applied', portfolio_url: 'https://candra.film', created_at: '2026-06-14' },
-  { applicant_id: 'a7', job_id: 'j2', name: 'Putri Rahayu', email: 'putri@mail.com', tahap: 'screening', score: 72, portfolio_url: 'https://putri.edit.id', created_at: '2026-06-13' },
-  { applicant_id: 'a8', job_id: 'j1', name: 'Wahyu Hidayat', email: 'wahyu@mail.com', tahap: 'rejected', portfolio_url: 'https://wahyu.com', created_at: '2026-06-09' },
+  { applicant_id: 'a1', job_id: 'j1', name: 'Fajar Nugroho', email: 'fajar@mail.com', tahap: 'applied', portfolio_url: 'https://portfolio.fajar.com', created_at: '2026-06-12', avatar: 'https://i.pravatar.cc/480?img=15' },
+  { applicant_id: 'a2', job_id: 'j1', name: 'Lina Sari', email: 'lina@mail.com', tahap: 'screening', score: 78, portfolio_url: 'https://linasari.com', created_at: '2026-06-11', avatar: 'https://i.pravatar.cc/480?img=20' },
+  { applicant_id: 'a3', job_id: 'j1', name: 'Hendra Wijaya', email: 'hendra@mail.com', tahap: 'interview', score: 85, portfolio_url: 'https://hendra.portfolio.id', created_at: '2026-06-10', avatar: 'https://i.pravatar.cc/480?img=8' },
+  { applicant_id: 'a4', job_id: 'j1', name: 'Nita Amalia', email: 'nita@mail.com', tahap: 'offered', score: 91, portfolio_url: 'https://nita.design', created_at: '2026-06-08', avatar: 'https://i.pravatar.cc/480?img=23' },
+  { applicant_id: 'a5', job_id: 'j1', name: 'Bagas Prasetyo', email: 'bagas@mail.com', tahap: 'offer_accepted', score: 91, portfolio_url: 'https://bagas.com', created_at: '2026-06-05', offer_accepted_at: '2026-06-18', avatar: 'https://i.pravatar.cc/480?img=60' },
+  { applicant_id: 'a6', job_id: 'j2', name: 'Candra Halim', email: 'candra@mail.com', tahap: 'applied', portfolio_url: 'https://candra.film', created_at: '2026-06-14', avatar: 'https://i.pravatar.cc/480?img=68' },
+  { applicant_id: 'a7', job_id: 'j2', name: 'Putri Rahayu', email: 'putri@mail.com', tahap: 'screening', score: 72, portfolio_url: 'https://putri.edit.id', created_at: '2026-06-13', avatar: 'https://i.pravatar.cc/480?img=32' },
+  { applicant_id: 'a8', job_id: 'j1', name: 'Wahyu Hidayat', email: 'wahyu@mail.com', tahap: 'rejected', portfolio_url: 'https://wahyu.com', created_at: '2026-06-09', avatar: 'https://i.pravatar.cc/480?img=51' },
 ]
 
 export const mockProjects: Project[] = [
