@@ -17,16 +17,16 @@ interface OffboardingCase {
 }
 
 const PHASES = [
-  { label: 'Trigger & Notify', icon: AlertTriangle, desc: 'HR notified, editor receives offboarding letter' },
-  { label: 'Project Handoff', icon: Briefcase, desc: 'Active projects reassigned to available editors' },
-  { label: 'Final Payroll', icon: FileText, desc: 'Pro-rated salary, bonuses, and deductions settled' },
-  { label: 'Data Anonymization', icon: Archive, desc: 'PII anonymized 90 days post-offboarding per policy' },
+  { label: 'Pemicu & Notifikasi', icon: AlertTriangle, desc: 'HR diberi tahu, editor menerima surat pengakhiran' },
+  { label: 'Serah Terima Proyek', icon: Briefcase, desc: 'Proyek aktif dialihkan ke editor yang tersedia' },
+  { label: 'Penggajian Akhir', icon: FileText, desc: 'Gaji prorata, bonus, dan potongan diselesaikan' },
+  { label: 'Anonimisasi Data', icon: Archive, desc: 'Data pribadi dianonimkan 90 hari pasca-pengakhiran sesuai kebijakan' },
 ]
 
 const REASON_LABELS: Record<string, string> = {
-  resignation: 'Resignation',
-  termination: 'Termination',
-  contract_end: 'Contract End',
+  resignation: 'Pengunduran Diri',
+  termination: 'Pemutusan',
+  contract_end: 'Kontrak Berakhir',
 }
 
 const mockCases: OffboardingCase[] = [
@@ -47,15 +47,15 @@ export default function OffboardingPage() {
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-amber-600">{mockCases.filter(c => c.phase < 4).length}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Active Offboardings</p>
+          <p className="text-xs text-navy/60 mt-0.5">Pengakhiran Aktif</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-emerald-600">0</p>
-          <p className="text-xs text-navy/60 mt-0.5">Completed This Month</p>
+          <p className="text-xs text-navy/60 mt-0.5">Selesai Bulan Ini</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-navy">1</p>
-          <p className="text-xs text-navy/60 mt-0.5">Pending Anonymization</p>
+          <p className="text-xs text-navy/60 mt-0.5">Menunggu Anonimisasi</p>
         </div>
       </div>
 
@@ -72,8 +72,8 @@ export default function OffboardingPage() {
                   <UserX className="w-4 h-4 text-red-500" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-navy">Initiate Offboarding</p>
-                  <p className="text-xs text-navy/50">Select editor and trigger reason</p>
+                  <p className="text-sm font-semibold text-navy">Mulai Pengakhiran</p>
+                  <p className="text-xs text-navy/50">Pilih editor dan alasan pemicu</p>
                 </div>
               </div>
               {showForm ? <ChevronUp className="w-4 h-4 text-navy/40" /> : <ChevronDown className="w-4 h-4 text-navy/40" />}
@@ -88,7 +88,7 @@ export default function OffboardingPage() {
                     onChange={e => setForm(f => ({ ...f, editor_id: e.target.value }))}
                     className="input"
                   >
-                    <option value="">Select editor…</option>
+                    <option value="">Pilih editor…</option>
                     {mockEditors.map(e => (
                       <option key={e.editor_id} value={e.editor_id}>{e.full_name} — {e.department}</option>
                     ))}
@@ -102,30 +102,30 @@ export default function OffboardingPage() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-navy">{selectedEditor.full_name}</p>
-                      <p className="text-xs text-navy/50">{selectedEditor.department} · {selectedEditor.active_projects} active project(s)</p>
+                      <p className="text-xs text-navy/50">{selectedEditor.department} · {selectedEditor.active_projects} proyek aktif</p>
                     </div>
                     <StatusBadge status={selectedEditor.status} />
                   </div>
                 )}
 
                 <div>
-                  <label className="label">Reason</label>
+                  <label className="label">Alasan</label>
                   <select value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))} className="input">
-                    <option value="resignation">Resignation</option>
-                    <option value="termination">Termination</option>
-                    <option value="contract_end">Contract End</option>
+                    <option value="resignation">Pengunduran Diri</option>
+                    <option value="termination">Pemutusan</option>
+                    <option value="contract_end">Kontrak Berakhir</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="label">Effective Date</label>
+                  <label className="label">Tanggal Efektif</label>
                   <input type="date" value={form.effective_date} onChange={e => setForm(f => ({ ...f, effective_date: e.target.value }))} className="input" />
                 </div>
 
                 {form.editor_id && form.effective_date && (
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
                     <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
-                    This will lock the editor's account and begin the 4-phase offboarding workflow. Active projects will be flagged for reassignment.
+                    Ini akan mengunci akun editor dan memulai alur pengakhiran 4 tahap. Proyek aktif akan ditandai untuk dialihkan.
                   </div>
                 )}
 
@@ -134,7 +134,7 @@ export default function OffboardingPage() {
                   onClick={() => setConfirmModal(true)}
                   className="btn-danger w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <UserX className="w-4 h-4" /> Initiate Offboarding
+                  <UserX className="w-4 h-4" /> Mulai Pengakhiran
                 </button>
               </div>
             )}
@@ -142,7 +142,7 @@ export default function OffboardingPage() {
 
           {/* 4-phase legend */}
           <div className="card">
-            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Workflow Phases</p>
+            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Tahap Alur Kerja</p>
             <div className="space-y-3">
               {PHASES.map((p, i) => (
                 <div key={p.label} className="flex gap-3">
@@ -154,17 +154,17 @@ export default function OffboardingPage() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-navy/40 mt-3 border-t border-border pt-3">Data anonymization runs 90 days post-offboarding per PDPA guidelines.</p>
+            <p className="text-xs text-navy/40 mt-3 border-t border-border pt-3">Anonimisasi data berjalan 90 hari pasca-pengakhiran sesuai pedoman PDPA.</p>
           </div>
         </div>
 
         {/* Active cases */}
         <div className="lg:col-span-3 space-y-4">
-          <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Active Cases</p>
+          <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Kasus Aktif</p>
           {mockCases.length === 0 && (
             <div className="card text-center py-12 text-navy/30">
               <Shield className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No active offboardings</p>
+              <p className="text-sm">Tidak ada pengakhiran aktif</p>
             </div>
           )}
           {mockCases.map(c => {
@@ -186,7 +186,7 @@ export default function OffboardingPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <p className="text-xs text-navy/40">Effective</p>
+                      <p className="text-xs text-navy/40">Efektif</p>
                       <p className="text-xs font-semibold text-navy">{formatDate(c.effective_date)}</p>
                     </div>
                     {isExpanded ? <ChevronUp className="w-4 h-4 text-navy/40" /> : <ChevronDown className="w-4 h-4 text-navy/40" />}
@@ -225,7 +225,7 @@ export default function OffboardingPage() {
                       <div className="flex justify-end mt-4">
                         <button className="btn-primary text-sm py-2">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          Mark Phase {c.phase + 1} Complete
+                          Tandai Tahap {c.phase + 1} Selesai
                         </button>
                       </div>
                     )}
@@ -238,14 +238,14 @@ export default function OffboardingPage() {
       </div>
 
       {/* Confirm modal */}
-      <Modal open={confirmModal} onClose={() => setConfirmModal(false)} title="Confirm Offboarding">
+      <Modal open={confirmModal} onClose={() => setConfirmModal(false)} title="Konfirmasi Pengakhiran">
         <div className="space-y-4">
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3">
             <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-red-800">This action cannot be undone</p>
+              <p className="text-sm font-semibold text-red-800">Aksi ini tidak bisa dibatalkan</p>
               <p className="text-xs text-red-700 mt-1">
-                Initiating offboarding will immediately lock the editor's account, flag their active projects for reassignment, and begin the 4-phase offboarding workflow.
+                Memulai pengakhiran akan langsung mengunci akun editor, menandai proyek aktif untuk dialihkan, dan memulai alur pengakhiran 4 tahap.
               </p>
             </div>
           </div>
@@ -253,10 +253,10 @@ export default function OffboardingPage() {
             <div className="space-y-2 text-sm">
               {[
                 ['Editor', selectedEditor.full_name],
-                ['Department', selectedEditor.department],
-                ['Reason', REASON_LABELS[form.reason]],
-                ['Effective Date', form.effective_date ? formatDate(form.effective_date) : '—'],
-                ['Active Projects', String(selectedEditor.active_projects)],
+                ['Departemen', selectedEditor.department],
+                ['Alasan', REASON_LABELS[form.reason]],
+                ['Tanggal Efektif', form.effective_date ? formatDate(form.effective_date) : '—'],
+                ['Proyek Aktif', String(selectedEditor.active_projects)],
               ].map(([l, v]) => (
                 <div key={l} className="flex justify-between py-1.5 border-b border-border last:border-0">
                   <span className="text-navy/60">{l}</span>
@@ -266,9 +266,9 @@ export default function OffboardingPage() {
             </div>
           )}
           <div className="flex justify-end gap-2">
-            <button onClick={() => setConfirmModal(false)} className="btn-secondary">Cancel</button>
+            <button onClick={() => setConfirmModal(false)} className="btn-secondary">Batal</button>
             <button onClick={() => setConfirmModal(false)} className="btn-danger">
-              <UserX className="w-4 h-4" /> Confirm Offboarding
+              <UserX className="w-4 h-4" /> Konfirmasi Pengakhiran
             </button>
           </div>
         </div>

@@ -153,11 +153,11 @@ export default function PerformancePage({ role }: { role: UserRole }) {
               </div>
             </div>
             <div className="card space-y-3">
-              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Score Breakdown</p>
+              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Rincian Skor</p>
               {[
-                { label: 'Client Rating', value: selected.avg_client_rating, max: 5, icon: Star },
-                { label: 'Completion Rate', value: selected.completion_rate / 20, max: 5, icon: TrendingUp, raw: `${selected.completion_rate}%` },
-                { label: 'Manager Rating', value: selected.manager_rating, max: 5, icon: Target },
+                { label: 'Rating Klien', value: selected.avg_client_rating, max: 5, icon: Star },
+                { label: 'Tingkat Penyelesaian', value: selected.completion_rate / 20, max: 5, icon: TrendingUp, raw: `${selected.completion_rate}%` },
+                { label: 'Rating Manajer', value: selected.manager_rating, max: 5, icon: Target },
               ].map(({ label, value, icon: Icon, raw }) => (
                 <div key={label} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                   <span className="flex items-center gap-1.5 text-sm text-navy/60"><Icon className="w-3.5 h-3.5" />{label}</span>
@@ -180,7 +180,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
                   </div>
                   <div>
                     <h2 className="text-base font-semibold text-navy">{selected.editor_name}</h2>
-                    <p className="text-xs text-navy/50">Q2 2026 Review</p>
+                    <p className="text-xs text-navy/50">Tinjauan Q2 2026</p>
                   </div>
                 </div>
               </div>
@@ -194,7 +194,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
                 <KpiGauge value={selected.kpi_average} />
                 {isManager && (
                   <button onClick={() => setRatingModal(true)} className="btn-secondary text-sm py-2">
-                    <Target className="w-3.5 h-3.5" /> Rate
+                    <Target className="w-3.5 h-3.5" /> Nilai
                   </button>
                 )}
               </div>
@@ -203,9 +203,9 @@ export default function PerformancePage({ role }: { role: UserRole }) {
             {/* Score breakdown */}
             <div className="grid grid-cols-3 gap-3 mt-4">
               {[
-                { label: 'Client Rating', value: selected.avg_client_rating, prev: prevSnapshot?.avg_client_rating, icon: Star, color: 'text-amber-500', fmt: (v: number) => `${v.toFixed(1)} / 5.0` },
-                { label: 'Completion Rate', value: selected.completion_rate, prev: prevSnapshot?.completion_rate, icon: TrendingUp, color: 'text-blue-500', fmt: (v: number) => `${v}%` },
-                { label: 'Manager Rating', value: selected.manager_rating, prev: prevSnapshot?.manager_rating, icon: Target, color: 'text-navy/60', fmt: (v: number) => `${v.toFixed(1)} / 5.0` },
+                { label: 'Rating Klien', value: selected.avg_client_rating, prev: prevSnapshot?.avg_client_rating, icon: Star, color: 'text-amber-500', fmt: (v: number) => `${v.toFixed(1)} / 5.0` },
+                { label: 'Tingkat Penyelesaian', value: selected.completion_rate, prev: prevSnapshot?.completion_rate, icon: TrendingUp, color: 'text-blue-500', fmt: (v: number) => `${v}%` },
+                { label: 'Rating Manajer', value: selected.manager_rating, prev: prevSnapshot?.manager_rating, icon: Target, color: 'text-navy/60', fmt: (v: number) => `${v.toFixed(1)} / 5.0` },
               ].map(({ label, value, prev, icon: Icon, color, fmt }) => (
                 <div key={label} className="bg-navy-50/50 rounded-xl p-3 text-center">
                   <Icon className={`w-4 h-4 mx-auto mb-1 ${color}`} />
@@ -226,7 +226,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
           <div className="grid sm:grid-cols-2 gap-5">
             {/* Radar */}
             <div className="card">
-              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">KPI Dimensions</p>
+              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Dimensi KPI</p>
               <ResponsiveContainer width="100%" height={200}>
                 <RadarChart data={radarData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <PolarGrid stroke="#e8edf2" />
@@ -237,20 +237,20 @@ export default function PerformancePage({ role }: { role: UserRole }) {
               </ResponsiveContainer>
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between text-xs text-navy/50">
-                  <span>Client Rating</span><span className="font-semibold text-navy">{selected.avg_client_rating.toFixed(1)}/5</span>
+                  <span>Rating Klien</span><span className="font-semibold text-navy">{selected.avg_client_rating.toFixed(1)}/5</span>
                 </div>
                 <div className="flex justify-between text-xs text-navy/50">
-                  <span>Completion Rate</span><span className="font-semibold text-navy">{selected.completion_rate}%</span>
+                  <span>Tingkat Penyelesaian</span><span className="font-semibold text-navy">{selected.completion_rate}%</span>
                 </div>
                 <div className="flex justify-between text-xs text-navy/50">
-                  <span>Manager Rating</span><span className="font-semibold text-navy">{selected.manager_rating.toFixed(1)}/5</span>
+                  <span>Rating Manajer</span><span className="font-semibold text-navy">{selected.manager_rating.toFixed(1)}/5</span>
                 </div>
               </div>
             </div>
 
             {/* KPI trend */}
             <div className="card">
-              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">KPI Trend (4 Quarters)</p>
+              <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Tren KPI (4 Kuartal)</p>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={trendData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e8edf2" />
@@ -267,12 +267,12 @@ export default function PerformancePage({ role }: { role: UserRole }) {
 
           {/* Client rating stars visual */}
           <div className="card">
-            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-4">Client Satisfaction</p>
+            <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-4">Kepuasan Klien</p>
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <p className="text-4xl font-bold text-navy">{selected.avg_client_rating.toFixed(1)}</p>
                 <StarRating value={selected.avg_client_rating} />
-                <p className="text-xs text-navy/40 mt-1">Avg across all projects</p>
+                <p className="text-xs text-navy/40 mt-1">Rata-rata semua proyek</p>
               </div>
               <div className="flex-1 space-y-2">
                 {[5, 4, 3, 2, 1].map(star => {
@@ -297,13 +297,13 @@ export default function PerformancePage({ role }: { role: UserRole }) {
         </div>
       </div>
 
-      {/* Manager Rating Modal */}
+      {/* Rating Manajer Modal */}
       <Modal open={ratingModal} onClose={() => setRatingModal(false)} title={`Rate ${selected.editor_name}`}>
         <div className="space-y-4">
-          <p className="text-sm text-navy/60">Submit the quarterly manager rating for this editor. This contributes 1/3 to their overall KPI score.</p>
+          <p className="text-sm text-navy/60">Kirim rating manajer kuartalan untuk editor ini. Berkontribusi 1/3 dari total skor KPI.</p>
 
           <div>
-            <label className="label">Manager Rating (1.0 – 5.0)</label>
+            <label className="label">Rating Manajer (1,0 – 5,0)</label>
             <input
               type="range" min="1" max="5" step="0.1"
               value={draftRating}
@@ -311,9 +311,9 @@ export default function PerformancePage({ role }: { role: UserRole }) {
               className="w-full accent-navy"
             />
             <div className="flex justify-between text-xs text-navy/50 mt-1">
-              <span>1.0 — Poor</span>
+              <span>1,0 — Buruk</span>
               <span className="font-bold text-navy text-sm">{draftRating.toFixed(1)}</span>
-              <span>5.0 — Outstanding</span>
+              <span>5,0 — Luar Biasa</span>
             </div>
             <div className="flex justify-center mt-2">
               <StarRating value={draftRating} />
@@ -321,39 +321,39 @@ export default function PerformancePage({ role }: { role: UserRole }) {
           </div>
 
           <div>
-            <label className="label">Review Notes</label>
+            <label className="label">Catatan Tinjauan</label>
             <textarea
               rows={3}
               value={ratingNote}
               onChange={e => setRatingNote(e.target.value)}
               className="input resize-none"
-              placeholder="Summarize performance highlights, areas for improvement..."
+              placeholder="Ringkas sorotan kinerja, area yang perlu ditingkatkan..."
             />
           </div>
 
           <div className="bg-navy-50/50 rounded-xl p-3 text-sm space-y-1">
-            <p className="font-medium text-navy">Projected KPI Impact</p>
+            <p className="font-medium text-navy">Proyeksi Dampak KPI</p>
             <div className="flex justify-between text-navy/60 text-xs">
-              <span>Client Rating ({selected.avg_client_rating.toFixed(1)})</span>
+              <span>Rating Klien ({selected.avg_client_rating.toFixed(1)})</span>
               <span>{((selected.avg_client_rating / 5) * 33.3).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between text-navy/60 text-xs">
-              <span>Completion Rate ({selected.completion_rate}%)</span>
+              <span>Tingkat Penyelesaian ({selected.completion_rate}%)</span>
               <span>{(selected.completion_rate / 100 * 33.3).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between text-navy/60 text-xs">
-              <span>Manager Rating ({draftRating.toFixed(1)})</span>
+              <span>Rating Manajer ({draftRating.toFixed(1)})</span>
               <span>{((draftRating / 5) * 33.3).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between font-semibold text-navy text-xs border-t border-border pt-1 mt-1">
-              <span>New KPI Estimate</span>
+              <span>Estimasi KPI Baru</span>
               <span>{(((selected.avg_client_rating / 5) + (selected.completion_rate / 100) + (draftRating / 5)) / 3 * 5).toFixed(2)} / 5.0</span>
             </div>
           </div>
 
           <div className="flex justify-end gap-2">
-            <button onClick={() => setRatingModal(false)} className="btn-secondary">Cancel</button>
-            <button onClick={() => setRatingModal(false)} className="btn-primary">Submit Rating</button>
+            <button onClick={() => setRatingModal(false)} className="btn-secondary">Batal</button>
+            <button onClick={() => setRatingModal(false)} className="btn-primary">Kirim Rating</button>
           </div>
         </div>
       </Modal>

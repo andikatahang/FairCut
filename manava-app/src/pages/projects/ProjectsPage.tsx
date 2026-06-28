@@ -255,19 +255,19 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-blue-600">{statCounts.active}</p>
-          <p className="text-xs text-navy/60 mt-0.5">In Progress</p>
+          <p className="text-xs text-navy/60 mt-0.5">Berjalan</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-navy">{statCounts.review}</p>
-          <p className="text-xs text-navy/60 mt-0.5">In Review</p>
+          <p className="text-xs text-navy/60 mt-0.5">Ditinjau</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-red-600">{statCounts.disputed}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Disputed</p>
+          <p className="text-xs text-navy/60 mt-0.5">Disengketakan</p>
         </div>
         <div className="card text-center py-4">
           <p className="text-2xl font-bold text-emerald-600">{statCounts.completed}</p>
-          <p className="text-xs text-navy/60 mt-0.5">Completed</p>
+          <p className="text-xs text-navy/60 mt-0.5">Selesai</p>
         </div>
       </div>
 
@@ -277,7 +277,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
           onClick={() => setFilter('all')}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${filter === 'all' ? 'bg-navy text-white border-navy' : 'bg-white text-navy/60 border-border hover:border-navy/30'}`}
         >
-          All ({mockProjects.length})
+          Semua ({mockProjects.length})
         </button>
         {ALL_STATUSES.map(s => {
           const count = mockProjects.filter(p => p.status === s).length
@@ -288,7 +288,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
               onClick={() => setFilter(s)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${filter === s ? 'bg-navy text-white border-navy' : 'bg-white text-navy/60 border-border hover:border-navy/30'}`}
             >
-              {s.replace(/_/g, ' ')} ({count})
+              {STATUS_LABELS[s]} ({count})
             </button>
           )
         })}
@@ -301,7 +301,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
           {filtered.length === 0 && (
             <div className="card text-center py-12 text-navy/30">
               <Briefcase className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No projects found</p>
+              <p className="text-sm">Tidak ada proyek</p>
             </div>
           )}
           {filtered.map(p => (
@@ -347,7 +347,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                     <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{selected.editor_name}</span>
                     <span className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5" />{selected.client_name}</span>
                     {selected.started_at && (
-                      <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Started {formatDate(selected.started_at)}</span>
+                      <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Mulai {formatDate(selected.started_at)}</span>
                     )}
                     <span className="flex items-center gap-1.5 font-semibold text-navy">{formatCurrency(selected.project_value)}</span>
                   </div>
@@ -358,22 +358,22 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
               <div className="flex gap-2 mt-4 flex-wrap">
                 {isClient && selected.status === 'in_review' && (
                   <button className="btn-primary text-xs py-2 px-3">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Approve & Pay Final
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Setujui & Bayar Pelunasan
                   </button>
                 )}
                 {isClient && ['in_progress', 'in_review'].includes(selected.status) && (
                   <button onClick={() => setRevisionModal(true)} className="btn-secondary text-xs py-2 px-3">
-                    <RotateCcw className="w-3.5 h-3.5" /> Submit Revision
+                    <RotateCcw className="w-3.5 h-3.5" /> Ajukan Revisi
                   </button>
                 )}
                 {isEditor && selected.status === 'in_progress' && (
                   <button className="btn-primary text-xs py-2 px-3">
-                    <ArrowRight className="w-3.5 h-3.5" /> Submit for Review
+                    <ArrowRight className="w-3.5 h-3.5" /> Kirim untuk Ditinjau
                   </button>
                 )}
                 {selected.status === 'disputed' && (role === 'mediator' || isAdmin) && (
                   <button className="btn-secondary text-xs py-2 px-3">
-                    <ShieldAlert className="w-3.5 h-3.5" /> Open Dispute Panel
+                    <ShieldAlert className="w-3.5 h-3.5" /> Buka Panel Sengketa
                   </button>
                 )}
               </div>
@@ -400,7 +400,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
               <div className="p-5 space-y-5">
                 {/* Escrow snapshot */}
                 <div>
-                  <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Payment Escrow</p>
+                  <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider mb-3">Escrow Pembayaran</p>
                   <div className="flex items-center gap-2">
                     {ESCROW_STATES.map((s, i) => (
                       <div key={s.key} className="flex items-center gap-2">
@@ -416,15 +416,15 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                     <div className="grid grid-cols-3 gap-3 mt-3">
                       <div className="bg-navy-50/50 rounded-xl p-3 text-center">
                         <p className="text-base font-bold text-navy">{formatCurrency(escrow.held_balance)}</p>
-                        <p className="text-xs text-navy/50 mt-0.5">Held</p>
+                        <p className="text-xs text-navy/50 mt-0.5">Ditahan</p>
                       </div>
                       <div className="bg-emerald-50 rounded-xl p-3 text-center">
                         <p className="text-base font-bold text-emerald-700">{formatCurrency(escrow.released_balance)}</p>
-                        <p className="text-xs text-navy/50 mt-0.5">Released</p>
+                        <p className="text-xs text-navy/50 mt-0.5">Dicairkan</p>
                       </div>
                       <div className="bg-amber-50 rounded-xl p-3 text-center">
                         <p className="text-base font-bold text-amber-700">{formatCurrency(escrow.refunded_balance)}</p>
-                        <p className="text-xs text-navy/50 mt-0.5">Refunded</p>
+                        <p className="text-xs text-navy/50 mt-0.5">Dikembalikan</p>
                       </div>
                     </div>
                   )}
@@ -438,14 +438,14 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                       <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-4">
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-xs font-semibold text-emerald-700">Included Scope</span>
+                          <span className="text-xs font-semibold text-emerald-700">Lingkup Included</span>
                         </div>
                         <p className="text-xs text-navy/70">{envelope.included_scope}</p>
                       </div>
                       <div className="rounded-xl border border-red-100 bg-red-50/40 p-4">
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <AlertCircle className="w-3.5 h-3.5 text-red-500" />
-                          <span className="text-xs font-semibold text-red-600">Excluded Scope</span>
+                          <span className="text-xs font-semibold text-red-600">Lingkup Excluded</span>
                         </div>
                         <p className="text-xs text-navy/70">{envelope.excluded_scope}</p>
                       </div>
@@ -453,7 +453,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                         <div className="flex items-center gap-1.5 mb-2">
                           <Layers className="w-3.5 h-3.5 text-navy/60" />
                           <span className="text-xs font-semibold text-navy/70">
-                            Free Revision Allowance — {envelope.allowance_consumed}/{envelope.allowance_count} used
+                            Jatah Revisi Gratis — {envelope.allowance_consumed}/{envelope.allowance_count} terpakai
                           </span>
                         </div>
                         <RevisionEnvelopeBar consumed={envelope.allowance_consumed} total={envelope.allowance_count} />
@@ -470,7 +470,7 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                 {revisions.length === 0 ? (
                   <div className="text-center py-10 text-navy/30">
                     <RotateCcw className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">No revisions yet</p>
+                    <p className="text-sm">Belum ada revisi</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -481,20 +481,20 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
                           <StatusBadge status={r.status} />
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs text-navy/50">AI label:</span>
+                          <span className="text-xs text-navy/50">Label AI:</span>
                           <StatusBadge status={r.ai_label} />
                           <AiConfidencePill confidence={r.ai_confidence} />
                           {r.final_label && r.final_label !== r.ai_label && (
                             <>
-                              <span className="text-xs text-navy/40">→ Final:</span>
+                              <span className="text-xs text-navy/40">→ Akhir:</span>
                               <StatusBadge status={r.final_label} />
                             </>
                           )}
                           {r.price !== undefined && r.price > 0 && (
-                            <span className="text-xs font-semibold text-amber-700 ml-auto">{formatCurrency(r.price)} top-up</span>
+                            <span className="text-xs font-semibold text-amber-700 ml-auto">top-up {formatCurrency(r.price)}</span>
                           )}
                           {r.price === 0 && (
-                            <span className="text-xs text-emerald-700 font-medium ml-auto">Free</span>
+                            <span className="text-xs text-emerald-700 font-medium ml-auto">Gratis</span>
                           )}
                         </div>
                         <p className="text-xs text-navy/40">{formatDateTime(r.created_at)}</p>
@@ -508,11 +508,11 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
             {/* Tab: Escrow */}
             {tab === 'escrow' && (
               <div className="p-5 space-y-4">
-                <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Transaction History</p>
+                <p className="text-xs font-semibold text-navy/50 uppercase tracking-wider">Riwayat Transaksi</p>
                 {transactions.length === 0 ? (
                   <div className="text-center py-10 text-navy/30">
                     <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">No transactions yet</p>
+                    <p className="text-sm">Belum ada transaksi</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -537,28 +537,28 @@ export default function ProjectsPage({ role }: { role: UserRole }) {
       </div>
 
       {/* Submit Revision Modal */}
-      <Modal open={revisionModal} onClose={() => setRevisionModal(false)} title="Submit Revision Request">
+      <Modal open={revisionModal} onClose={() => setRevisionModal(false)} title="Ajukan Permintaan Revisi">
         <div className="space-y-4">
-          <p className="text-sm text-navy/60">Describe the changes you need. Our AI will classify the revision as minor (free) or major (additional charge).</p>
+          <p className="text-sm text-navy/60">Jelaskan perubahan yang Anda butuhkan. AI kami akan mengklasifikasi revisi sebagai minor (gratis) atau major (biaya tambahan).</p>
           <div>
-            <label className="label">Revision Details</label>
+            <label className="label">Detail Revisi</label>
             <textarea
               rows={4}
               value={revisionText}
               onChange={e => setRevisionText(e.target.value)}
               className="input resize-none"
-              placeholder="e.g. The background on photo #3 needs to be slightly brighter..."
+              placeholder="mis. Latar pada foto #3 perlu sedikit lebih cerah..."
             />
           </div>
           {envelope && (
             <div className="bg-navy-50/50 rounded-xl p-3">
-              <p className="text-xs text-navy/60 mb-1">Free Allowance Remaining</p>
+              <p className="text-xs text-navy/60 mb-1">Sisa Jatah Gratis</p>
               <RevisionEnvelopeBar consumed={envelope.allowance_consumed} total={envelope.allowance_count} />
             </div>
           )}
           <div className="flex justify-end gap-2">
-            <button onClick={() => setRevisionModal(false)} className="btn-secondary">Cancel</button>
-            <button onClick={() => setRevisionModal(false)} className="btn-primary">Submit Request</button>
+            <button onClick={() => setRevisionModal(false)} className="btn-secondary">Batal</button>
+            <button onClick={() => setRevisionModal(false)} className="btn-primary">Kirim Permohonan</button>
           </div>
         </div>
       </Modal>
