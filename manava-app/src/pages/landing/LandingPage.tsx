@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import logoDark from '../../assets/logo-dark.png'
 import logoLight from '../../assets/logo-light.png'
 import { Card } from '../../components/ui/Card'
+import DotField from '../../components/dot-field/DotField'
 import {
   Sparkles, ArrowRight, ChevronRight, Check, Plus, Minus,
   Users, FileText, Shield, BarChart2, ScanLine, Scale,
@@ -28,7 +29,7 @@ const features: Feature[] = [
   { icon: FileText, title: 'Revision Envelope', tag: 'Kontrol Lingkup',
     desc: 'Kunci setiap pekerjaan dengan kerangka INCLUDED / EXCLUDED / ALLOWANCE sebelum satu piksel pun bergerak.' },
   { icon: Shield, title: 'Dual-Phase Escrow', tag: 'Pembayaran Aman',
-    desc: '50% saat kontrak disetujui, 50% saat hasil diterima — dicairkan otomatis dalam satu jam.' },
+    desc: '50% saat kontrak disetujui, 50% saat hasil diterima, dicairkan otomatis dalam satu jam.' },
   { icon: ScanLine, title: 'AI Revision Classifier', tag: 'akurasi ≥85%',
     desc: 'Deteksi perubahan mengklasifikasi tiap revisi sebagai minor (gratis) atau major (berbayar), dengan bukti.' },
   { icon: Users, title: 'Smart Recruitment', tag: 'ATS + DSS',
@@ -43,7 +44,7 @@ const steps: Step[] = [
   { icon: FileCheck2, step: '01', title: 'Pesan & Kunci Lingkup',
     desc: 'Klien memesan editor, Revision Envelope ditetapkan, dan brief ditandatangani secara digital.' },
   { icon: PackageCheck, step: '02', title: 'Kerjakan & Klasifikasi',
-    desc: 'Editor bekerja dalam lingkup yang disepakati. Tiap revisi diklasifikasi — minor atau major — secara otomatis.' },
+    desc: 'Editor bekerja dalam lingkup yang disepakati. Tiap revisi diklasifikasi minor atau major secara otomatis.' },
   { icon: BadgeDollarSign, step: '03', title: 'Cairkan Pembayaran',
     desc: 'Saat hasil diterima, tahap escrow terakhir dicairkan ke perusahaan dalam waktu kurang dari satu jam.' },
 ]
@@ -83,7 +84,7 @@ export default function LandingPage() {
   return (
     <div
       className="min-h-screen bg-[#FBFBFB] text-[#1a1a1a] antialiased"
-      style={{ fontFamily: "'Open Runde', 'Inter', -apple-system, sans-serif" }}
+      style={{ fontFamily: "ui-serif, Georgia, 'Times New Roman', serif" }}
     >
       <Nav />
       <Hero />
@@ -143,41 +144,30 @@ function Hero() {
     <section
       aria-labelledby="hero-heading"
       className="relative overflow-hidden"
-      style={{
-        background:
-          'linear-gradient(180deg, rgba(2,21,38,1) 10%, rgba(8,38,68,1) 30%, rgba(17,60,103,1) 50%, rgba(96,154,212,1) 80%, rgba(251,251,251,1) 100%)',
-      }}
+      style={{ background: '#fbfbfb' }}
     >
-      {/* atmospheric glow near the top */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-32 h-[560px]"
-        style={{ background: 'radial-gradient(55% 55% at 50% 0%, rgba(120,160,255,0.38) 0%, rgba(31,87,240,0) 70%)' }}
-      />
-      {/* faint diagonal sheen, echoing the reference */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{ background: 'repeating-linear-gradient(58deg, transparent 0 38px, rgba(255,255,255,0.9) 38px 39px)' }}
-      />
-      <div className="relative max-w-[860px] mx-auto px-6 pt-24 pb-56 text-center">
-        <span className="inline-flex items-center gap-2 text-[12px] font-medium text-white/80 bg-white/10 border border-white/15 px-3.5 py-1.5 rounded-full mb-8">
-          <Sparkles className="w-3.5 h-3.5 text-[#D0F100]" />
+      {/* interactive dot field — above the lines */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-[1]">
+        <DotField />
+      </div>
+      <div className="relative z-10 max-w-[860px] mx-auto px-6 pt-24 pb-56 text-center">
+        <span className="inline-flex items-center gap-2 text-[12px] font-medium text-[#021526]/70 bg-[#021526]/[0.04] border border-[#021526]/10 px-3.5 py-1.5 rounded-full mb-8">
+          <Sparkles className="w-3.5 h-3.5 text-[#0050F8]" />
           ERP untuk Studio Visual Skala Kecil
         </span>
 
         <h1
           id="hero-heading"
-          className="text-[clamp(2.9rem,7vw,5.25rem)] font-bold leading-[1.03] tracking-[-0.04em] text-white mb-7"
+          className="text-[clamp(2.9rem,7vw,5.25rem)] font-bold leading-[1.03] tracking-[-0.04em] text-[#021526] mb-7"
           style={{ fontFamily: "'Inter Display', 'Open Runde', sans-serif" }}
         >
           Dari Brief ke Pembayaran,
           <br />
-          Otomatis &amp; <span className="text-[#D0F100]">Adil</span>.
+          Otomatis &amp; <span className="text-[#0050F8]">Adil</span>.
         </h1>
 
-        <p className="text-[clamp(1rem,1.8vw,1.18rem)] text-[#dde7fb] max-w-[560px] mx-auto mb-10 leading-[1.65]">
-          Manava menyatukan HR, pengerjaan layanan, dan keuangan untuk studio visual —
+        <p className="text-[clamp(1rem,1.8vw,1.18rem)] text-[#596074] max-w-[560px] mx-auto mb-10 leading-[1.65]">
+          Manava menyatukan HR, Sale of Services, dan Finance untuk studio visual
           kepastian lingkup, pembayaran escrow yang aman, dan penyelesaian sengketa yang objektif.
         </p>
 
@@ -191,13 +181,13 @@ function Hero() {
           </Link>
           <a
             href="#how-it-works"
-            className="inline-flex items-center gap-1.5 border border-white/15 hover:border-white/30 hover:bg-white/5 text-white font-medium px-7 py-3.5 rounded-full text-[15px] transition-all duration-200"
+            className="inline-flex items-center gap-1.5 border border-[#021526]/15 hover:border-[#021526]/30 hover:bg-[#021526]/[0.03] text-[#021526] font-medium px-7 py-3.5 rounded-full text-[15px] transition-all duration-200"
           >
             Lihat cara kerja <ChevronRight className="w-4 h-4" />
           </a>
         </div>
 
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/75">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#596074]">
           Dibuat untuk tim layanan visual profesional
         </p>
       </div>
@@ -223,8 +213,8 @@ function Features() {
               desc={desc}
               media={
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-[8px] bg-[#021526] flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-0.5">
-                    <Icon className="w-5 h-5 text-white" />
+                  <div className="w-12 h-12 rounded-[0px] flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-0.5">
+                    <Icon className="w-8 h-8 text-[#021526]" />
                   </div>
                   <span className="text-[8px] font-medium text-[#596074] bg-white/70 border border-black/[0.05] px-3 py-1 rounded-full whitespace-nowrap">
                     {tag}
@@ -278,8 +268,8 @@ function HowItWorks() {
               className="p-7 rounded-[8px] bg-[#0c2438] border border-white/[0.08] hover:border-white/[0.16] transition-colors duration-200"
             >
               <div className="flex items-center justify-between mb-7">
-                <div className="w-14 h-14 rounded-full bg-[#fbfbfb] flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-[#021526]" />
+                <div className="w-14 h-14 rounded-full flex items-center justify-center">
+                  <Icon className="w-8 h-8 text-[#fbfbfb]" />
                 </div>
                 <span className="text-[18px] font-semibold text-[#D0F100] tabular-nums">{step}</span>
               </div>
