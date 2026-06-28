@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Current Status
 
-This is a **planning/design phase** project. All architectural and business logic design is documented in `prd.md`. Reference UI designs are in `referensi-tampilan/` directory.
+This is a **planning/design phase** project. All architectural and business logic design is documented in `prd.md`. Reference UI designs are in `referensi-tampilan/` directory. **Do not use** AI slop or basic AI design. 
 
 **No production code yet.** When implementation begins:
 1. Technology stack will be determined (likely web-based, full-stack)
