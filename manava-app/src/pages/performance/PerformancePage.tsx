@@ -8,6 +8,17 @@ import {
 } from 'recharts'
 import { mockEditorMetrics, mockKpiHistory } from '../../data/mockData'
 import type { EditorMetrics, UserRole } from '../../types'
+import { PageHeader } from '../../components/page/PageHeader'
+
+const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
+  superadmin:     { eyebrow: 'KPI', title: 'Kinerja Editor', description: 'Tiga metrik agregat (rating klien, completion rate, Manager Assessment) di tiga band performansi.' },
+  hr_admin:       { eyebrow: 'KPI', title: 'KPI Editor', description: 'Snapshot performansi seluruh editor untuk evaluasi kuartalan dan keputusan payroll.' },
+  admin_manager:  { eyebrow: 'Manager Assessment', title: 'KPI Tim', description: 'Berikan penilaian internal (1-5) untuk anggota departemen Anda; rating masuk KPI band.' },
+  editor:         { eyebrow: 'KPI Saya', title: 'Kinerja & Bonus', description: 'Rating klien, completion rate, dan Manager Assessment Anda — basis bonus proyek.' },
+  client:         { eyebrow: 'KPI', title: 'Kinerja', description: '' },
+  mediator:       { eyebrow: 'KPI', title: 'Kinerja', description: '' },
+  finance:        { eyebrow: 'KPI', title: 'Kinerja Editor', description: 'Read-only — konteks untuk laporan payroll dan kompensasi.' },
+}
 
 const BAND_META: Record<string, { color: string; bg: string; label: string }> = {
   excellent:        { color: 'text-emerald-700', bg: 'bg-emerald-50',  label: 'Sangat Baik' },
@@ -88,9 +99,12 @@ export default function PerformancePage({ role }: { role: UserRole }) {
   }))
 
   const bandMeta = BAND_META[selected.performance_band] ?? BAND_META.good
+  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.hr_admin
 
   return (
     <div className="space-y-6">
+      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
+
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="card text-center py-4">

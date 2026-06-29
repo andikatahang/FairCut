@@ -13,6 +13,17 @@ import {
 import type { UserRole } from '../../types'
 import { ApplicantCard } from './ApplicantCard'
 import { InterviewForm } from './InterviewForm'
+import { PageHeader } from '../../components/page/PageHeader'
+
+const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
+  superadmin:     { eyebrow: 'HR', title: 'Rekrutmen & Onboarding', description: 'Pantau seluruh siklus rekrutmen, DSS scoring, dan konfirmasi onboarding lintas departemen.' },
+  hr_admin:       { eyebrow: 'ATS Pipeline', title: 'Rekrutmen & ATS', description: 'Kelola job posting, applicant pipeline, DSS, dan onboarding ke departemen.' },
+  admin_manager:  { eyebrow: 'Rekrutmen', title: 'Pelamar Departemen', description: 'Lihat dan diskusikan pelamar untuk departemen Anda — keputusan akhir di HR Admin.' },
+  editor:         { eyebrow: 'HR', title: 'Rekrutmen', description: '' },
+  client:         { eyebrow: 'HR', title: 'Rekrutmen', description: '' },
+  mediator:       { eyebrow: 'HR', title: 'Rekrutmen', description: '' },
+  finance:        { eyebrow: 'HR', title: 'Rekrutmen', description: '' },
+}
 
 const STATUSES: ApplicationStatus[] = ['pending', 'interview', 'accepted', 'rejected']
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
@@ -59,8 +70,12 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
     else setDetail(app)
   }
 
+  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.hr_admin
+
   return (
     <div className="space-y-6">
+      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
+
       {/* Vacancy header */}
       <div className="card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>

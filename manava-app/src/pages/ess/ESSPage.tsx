@@ -8,6 +8,7 @@ import { Modal } from '../../components/ui/Modal'
 import { formatCurrency, formatDate } from '../../lib/utils'
 import { mockPayslips, mockLeaveRequests, mockAttendance } from '../../data/mockData'
 import { MY_EDITOR } from '../../data/myEditor'
+import { PageHeader } from '../../components/page/PageHeader'
 
 type Tab = 'absensi' | 'cuti' | 'gaji'
 
@@ -83,6 +84,13 @@ function AttendanceTab() {
 
   return (
     <div className="space-y-4">
+      <PageHeader
+        eyebrow="Layanan mandiri editor"
+        title="ESS — Absensi, Cuti, Slip Gaji"
+        description="Lihat ringkasan kehadiran bulanan, ajukan cuti, dan unduh payslip Anda."
+        role="editor"
+      />
+
       <div className="grid grid-cols-3 gap-3">
         <div className="card text-center py-3">
           <p className="text-xl font-bold text-emerald-600">{present}</p>

@@ -7,6 +7,17 @@ import { Modal } from '../../components/ui/Modal'
 import { formatCurrency, formatDateTime, formatDate } from '../../lib/utils'
 import { mockEscrowAccounts, mockTransactions, mockProjects } from '../../data/mockData'
 import type { UserRole } from '../../types'
+import { PageHeader } from '../../components/page/PageHeader'
+
+const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
+  superadmin:     { eyebrow: 'Finansial', title: 'Escrow & Pembayaran', description: 'Pantau pergerakan escrow, transaksi, dan trigger manual release sebagai jalur darurat.' },
+  hr_admin:       { eyebrow: 'Payroll', title: 'Payroll Run', description: 'Jalankan payroll bulanan, generate payslip, dan publish batch ke ESS editor.' },
+  admin_manager:  { eyebrow: 'Finansial', title: 'Pembayaran', description: '' },
+  editor:         { eyebrow: 'Finansial', title: 'Pembayaran', description: '' },
+  client:         { eyebrow: 'Pembayaran', title: 'Escrow Saya', description: 'Status DP, top-up revisi, dan pelunasan untuk proyek-proyek Anda.' },
+  mediator:       { eyebrow: 'Finansial', title: 'Pembayaran', description: '' },
+  finance:        { eyebrow: 'Operasi keuangan', title: 'Escrow Ledger & Disbursement', description: 'Rekonsiliasi escrow harian, pengakuan pendapatan IFRS 15, dan eksekusi disbursement.' },
+}
 
 type TxFilter = 'all' | 'dp_payment' | 'final_payment' | 'escrow_release' | 'refund'
 
@@ -82,8 +93,11 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
     setTimeout(() => setToast(null), 3000)
   }
 
+  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.superadmin
+
   return (
     <div className="space-y-6">
+      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-navy text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center gap-2 animate-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
