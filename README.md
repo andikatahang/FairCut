@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="app-logo/logo-dark.png" alt="Manava" width="220" />
+<img src="app-logo/logo-light.png" alt="Manava" width="220" />
 
 ### ERP untuk Studio Layanan Visual Profesional
 
