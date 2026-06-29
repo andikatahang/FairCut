@@ -10,6 +10,7 @@ export const currentUser: User = {
 
 export const mockUsers: Record<string, User> = {
   superadmin: { user_id: 'u1', full_name: 'Ahmad Superadmin', email: 'admin@manava.id', role: 'superadmin', is_active: true },
+  hr_admin: { user_id: 'u11', full_name: 'Hasna HR Admin', email: 'hasna@manava.id', role: 'hr_admin', is_active: true },
   editor: { user_id: 'u2', full_name: 'Budi Editor', email: 'budi@manava.id', role: 'editor', is_active: true },
   client: { user_id: 'u3', full_name: 'Citra Client', email: 'citra@client.com', role: 'client', is_active: true },
   mediator: { user_id: 'u4', full_name: 'Dewi Mediator', email: 'dewi@manava.id', role: 'mediator', is_active: true },

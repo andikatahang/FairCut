@@ -5,6 +5,17 @@ import { Modal } from '../../components/ui/Modal'
 import { formatDateTime, formatDate } from '../../lib/utils'
 import { mockDisputes } from '../../data/mockData'
 import type { Dispute, UserRole } from '../../types'
+import { PageHeader } from '../../components/page/PageHeader'
+
+const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
+  superadmin:     { eyebrow: 'Jalur darurat', title: 'Sengketa — Fallback Queue', description: 'Kasus yang ter-override cron `disputeSlaWatchdog` karena MEDIATOR lalai > 48 jam.' },
+  hr_admin:       { eyebrow: 'Sengketa', title: 'Sengketa', description: '' },
+  admin_manager:  { eyebrow: 'Sengketa', title: 'Sengketa', description: '' },
+  editor:         { eyebrow: 'Sengketa', title: 'Sengketa Saya', description: '' },
+  client:         { eyebrow: 'Sengketa', title: 'Sengketa Saya', description: '' },
+  mediator:       { eyebrow: 'Queue mediasi', title: 'Penyelesaian Sengketa', description: 'Kasus ditugaskan ke Anda — SLA 48 jam, resolution_note minimal 200 karakter.' },
+  finance:        { eyebrow: 'Sengketa', title: 'Sengketa', description: '' },
+}
 
 const resolutionOptions = [
   { value: 'free_revision', label: 'Revisi Gratis', desc: 'Editor mengerjakan ulang tanpa biaya' },
@@ -27,8 +38,12 @@ export default function DisputesPage({ role }: { role: UserRole }) {
     return h > 0 ? `sisa ${h} jam` : 'SLA terlewati'
   }
 
+  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.mediator
+
   return (
     <div className="space-y-6">
+      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
+
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="card text-center"><p className="text-3xl font-bold text-red-600">{mockDisputes.filter(d=>d.status==='open').length}</p><p className="text-sm text-navy/60 mt-1">Terbuka</p></div>
         <div className="card text-center"><p className="text-3xl font-bold text-amber-600">{mockDisputes.filter(d=>d.status==='in_mediation').length}</p><p className="text-sm text-navy/60 mt-1">Mediasi</p></div>

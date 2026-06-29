@@ -6,6 +6,17 @@ import { Modal } from '../../components/ui/Modal'
 import { formatCurrency, formatDate } from '../../lib/utils'
 import { mockAttendance, mockLeaveRequests, mockPayslips } from '../../data/mockData'
 import type { UserRole } from '../../types'
+import { PageHeader } from '../../components/page/PageHeader'
+
+const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
+  superadmin:     { eyebrow: 'Operasi HR', title: 'Absensi, Cuti & Penggajian', description: 'Pantau end-to-end siklus absensi, cuti, dan payroll lintas departemen.' },
+  hr_admin:       { eyebrow: 'Cutoff bulanan', title: 'Absensi & Payroll Lock', description: 'Kunci rekap bulanan tepat cutoff dan jalankan payroll run setelah klarifikasi selesai.' },
+  admin_manager:  { eyebrow: 'Operasi tim', title: 'Absensi & Cuti Tim', description: 'Klarifikasi missing clock-out dan setujui permohonan cuti anggota departemen Anda.' },
+  editor:         { eyebrow: 'Layanan mandiri', title: 'Absensi Saya', description: 'Riwayat clock-in/out, status klarifikasi, dan slip gaji bulanan Anda.' },
+  client:         { eyebrow: 'Operasi', title: 'Absensi', description: '' },
+  mediator:       { eyebrow: 'Operasi', title: 'Absensi', description: '' },
+  finance:        { eyebrow: 'Disbursement', title: 'Payroll Disbursement', description: 'Eksekusi pencairan batch payslip yang sudah dipublish HR Admin ke akun editor.' },
+}
 
 const STATUS_STYLE: Record<string, string> = {
   present: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -70,8 +81,11 @@ export default function AttendancePage({ role }: { role: UserRole }) {
     return Math.round((new Date(leaveForm.end).getTime() - new Date(leaveForm.start).getTime()) / 86400000) + 1
   }
 
+  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.editor
+
   return (
     <div className="space-y-6">
+      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
       {payrollToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-navy text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />Proses penggajian Juni 2026 dimulai.

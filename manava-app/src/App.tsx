@@ -16,8 +16,11 @@ import ProjectsPage from './pages/projects/ProjectsPage'
 import ProjectDetailPage from './pages/projects/ProjectDetailPage'
 import ESSPage from './pages/ess/ESSPage'
 import ProfilePage from './pages/profile/ProfilePage'
-import ClientHomePage from './pages/client-home/ClientHomePage'
-import EditorHomePage from './pages/editor-home/EditorHomePage'
+import RoleHomePage from './pages/home/RoleHomePage'
+import UsersPage from './pages/users/UsersPage'
+import SystemPage from './pages/system/SystemPage'
+import WarningPage from './pages/warning/WarningPage'
+import EscalationPage from './pages/escalation/EscalationPage'
 import ChatPage from './pages/chat/ChatPage'
 import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
@@ -27,13 +30,15 @@ import BrowseEditorsPage from './pages/browse-editors/BrowseEditorsPage'
 
 const ALLOWED_PATHS: Record<UserRole, string[]> = {
   superadmin: [
-    '/dashboard', '/recruitment', '/projects', '/contracts', '/payments',
-    '/attendance', '/performance', '/disputes', '/deliverables', '/chat',
-    '/offboarding', '/audit', '/settings', '/ess', '/profile',
+    '/dashboard', '/users', '/system', '/audit', '/settings', '/profile',
+  ],
+  hr_admin: [
+    '/dashboard', '/recruitment', '/attendance', '/payments', '/performance',
+    '/warning', '/escalation', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
-    '/dashboard', '/recruitment', '/attendance', '/performance', '/projects',
-    '/settings', '/offboarding',
+    '/dashboard', '/attendance', '/performance', '/escalation', '/projects',
+    '/warning', '/offboarding', '/settings', '/profile',
   ],
   editor: [
     '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings', '/profile',
@@ -81,11 +86,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={
-          role === 'client' ? <ClientHomePage userName={user.full_name} />
-          : role === 'editor' ? <EditorHomePage />
-          : <DashboardPage role={role} />
-        } />
+        <Route path="/dashboard" element={<RoleHomePage user={user} />} />
+        <Route path="/dashboard-legacy" element={<DashboardPage role={role} />} />
         <Route path="/recruitment" element={<RoleGuard role={role}><RecruitmentPage role={role} /></RoleGuard>} />
         <Route path="/projects" element={<RoleGuard role={role}><ProjectsPage role={role} /></RoleGuard>} />
         <Route path="/projects/:id" element={<RoleGuard role={role}><ProjectDetailPage role={role} /></RoleGuard>} />
@@ -101,6 +103,10 @@ function AppRoutes() {
         <Route path="/profile" element={<RoleGuard role={role}><ProfilePage /></RoleGuard>} />
         <Route path="/offboarding" element={<RoleGuard role={role}><OffboardingPage /></RoleGuard>} />
         <Route path="/browse-editors" element={<RoleGuard role={role}><BrowseEditorsPage /></RoleGuard>} />
+        <Route path="/users" element={<RoleGuard role={role}><UsersPage /></RoleGuard>} />
+        <Route path="/system" element={<RoleGuard role={role}><SystemPage /></RoleGuard>} />
+        <Route path="/warning" element={<RoleGuard role={role}><WarningPage role={role} /></RoleGuard>} />
+        <Route path="/escalation" element={<RoleGuard role={role}><EscalationPage role={role} /></RoleGuard>} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
