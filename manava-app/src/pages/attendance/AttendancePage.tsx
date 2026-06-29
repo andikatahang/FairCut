@@ -7,7 +7,11 @@ import { StatusBadge } from '../../components/ui/Badge'
 import { Modal } from '../../components/ui/Modal'
 import { Drawer } from '../../components/ui/Drawer'
 import { formatDate } from '../../lib/utils'
-import { mockAttendance, mockLeaveRequests } from '../../data/mockData'
+import { mockAttendance, mockLeaveRequests, mockEditors } from '../../data/mockData'
+
+// Mock attendance is implicitly one editor's record. Use the first active editor
+// as the "subject" so manager / HR drawer headers identify whose day is being viewed.
+const SUBJECT_EDITOR = mockEditors[0]
 import type { UserRole, AttendanceRecord, LeaveRequest } from '../../types'
 import { PageHeader } from '../../components/page/PageHeader'
 
@@ -150,10 +154,19 @@ export default function AttendancePage({ role }: { role: UserRole }) {
       <Drawer
         open={!!dayDetail}
         onClose={() => setDayDetail(null)}
-        title={dayDetail ? fmtFullDate(dayDetail) : ''}
-        subtitle={detailRecord ? STATUS_LABEL[detailRecord.status] : 'Tidak ada catatan'}
+        title={role === 'editor' || !dayDetail ? (dayDetail ? fmtFullDate(dayDetail) : '') : SUBJECT_EDITOR.full_name}
+        subtitle={
+          role === 'editor'
+            ? (detailRecord ? STATUS_LABEL[detailRecord.status] : 'Tidak ada catatan')
+            : dayDetail ? `${fmtFullDate(dayDetail)} · ${detailRecord ? STATUS_LABEL[detailRecord.status] : 'Tidak ada catatan'}` : ''
+        }
       >
-        <DayDetailBody record={detailRecord} canClarify={role === 'admin_manager'} onClarify={k => flash(`Status diubah ke ${STATUS_LABEL[k]}.`)} />
+        <DayDetailBody
+          record={detailRecord}
+          subject={role === 'editor' ? null : SUBJECT_EDITOR}
+          canClarify={role === 'admin_manager'}
+          onClarify={k => flash(`Status diubah ke ${STATUS_LABEL[k]}.`)}
+        />
       </Drawer>
 
       {/* Leave detail drawer */}
@@ -457,23 +470,28 @@ function LegendRow() {
 }
 
 function DayDetailBody({
-  record, canClarify, onClarify,
+  record, subject, canClarify, onClarify,
 }: {
   record: AttendanceRecord | null
+  subject: { full_name: string; department: string; avatar?: string } | null
   canClarify: boolean
   onClarify: (status: AttendanceRecord['status']) => void
 }) {
   if (!record) {
     return (
-      <div className="text-center py-12 text-navy/50">
-        <CalendarDays className="w-10 h-10 mx-auto mb-3 text-navy/20" />
-        <p className="text-sm">Belum ada catatan untuk tanggal ini.</p>
+      <div className="space-y-5">
+        {subject && <SubjectStrip subject={subject} />}
+        <div className="text-center py-12 text-navy/50">
+          <CalendarDays className="w-10 h-10 mx-auto mb-3 text-navy/20" />
+          <p className="text-sm">Belum ada catatan untuk tanggal ini.</p>
+        </div>
       </div>
     )
   }
   const missing = record.clock_in && !record.clock_out
   return (
     <div className="space-y-5">
+      {subject && <SubjectStrip subject={subject} />}
       <div className="flex items-center gap-3">
         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${STATUS_STYLE[record.status]}`}>
           {STATUS_LABEL[record.status]}
@@ -518,6 +536,23 @@ function DayDetailBody({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function SubjectStrip({ subject }: { subject: { full_name: string; department: string; avatar?: string } }) {
+  return (
+    <div className="flex items-center gap-3 bg-navy/5 border border-navy/10 rounded-xl px-3 py-2.5">
+      {subject.avatar
+        ? <img src={subject.avatar} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
+        : <div className="w-9 h-9 rounded-full bg-navy/10 flex items-center justify-center text-xs font-semibold text-navy shrink-0">
+            {subject.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          </div>
+      }
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-navy truncate">{subject.full_name}</p>
+        <p className="text-xs text-navy/50 truncate">{subject.department}</p>
+      </div>
     </div>
   )
 }
