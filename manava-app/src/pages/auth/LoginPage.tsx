@@ -7,12 +7,13 @@ import logoDark from '../../assets/logo-dark.png'
 import type { UserRole } from '../../types'
 
 const roles: { value: UserRole; label: string; desc: string }[] = [
-  { value: 'superadmin',    label: 'Superadmin',     desc: 'Kendali penuh platform' },
-  { value: 'editor',        label: 'Editor',          desc: 'Kelola proyek & HR' },
-  { value: 'client',        label: 'Klien',           desc: 'Pesan & lacak layanan' },
-  { value: 'mediator',      label: 'Mediator',        desc: 'Selesaikan sengketa' },
-  { value: 'admin_manager', label: 'Manajer Admin',   desc: 'Persetujuan tim & cuti' },
-  { value: 'finance',       label: 'Keuangan',        desc: 'Escrow & penggajian' },
+  { value: 'superadmin',    label: 'Superadmin',     desc: 'Sistem, IT, jalur darurat' },
+  { value: 'hr_admin',      label: 'HR Admin',       desc: 'ATS, payroll, onboarding' },
+  { value: 'admin_manager', label: 'Admin Manager',  desc: 'Persetujuan tim & cuti' },
+  { value: 'editor',        label: 'Editor',         desc: 'Kerjakan proyek & ESS' },
+  { value: 'client',        label: 'Klien',          desc: 'Pesan & lacak layanan' },
+  { value: 'mediator',      label: 'Mediator',       desc: 'Selesaikan sengketa' },
+  { value: 'finance',       label: 'Keuangan',       desc: 'Escrow & penggajian' },
 ]
 
 interface LoginPageProps { onLogin: (role: UserRole) => void }

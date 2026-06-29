@@ -57,6 +57,12 @@ const NOTIFS_BY_ROLE: Record<UserRole, Notification[]> = {
     { id: 'n4', icon: 'contract', title: 'Kontrak ditandatangani', body: 'Klien Artisan Studio menandatangani Brief #BRF-009', time: '4 jam lalu', read: true },
     { id: 'n5', icon: 'clock', title: 'Permohonan cuti', body: 'Ahmad Rizki mengajukan cuti 2 hari mulai Sen 30 Jun', time: '6 jam lalu', read: true },
   ],
+  hr_admin: [
+    { id: 'n1', icon: 'user', title: '5 pelamar baru', body: 'Posisi Video Editor — E-commerce menerima 5 lamaran hari ini', time: '20 mnt lalu', read: false },
+    { id: 'n2', icon: 'clock', title: 'Cutoff absensi hari ini', body: 'Kunci rekap kehadiran Juni — 18:00 WIB', time: '2 jam lalu', read: false },
+    { id: 'n3', icon: 'payment', title: 'Batch payslip siap publish', body: '12 payslip menunggu konfirmasi Anda sebelum disbursement Keuangan', time: '4 jam lalu', read: true },
+    { id: 'n4', icon: 'user', title: 'Offer accepted', body: 'Maya Putri menerima offer — DSS menunggu konfirmasi departemen', time: '1 hr lalu', read: true },
+  ],
   admin_manager: [
     { id: 'n1', icon: 'user', title: '3 pelamar baru', body: 'Posisi Senior Photo Retoucher menerima 3 lamaran hari ini', time: '1 jam lalu', read: false },
     { id: 'n2', icon: 'clock', title: 'Permohonan cuti', body: 'Ahmad Rizki mengajukan cuti 2 hari mulai Sen 30 Jun', time: '2 jam lalu', read: false },

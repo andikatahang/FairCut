@@ -16,8 +16,7 @@ import ProjectsPage from './pages/projects/ProjectsPage'
 import ProjectDetailPage from './pages/projects/ProjectDetailPage'
 import ESSPage from './pages/ess/ESSPage'
 import ProfilePage from './pages/profile/ProfilePage'
-import ClientHomePage from './pages/client-home/ClientHomePage'
-import EditorHomePage from './pages/editor-home/EditorHomePage'
+import RoleHomePage from './pages/home/RoleHomePage'
 import ChatPage from './pages/chat/ChatPage'
 import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
@@ -31,9 +30,13 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/attendance', '/performance', '/disputes', '/deliverables', '/chat',
     '/offboarding', '/audit', '/settings', '/ess', '/profile',
   ],
+  hr_admin: [
+    '/dashboard', '/recruitment', '/attendance', '/payments',
+    '/performance', '/offboarding', '/settings', '/profile',
+  ],
   admin_manager: [
     '/dashboard', '/recruitment', '/attendance', '/performance', '/projects',
-    '/settings', '/offboarding',
+    '/settings', '/offboarding', '/profile',
   ],
   editor: [
     '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings', '/profile',
@@ -81,11 +84,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={
-          role === 'client' ? <ClientHomePage userName={user.full_name} />
-          : role === 'editor' ? <EditorHomePage />
-          : <DashboardPage role={role} />
-        } />
+        <Route path="/dashboard" element={<RoleHomePage user={user} />} />
+        <Route path="/dashboard-legacy" element={<DashboardPage role={role} />} />
         <Route path="/recruitment" element={<RoleGuard role={role}><RecruitmentPage role={role} /></RoleGuard>} />
         <Route path="/projects" element={<RoleGuard role={role}><ProjectsPage role={role} /></RoleGuard>} />
         <Route path="/projects/:id" element={<RoleGuard role={role}><ProjectDetailPage role={role} /></RoleGuard>} />
