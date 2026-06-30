@@ -1,21 +1,22 @@
 import { useState } from 'react'
 import { Search, ChevronDown } from 'lucide-react'
-import { mockEditors, EDITOR_CAPACITY } from '../../data/mockData'
+import { mockEditors } from '../../data/mockData'
 import { PageHeader } from '../../components/page/PageHeader'
 import { EditorCard } from './EditorCard'
+import { BookingModal } from './BookingModal'
 import { SPEC_LABELS } from './specializations'
+import { isAvailable } from './capacity'
 import type { Editor } from '../../types'
 
 const REVIEW_COUNTS: Record<string, number> = {
   e1: 142, e2: 89, e3: 56, e4: 203, e5: 31,
 }
 
-const isAvailable = (e: Editor) => e.status === 'active' && e.active_projects < EDITOR_CAPACITY
-
 export default function BrowseEditorsPage() {
   const [search, setSearch] = useState('')
   const [specFilter, setSpecFilter] = useState<string>('all')
   const [sort, setSort] = useState<'rating' | 'completion'>('rating')
+  const [bookingEditor, setBookingEditor] = useState<Editor | null>(null)
 
   const allSpecs = Array.from(new Set(mockEditors.flatMap(e => e.specialization)))
   const availableCount = mockEditors.filter(isAvailable).length
@@ -117,10 +118,13 @@ export default function BrowseEditorsPage() {
               key={editor.editor_id}
               editor={editor}
               reviewCount={REVIEW_COUNTS[editor.editor_id] ?? 40}
+              onMessage={ed => setBookingEditor(ed)}
             />
           ))}
         </div>
       )}
+
+      <BookingModal editor={bookingEditor} onClose={() => setBookingEditor(null)} />
 
     </div>
   )

@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import type { Editor } from '../../types'
 import { StarRating } from '../../components/ui/StarRating'
-import { EDITOR_CAPACITY } from '../../data/mockData'
 import { SPEC_LABELS } from './specializations'
+import { isAtCapacity, isAvailable } from './capacity'
 
 function completionTextColor(rate: number): string {
   if (rate >= 90) return '#16a34a'
@@ -24,22 +24,21 @@ interface EditorCardProps {
 export function EditorCard({ editor, reviewCount, onDetail, onMessage }: EditorCardProps) {
   const initials = getInitials(editor.full_name)
   const isActive = editor.status === 'active'
-  const isFull = isActive && editor.active_projects >= EDITOR_CAPACITY
-  const isAvailable = isActive && !isFull
-  const isTopRated = isAvailable && editor.rating >= 4.7 && editor.completion_rate >= 90
+  const available = isAvailable(editor)
+  const isTopRated = available && editor.rating >= 4.7 && editor.completion_rate >= 90
   const skills = editor.specialization.slice(0, 2).map(s => SPEC_LABELS[s] ?? s).join(' · ')
 
   // Availability is distinct from active/inactive status: an active editor can
   // still be "full" (at capacity), an inactive editor is simply off-roster.
   const availability = !isActive
     ? { label: 'Nonaktif', cls: 'is-off' }
-    : isFull
+    : isAtCapacity(editor)
       ? { label: 'Penuh', cls: 'is-full' }
       : { label: 'Tersedia', cls: 'is-open' }
 
   return (
     <StyledWrapper>
-      <div className={`card ${isAvailable ? '' : 'disabled'}`} aria-disabled={!isAvailable}>
+      <div className={`card ${available ? '' : 'disabled'}`} aria-disabled={!available}>
         {/* Photo — bezel-less, full-bleed; shrinks on hover to reveal actions */}
         <div className="card-image">
           {editor.avatar ? (
@@ -79,10 +78,10 @@ export function EditorCard({ editor, reviewCount, onDetail, onMessage }: EditorC
             <button
               type="button"
               className="card-btn pesan"
-              disabled={!isAvailable}
+              disabled={!isActive}
               onClick={() => onMessage?.(editor)}
             >
-              {isAvailable ? 'Pesan' : 'Tidak tersedia'}
+              {isActive ? 'Pesan' : 'Tidak tersedia'}
             </button>
           </div>
         </div>
