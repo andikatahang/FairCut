@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   CheckCircle2, AlertCircle, Layers, FileText, ShieldCheck, Bot,
   FileImage, Film, Send, ArrowRight, ShieldAlert, Clock, Inbox, Upload,
-  Plus, Pencil,
+  Plus, Pencil, Eye, Download, Lock,
 } from 'lucide-react'
 import { StatusBadge } from '../../components/ui/Badge'
+import { Modal } from '../../components/ui/Modal'
 import { formatCurrency, formatDate, formatDateTime, getInitials } from '../../lib/utils'
 import {
   mockMessages, mockEscrowAccounts, mockTransactions, mockDisputes,
@@ -256,7 +257,7 @@ export function ContractPanel({
 
 // ─── Hasil Kerja ──────────────────────────────────────────────────────────────
 
-interface DeliverableVersion {
+export interface DeliverableVersion {
   version: number
   uploaded_at: string
   uploaded_by: string
@@ -285,8 +286,8 @@ export const DELIVERABLES: Record<string, DeliverableVersion[]> = {
 }
 
 function fileIcon(name: string) {
-  if (/\.(mp4|mov|avi)$/i.test(name)) return <Film className="w-4.5 h-4.5 text-purple-500" />
-  return <FileImage className="w-4.5 h-4.5 text-blue-500" />
+  if (/\.(mp4|mov|avi)$/i.test(name)) return <Film className="w-5 h-5 text-purple-500" />
+  return <FileImage className="w-5 h-5 text-blue-500" />
 }
 
 function diffColor(score: number) {
@@ -295,70 +296,175 @@ function diffColor(score: number) {
   return 'text-red-700 bg-red-50'
 }
 
-export function DeliverablesPanel({ project, role = 'client' }: { project: Project; role?: UserRole }) {
-  const isEditor = role === 'editor'
-  const versions = DELIVERABLES[project.project_id] ?? []
+function formatFileSize(bytes: number): string {
+  if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`
+  if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(0)} MB`
+  if (bytes >= 1e3) return `${(bytes / 1e3).toFixed(0)} KB`
+  return `${bytes} B`
+}
 
-  if (versions.length === 0) {
-    return (
-      <div className="text-center py-12 text-navy/35">
-        <Inbox className="w-9 h-9 mx-auto mb-2 opacity-40" />
-        <p className="text-sm">Belum ada hasil kerja yang dikirim</p>
-        {isEditor && (
-          <button className="btn-primary text-xs py-2 px-3 mt-4 mx-auto">
-            <Upload className="w-3.5 h-3.5" /> Unggah versi pertama
-          </button>
-        )}
-      </div>
-    )
+export function DeliverablesPanel({
+  project,
+  role = 'client',
+  versions,
+  onUpload,
+}: {
+  project: Project
+  role?: UserRole
+  versions: DeliverableVersion[]
+  onUpload: (version: DeliverableVersion) => void
+}) {
+  const isEditor = role === 'editor'
+  const canDownload = project.status === 'completed'
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<DeliverableVersion | null>(null)
+
+  // Upload simulation: read the picked file's name/size and run a stub of the
+  // AI change-detection that classifies new versions.
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const isFirst = versions.length === 0
+    onUpload({
+      version: isFirst ? 1 : Math.max(...versions.map(v => v.version)) + 1,
+      uploaded_at: new Date().toISOString(),
+      uploaded_by: project.editor_name,
+      file_name: file.name,
+      file_size: formatFileSize(file.size),
+      status: 'pending_review',
+      ai_diff_score: isFirst ? 0 : 10,
+      ai_change_type: isFirst ? 'new' : 'minor',
+      ai_confidence: isFirst ? 100 : 92,
+      change_summary: isFirst
+        ? 'Pengiriman awal'
+        : 'Versi baru diunggah — deteksi perubahan AI otomatis: perubahan minor.',
+    })
+    e.target.value = '' // allow re-selecting the same file
   }
 
   return (
     <div className="space-y-3">
-      {isEditor && (
+      <input ref={fileRef} type="file" className="hidden" onChange={handleFile} />
+
+      {isEditor && versions.length > 0 && (
         <div className="flex justify-end">
-          <button className="btn-primary text-xs py-2 px-3">
+          <button onClick={() => fileRef.current?.click()} className="btn-primary text-xs py-2 px-3">
             <Upload className="w-3.5 h-3.5" /> Unggah versi baru
           </button>
         </div>
       )}
-      {versions.map(v => (
-        <div key={v.version} className="rounded-xl border border-border bg-white p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3 min-w-0">
-              <span className="grid place-items-center w-9 h-9 rounded-lg bg-navy-50/60 shrink-0">{fileIcon(v.file_name)}</span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-navy flex items-center gap-2">
-                  Versi {v.version}
-                  <span className="text-xs font-normal text-navy/45 truncate">{v.file_name}</span>
-                </p>
-                <p className="text-xs text-navy/45 mt-0.5">{v.file_size} · {formatDateTime(v.uploaded_at)}</p>
-              </div>
-            </div>
-            <StatusBadge status={v.status} />
-          </div>
 
-          <div className="mt-3 flex items-start gap-2 rounded-lg bg-navy-50/40 p-2.5">
-            <Bot className="w-3.5 h-3.5 text-navy/50 mt-0.5 shrink-0" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${diffColor(v.ai_diff_score)}`}>
-                  Beda {v.ai_diff_score}%
-                </span>
-                <span className="text-xs text-navy/50">Keyakinan AI {v.ai_confidence}%</span>
-              </div>
-              <p className="text-xs text-navy/70 leading-snug">{v.change_summary}</p>
-            </div>
-          </div>
-
-          {!isEditor && v.status === 'pending_review' && (
-            <div className="mt-3 flex gap-2">
-              <button className="btn-primary text-xs py-2 px-3"><CheckCircle2 className="w-3.5 h-3.5" /> Setujui versi</button>
-              <button className="btn-secondary text-xs py-2 px-3">Minta revisi</button>
-            </div>
+      {versions.length === 0 ? (
+        <div className="text-center py-12 text-navy/35">
+          <Inbox className="w-9 h-9 mx-auto mb-2 opacity-40" />
+          <p className="text-sm">Belum ada hasil kerja yang dikirim</p>
+          {isEditor && (
+            <button onClick={() => fileRef.current?.click()} className="btn-primary text-xs py-2 px-3 mt-4 mx-auto">
+              <Upload className="w-3.5 h-3.5" /> Unggah versi pertama
+            </button>
           )}
         </div>
-      ))}
+      ) : (
+        versions.map(v => (
+          <div key={v.version} className="rounded-xl border border-border bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 min-w-0">
+                <span className="grid place-items-center w-9 h-9 rounded-lg bg-navy-50/60 shrink-0">{fileIcon(v.file_name)}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-navy flex items-center gap-2">
+                    Versi {v.version}
+                    <span className="text-xs font-normal text-navy/45 truncate">{v.file_name}</span>
+                  </p>
+                  <p className="text-xs text-navy/45 mt-0.5">{v.file_size} · {formatDateTime(v.uploaded_at)}</p>
+                </div>
+              </div>
+              <StatusBadge status={v.status} />
+            </div>
+
+            <div className="mt-3 flex items-start gap-2 rounded-lg bg-navy-50/40 p-2.5">
+              <Bot className="w-3.5 h-3.5 text-navy/50 mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${diffColor(v.ai_diff_score)}`}>
+                    Beda {v.ai_diff_score}%
+                  </span>
+                  <span className="text-xs text-navy/50">Keyakinan AI {v.ai_confidence}%</span>
+                </div>
+                <p className="text-xs text-navy/70 leading-snug">{v.change_summary}</p>
+              </div>
+            </div>
+
+            {/* Preview (watermarked) + download (gated on completion) */}
+            <div className="mt-3 flex items-center gap-2">
+              <button onClick={() => setPreview(v)} className="btn-secondary text-xs py-2 px-3">
+                <Eye className="w-3.5 h-3.5" /> Pratinjau
+              </button>
+              <button
+                disabled={!canDownload}
+                title={canDownload ? 'Unduh file asli' : 'Tersedia setelah proyek selesai'}
+                className="btn-secondary text-xs py-2 px-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {canDownload ? <Download className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                {canDownload ? 'Unduh' : 'Terkunci'}
+              </button>
+            </div>
+
+            {!isEditor && v.status === 'pending_review' && (
+              <div className="mt-3 flex gap-2 border-t border-border pt-3">
+                <button className="btn-primary text-xs py-2 px-3"><CheckCircle2 className="w-3.5 h-3.5" /> Setujui versi</button>
+                <button className="btn-secondary text-xs py-2 px-3">Minta revisi</button>
+              </div>
+            )}
+          </div>
+        ))
+      )}
+
+      {preview && (
+        <Modal open onClose={() => setPreview(null)} title={`Pratinjau — ${preview.file_name}`} size="lg">
+          <div className="space-y-3">
+            <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#021526] to-[#0c2438] grid place-items-center">
+              <div className="relative z-10 text-center text-white/80 px-4">
+                <span className="grid place-items-center w-14 h-14 rounded-2xl bg-white/10 mx-auto mb-3">
+                  {/\.(mp4|mov|avi)$/i.test(preview.file_name)
+                    ? <Film className="w-7 h-7 text-white" />
+                    : <FileImage className="w-7 h-7 text-white" />}
+                </span>
+                <p className="text-sm font-medium">{preview.file_name}</p>
+                <p className="text-xs text-white/50 mt-1">{preview.file_size}</p>
+              </div>
+              {/* Auto watermark overlay */}
+              <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+                <div className="absolute inset-[-25%] flex flex-wrap gap-x-10 gap-y-7 rotate-[-30deg] opacity-20">
+                  {Array.from({ length: 80 }).map((_, i) => (
+                    <span key={i} className="text-white text-[12px] font-bold tracking-[0.25em] whitespace-nowrap">
+                      MANAVA · PRATINJAU
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+              <ShieldCheck className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+              <p className="text-xs text-navy/70 leading-relaxed">
+                Pratinjau diberi watermark otomatis. File asli tanpa watermark tersedia untuk diunduh
+                setelah proyek selesai.
+              </p>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                disabled={!canDownload}
+                title={canDownload ? 'Unduh file asli' : 'Tersedia setelah proyek selesai'}
+                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {canDownload ? <Download className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                {canDownload ? 'Unduh file asli' : 'Unduhan terkunci'}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

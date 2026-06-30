@@ -12,8 +12,9 @@ import { StageRail } from './StageRail'
 import { attentionFor, projectCategory } from './lifecycle'
 import {
   OverviewPanel, ContractPanel, DeliverablesPanel, ChatPanel,
-  PaymentPanel, DisputePanel, tabCounts,
+  PaymentPanel, DisputePanel, tabCounts, DELIVERABLES,
 } from './detailPanels'
+import type { DeliverableVersion } from './detailPanels'
 import type { UserRole, RevisionEnvelope } from '../../types'
 
 type Tab = 'ringkasan' | 'kontrak' | 'hasil' | 'chat' | 'pembayaran' | 'sengketa'
@@ -58,6 +59,12 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
   )
   const [envelopeAgreedAt, setEnvelopeAgreedAt] = useState<string | null>(null)
 
+  // Deliverable versions live at the page so uploads survive tab switches and
+  // keep the "Hasil Kerja" tab badge accurate.
+  const [deliverables, setDeliverables] = useState<DeliverableVersion[]>(
+    () => (id ? DELIVERABLES[id] ?? [] : []),
+  )
+
   if (!project) {
     return (
       <div className="max-w-md mx-auto text-center py-24">
@@ -79,7 +86,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
   const showSubmit = isEditor && (project.status === 'in_progress' || project.status === 'revision')
 
   const badge = (key: Tab) => {
-    const n = key === 'hasil' ? counts.hasil : key === 'chat' ? counts.chat : key === 'sengketa' ? counts.sengketa : 0
+    const n = key === 'hasil' ? deliverables.length : key === 'chat' ? counts.chat : key === 'sengketa' ? counts.sengketa : 0
     return n > 0 ? n : null
   }
 
@@ -187,7 +194,14 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
             onAgree={() => setEnvelopeAgreedAt(new Date().toISOString())}
           />
         )}
-        {tab === 'hasil' && <DeliverablesPanel project={project} role={role} />}
+        {tab === 'hasil' && (
+          <DeliverablesPanel
+            project={project}
+            role={role}
+            versions={deliverables}
+            onUpload={v => setDeliverables(prev => [v, ...prev])}
+          />
+        )}
         {tab === 'chat' && <ChatPanel project={project} />}
         {tab === 'pembayaran' && <PaymentPanel project={project} />}
         {tab === 'sengketa' && <DisputePanel project={project} />}
