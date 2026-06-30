@@ -2,14 +2,15 @@ import { useState } from 'react'
 import {
   CheckCircle2, AlertCircle, Layers, FileText, ShieldCheck, Bot,
   FileImage, Film, Send, ArrowRight, ShieldAlert, Clock, Inbox, Upload,
+  Plus, Pencil,
 } from 'lucide-react'
 import { StatusBadge } from '../../components/ui/Badge'
 import { formatCurrency, formatDate, formatDateTime, getInitials } from '../../lib/utils'
 import {
-  mockMessages, mockEscrowAccounts, mockTransactions,
-  mockRevisionEnvelopes, mockDisputes,
+  mockMessages, mockEscrowAccounts, mockTransactions, mockDisputes,
 } from '../../data/mockData'
-import type { Project, Message, UserRole } from '../../types'
+import { EnvelopeBuilder } from './EnvelopeBuilder'
+import type { Project, Message, UserRole, RevisionEnvelope } from '../../types'
 
 // ─── Shared bits ──────────────────────────────────────────────────────────────
 
@@ -44,9 +45,7 @@ function EmptyState({ icon: Icon, text }: { icon: typeof Inbox; text: string }) 
 
 // ─── Ringkasan ──────────────────────────────────────────────────────────────
 
-export function OverviewPanel({ project }: { project: Project }) {
-  const envelope = mockRevisionEnvelopes.find(e => e.project_id === project.project_id)
-
+export function OverviewPanel({ project, envelope }: { project: Project; envelope?: RevisionEnvelope }) {
   return (
     <div className="space-y-6">
       <div>
@@ -109,8 +108,25 @@ function ScopeRow({ tone, title, body }: { tone: 'ok' | 'no'; title: string; bod
 
 // ─── Kontrak ──────────────────────────────────────────────────────────────────
 
-export function ContractPanel({ project }: { project: Project }) {
-  const envelope = mockRevisionEnvelopes.find(e => e.project_id === project.project_id)
+export function ContractPanel({
+  project,
+  role = 'client',
+  envelope,
+  agreedAt,
+  onEnvelopeChange,
+  onAgree,
+}: {
+  project: Project
+  role?: UserRole
+  envelope?: RevisionEnvelope
+  agreedAt: string | null
+  onEnvelopeChange: (envelope: RevisionEnvelope) => void
+  onAgree: () => void
+}) {
+  const isEditor = role === 'editor'
+  const [builderOpen, setBuilderOpen] = useState(false)
+  const [confirmChecked, setConfirmChecked] = useState(false)
+
   const contractStatus = project.status === 'completed' ? 'closed'
     : project.status === 'cancelled' ? 'rejected' : 'active'
 
@@ -119,7 +135,7 @@ export function ContractPanel({ project }: { project: Project }) {
       <div className="flex items-center justify-between rounded-xl border border-border bg-white p-4">
         <div className="flex items-center gap-3">
           <span className="grid place-items-center w-9 h-9 rounded-lg bg-navy/5 text-navy">
-            <FileText className="w-4.5 h-4.5" />
+            <FileText className="w-5 h-5" />
           </span>
           <div>
             <p className="text-sm font-semibold text-navy">Brief & Kontrak Layanan</p>
@@ -134,12 +150,85 @@ export function ContractPanel({ project }: { project: Project }) {
         <p className="text-sm text-navy/75 leading-relaxed">{project.description}</p>
       </div>
 
-      {envelope && (
-        <div className="grid sm:grid-cols-2 gap-3">
-          <ScopeRow tone="ok" title="Termasuk" body={envelope.included_scope} />
-          <ScopeRow tone="no" title="Tidak termasuk" body={envelope.excluded_scope} />
+      {/* Revision Envelope — the digital work agreement */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-semibold text-navy/45 uppercase tracking-wider">Revision Envelope</p>
+          {envelope && !agreedAt && isEditor && (
+            <button onClick={() => setBuilderOpen(true)} className="btn-ghost text-xs py-1.5 px-3">
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </button>
+          )}
         </div>
-      )}
+
+        {!envelope ? (
+          isEditor ? (
+            <div className="rounded-xl border border-dashed border-navy/20 bg-navy-50/30 p-6 text-center">
+              <FileText className="w-8 h-8 mx-auto text-navy/30 mb-2" />
+              <p className="text-sm text-navy/60 mb-4">
+                Belum ada Revision Envelope. Susun kesepakatan kerja digital sebelum proyek mulai.
+              </p>
+              <button onClick={() => setBuilderOpen(true)} className="btn-primary text-sm mx-auto">
+                <Plus className="w-4 h-4" /> Susun Revision Envelope
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-border bg-navy-50/30 p-4 text-sm text-navy/55">
+              Editor belum menyusun Revision Envelope untuk proyek ini.
+            </div>
+          )
+        ) : (
+          <div className="space-y-3">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <ScopeRow tone="ok" title="Termasuk" body={envelope.included_scope} />
+              <ScopeRow tone="no" title="Tidak termasuk" body={envelope.excluded_scope} />
+            </div>
+            <div className="rounded-xl border border-border bg-white p-4">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Layers className="w-3.5 h-3.5 text-navy/50" />
+                <span className="text-xs font-semibold text-navy/70">
+                  Jatah revisi gratis — {envelope.allowance_consumed}/{envelope.allowance_count} terpakai
+                </span>
+              </div>
+              <AllowanceBar consumed={envelope.allowance_consumed} total={envelope.allowance_count} />
+            </div>
+
+            {/* Agreement confirmation */}
+            {agreedAt ? (
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-emerald-800">Kesepakatan dikonfirmasi</p>
+                  <p className="text-xs text-navy/60 mt-0.5">
+                    Disepakati pada {formatDateTime(agreedAt)}. Lingkup terkunci untuk kedua pihak.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={confirmChecked}
+                    onChange={e => setConfirmChecked(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-navy shrink-0"
+                  />
+                  <span className="text-sm text-navy/75">
+                    Saya menyetujui lingkup dan jatah revisi di atas sebagai kesepakatan kerja digital yang mengikat.
+                  </span>
+                </label>
+                <button
+                  onClick={onAgree}
+                  disabled={!confirmChecked}
+                  className="btn-primary text-sm mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ShieldCheck className="w-4 h-4" /> Konfirmasi Kesepakatan
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Fact label="Nilai kontrak" value={formatCurrency(project.project_value)} />
@@ -153,6 +242,14 @@ export function ContractPanel({ project }: { project: Project }) {
           Pembayaran Anda ditahan aman di escrow dan baru dicairkan ke editor setelah Anda menyetujui hasil akhir.
         </p>
       </div>
+
+      <EnvelopeBuilder
+        open={builderOpen}
+        onClose={() => setBuilderOpen(false)}
+        projectId={project.project_id}
+        initial={envelope}
+        onSave={env => { onEnvelopeChange(env); setConfirmChecked(false) }}
+      />
     </div>
   )
 }

@@ -7,14 +7,14 @@ import {
 import { StatusBadge } from '../../components/ui/Badge'
 import { cn } from '../../lib/utils'
 import { formatCurrency } from '../../lib/utils'
-import { mockProjects } from '../../data/mockData'
+import { mockProjects, mockRevisionEnvelopes } from '../../data/mockData'
 import { StageRail } from './StageRail'
 import { attentionFor, projectCategory } from './lifecycle'
 import {
   OverviewPanel, ContractPanel, DeliverablesPanel, ChatPanel,
   PaymentPanel, DisputePanel, tabCounts,
 } from './detailPanels'
-import type { UserRole } from '../../types'
+import type { UserRole, RevisionEnvelope } from '../../types'
 
 type Tab = 'ringkasan' | 'kontrak' | 'hasil' | 'chat' | 'pembayaran' | 'sengketa'
 
@@ -50,6 +50,13 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
   const TABS = isEditor ? EDITOR_TABS : CLIENT_TABS
 
   const project = mockProjects.find(p => p.project_id === id)
+
+  // Revision Envelope state lives at the page so it survives tab switches and
+  // stays in sync between the Ringkasan and Kontrak tabs.
+  const [envelope, setEnvelope] = useState<RevisionEnvelope | undefined>(
+    () => mockRevisionEnvelopes.find(e => e.project_id === id),
+  )
+  const [envelopeAgreedAt, setEnvelopeAgreedAt] = useState<string | null>(null)
 
   if (!project) {
     return (
@@ -169,8 +176,17 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
 
       {/* Panel */}
       <div className="card">
-        {tab === 'ringkasan' && <OverviewPanel project={project} />}
-        {tab === 'kontrak' && <ContractPanel project={project} />}
+        {tab === 'ringkasan' && <OverviewPanel project={project} envelope={envelope} />}
+        {tab === 'kontrak' && (
+          <ContractPanel
+            project={project}
+            role={role}
+            envelope={envelope}
+            agreedAt={envelopeAgreedAt}
+            onEnvelopeChange={setEnvelope}
+            onAgree={() => setEnvelopeAgreedAt(new Date().toISOString())}
+          />
+        )}
         {tab === 'hasil' && <DeliverablesPanel project={project} role={role} />}
         {tab === 'chat' && <ChatPanel project={project} />}
         {tab === 'pembayaran' && <PaymentPanel project={project} />}
