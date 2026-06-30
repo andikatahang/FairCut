@@ -11,7 +11,8 @@ import {
   mockMessages, mockEscrowAccounts, mockTransactions, mockDisputes,
 } from '../../data/mockData'
 import { EnvelopeBuilder } from './EnvelopeBuilder'
-import type { Project, Message, UserRole, RevisionEnvelope } from '../../types'
+import { DisputeForm } from './DisputeForm'
+import type { Project, Message, UserRole, RevisionEnvelope, Dispute } from '../../types'
 
 // ─── Shared bits ──────────────────────────────────────────────────────────────
 
@@ -628,49 +629,106 @@ const RESOLUTION_LABELS: Record<string, string> = {
   partial_refund: 'Pengembalian sebagian', full_refund: 'Pengembalian penuh', quality_sanction: 'Sanksi kualitas',
 }
 
-export function DisputePanel({ project }: { project: Project }) {
-  const disputes = mockDisputes.filter(d => d.project_id === project.project_id)
+export function DisputePanel({
+  project,
+  role = 'client',
+  disputes,
+  onCreate,
+}: {
+  project: Project
+  role?: UserRole
+  disputes: Dispute[]
+  onCreate: (dispute: Dispute) => void
+}) {
+  const [formOpen, setFormOpen] = useState(false)
 
-  if (disputes.length === 0) {
-    return (
-      <div className="text-center py-10">
-        <ShieldCheck className="w-9 h-9 mx-auto mb-2 text-emerald-500/70" />
-        <p className="text-sm text-navy/60">Tidak ada sengketa pada proyek ini.</p>
-        <button className="btn-secondary text-xs py-2 px-3 mt-4">
-          <ShieldAlert className="w-3.5 h-3.5" /> Ajukan sengketa
-        </button>
-      </div>
-    )
+  // Only a project party may open a dispute, and only one can be active at a time.
+  const canCreate = role === 'client' || role === 'editor'
+  const hasActive = disputes.some(d => d.status === 'open' || d.status === 'in_mediation')
+  const showCreate = canCreate && !hasActive
+
+  function handleSubmit(reason: string, evidence: string[]) {
+    onCreate({
+      dispute_id: `dsp-${Date.now()}`,
+      project_id: project.project_id,
+      project_title: project.title,
+      client_name: project.client_name,
+      editor_name: project.editor_name,
+      opened_by: role === 'editor' ? project.editor_name : project.client_name,
+      opened_by_role: role === 'editor' ? 'editor' : 'client',
+      reason,
+      evidence: evidence.length ? evidence : undefined,
+      status: 'open',
+      opened_at: new Date().toISOString(),
+      sla_deadline: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
+    })
   }
 
   return (
     <div className="space-y-3">
-      {disputes.map(d => (
-        <div key={d.dispute_id} className="rounded-xl border border-border bg-white p-4 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-red-500" />
-              <span className="text-sm font-semibold text-navy">Diajukan oleh {d.opened_by}</span>
-            </div>
-            <StatusBadge status={d.status} />
-          </div>
-          <p className="text-sm text-navy/75 leading-relaxed">{d.reason}</p>
-          <div className="flex items-center gap-3 text-xs text-navy/45">
-            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatDateTime(d.opened_at)}</span>
-          </div>
-          {d.resolution_type && (
-            <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 p-3">
-              <div className="flex items-center gap-1.5 mb-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-xs font-semibold text-emerald-700">
-                  Hasil: {RESOLUTION_LABELS[d.resolution_type] ?? d.resolution_type}
-                </span>
-              </div>
-              {d.resolution_note && <p className="text-xs text-navy/70 leading-relaxed">{d.resolution_note}</p>}
-            </div>
+      {disputes.length === 0 ? (
+        <div className="text-center py-10">
+          <ShieldCheck className="w-9 h-9 mx-auto mb-2 text-emerald-500/70" />
+          <p className="text-sm text-navy/60">Tidak ada sengketa pada proyek ini.</p>
+          {showCreate && (
+            <button onClick={() => setFormOpen(true)} className="btn-secondary text-xs py-2 px-3 mt-4 mx-auto">
+              <ShieldAlert className="w-3.5 h-3.5" /> Ajukan sengketa
+            </button>
           )}
         </div>
-      ))}
+      ) : (
+        <>
+          {showCreate && (
+            <div className="flex justify-end">
+              <button onClick={() => setFormOpen(true)} className="btn-secondary text-xs py-2 px-3">
+                <ShieldAlert className="w-3.5 h-3.5" /> Ajukan sengketa
+              </button>
+            </div>
+          )}
+          {disputes.map(d => (
+            <div key={d.dispute_id} className="rounded-xl border border-border bg-white p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-red-500" />
+                  <span className="text-sm font-semibold text-navy">Diajukan oleh {d.opened_by}</span>
+                </div>
+                <StatusBadge status={d.status} />
+              </div>
+              <p className="text-sm text-navy/75 leading-relaxed">{d.reason}</p>
+
+              {d.evidence && d.evidence.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {d.evidence.map((name, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-navy-50/40 px-2.5 py-1 text-xs text-navy/70"
+                    >
+                      <FileText className="w-3 h-3 shrink-0" /> {name}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 text-xs text-navy/45">
+                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatDateTime(d.opened_at)}</span>
+              </div>
+              {d.resolution_type && (
+                <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-xs font-semibold text-emerald-700">
+                      Hasil: {RESOLUTION_LABELS[d.resolution_type] ?? d.resolution_type}
+                    </span>
+                  </div>
+                  {d.resolution_note && <p className="text-xs text-navy/70 leading-relaxed">{d.resolution_note}</p>}
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+
+      <DisputeForm open={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} />
     </div>
   )
 }

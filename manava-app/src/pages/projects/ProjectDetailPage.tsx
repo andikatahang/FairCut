@@ -7,7 +7,7 @@ import {
 import { StatusBadge } from '../../components/ui/Badge'
 import { cn } from '../../lib/utils'
 import { formatCurrency } from '../../lib/utils'
-import { mockProjects, mockRevisionEnvelopes } from '../../data/mockData'
+import { mockProjects, mockRevisionEnvelopes, mockDisputes } from '../../data/mockData'
 import { StageRail } from './StageRail'
 import { attentionFor, projectCategory } from './lifecycle'
 import {
@@ -15,7 +15,7 @@ import {
   PaymentPanel, DisputePanel, tabCounts, DELIVERABLES,
 } from './detailPanels'
 import type { DeliverableVersion } from './detailPanels'
-import type { UserRole, RevisionEnvelope } from '../../types'
+import type { UserRole, RevisionEnvelope, Dispute } from '../../types'
 
 type Tab = 'ringkasan' | 'kontrak' | 'hasil' | 'chat' | 'pembayaran' | 'sengketa'
 
@@ -34,6 +34,7 @@ const EDITOR_TABS: { key: Tab; label: string }[] = [
   { key: 'kontrak', label: 'Kontrak' },
   { key: 'hasil', label: 'Hasil Kerja' },
   { key: 'chat', label: 'Chat' },
+  { key: 'sengketa', label: 'Sengketa' },
 ]
 
 const TONE_PILL: Record<string, string> = {
@@ -64,6 +65,9 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
   const [deliverables, setDeliverables] = useState<DeliverableVersion[]>(
     () => (id ? DELIVERABLES[id] ?? [] : []),
   )
+  const [disputes, setDisputes] = useState<Dispute[]>(
+    () => mockDisputes.filter(d => d.project_id === id),
+  )
 
   if (!project) {
     return (
@@ -86,7 +90,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
   const showSubmit = isEditor && (project.status === 'in_progress' || project.status === 'revision')
 
   const badge = (key: Tab) => {
-    const n = key === 'hasil' ? deliverables.length : key === 'chat' ? counts.chat : key === 'sengketa' ? counts.sengketa : 0
+    const n = key === 'hasil' ? deliverables.length : key === 'chat' ? counts.chat : key === 'sengketa' ? disputes.length : 0
     return n > 0 ? n : null
   }
 
@@ -204,7 +208,14 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
         )}
         {tab === 'chat' && <ChatPanel project={project} />}
         {tab === 'pembayaran' && <PaymentPanel project={project} />}
-        {tab === 'sengketa' && <DisputePanel project={project} />}
+        {tab === 'sengketa' && (
+          <DisputePanel
+            project={project}
+            role={role}
+            disputes={disputes}
+            onCreate={d => setDisputes(prev => [d, ...prev])}
+          />
+        )}
       </div>
     </div>
   )

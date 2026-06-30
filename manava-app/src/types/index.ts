@@ -143,6 +143,7 @@ export interface Dispute {
   opened_by: string
   opened_by_role: 'client' | 'editor'
   reason: string
+  evidence?: string[]
   status: 'open' | 'in_mediation' | 'resolved' | 'cancelled'
   resolution_type?: 'free_revision' | 'charge_justified' | 'partial_refund' | 'full_refund' | 'quality_sanction'
   resolution_note?: string
