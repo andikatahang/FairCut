@@ -18,6 +18,14 @@ export const mockUsers: Record<string, User> = {
   finance: { user_id: 'u6', full_name: 'Fani Finance', email: 'fani@manava.id', role: 'finance', is_active: true },
 }
 
+/**
+ * Maximum concurrent active projects per editor. An editor at or above this
+ * count is considered "full" (unavailable for new work). Single source of
+ * truth for both the roster's availability display and the booking capacity
+ * check.
+ */
+export const EDITOR_CAPACITY = 2
+
 export const mockEditors: Editor[] = [
   { editor_id: 'e1', user_id: 'u2', full_name: 'Budi Santoso', email: 'budi@manava.id', department: 'Photo Retouching', specialization: ['product_retouch', 'color_correction'], base_salary: 8000000, status: 'active', onboarded_at: '2026-01-15', rating: 4.8, completion_rate: 94, active_projects: 2, performance_band: 'excellent', avatar: 'https://i.pravatar.cc/480?img=12' },
   { editor_id: 'e2', user_id: 'u7', full_name: 'Sari Dewi', email: 'sari@manava.id', department: 'Video Editing', specialization: ['video_edit', 'color_grading'], base_salary: 9000000, status: 'active', onboarded_at: '2026-02-01', rating: 4.5, completion_rate: 88, active_projects: 1, performance_band: 'good', avatar: 'https://i.pravatar.cc/480?img=47' },
