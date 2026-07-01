@@ -21,17 +21,15 @@ const navByRole: Record<UserRole, NavItem[]> = {
   hr_admin: [
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'Rekrutmen & ATS' },
-    { to: '/attendance', icon: Clock, label: 'Presensi & Cutoff' },
-    { to: '/departments', icon: Building2, label: 'Departemen' },
+    { to: '/departments', icon: Building2, label: 'Dashboard Departemen' },
     { to: '/payments', icon: CreditCard, label: 'Payroll Run' },
     { to: '/performance', icon: BarChart2, label: 'KPI Editor' },
-    { to: '/warning', icon: AlertOctagon, label: 'Peringatan Kerja' },
     { to: '/escalation', icon: ArrowUpRightFromSquare, label: 'Eskalasi Tinggi' },
-    { to: '/offboarding', icon: UserCheck, label: 'Offboarding' },
   ],
   admin_manager: [
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/team-dashboard', icon: Building2, label: 'Dashboard Departemen' },
+    { to: '/ess', icon: UserCheck, label: 'Layanan Mandiri' },
   ],
   editor: [
     { to: '/dashboard', icon: Home, label: 'Home' },

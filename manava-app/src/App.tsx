@@ -40,7 +40,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
   ],
   admin_manager: [
     '/dashboard', '/team-dashboard', '/attendance', '/departments', '/performance', '/projects',
-    '/warning', '/settings', '/profile',
+    '/ess', '/warning', '/settings', '/profile',
   ],
   editor: [
     '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings', '/profile',
@@ -103,7 +103,7 @@ function AppRoutes() {
         <Route path="/deliverables" element={<RoleGuard role={role}><DeliverablesPage /></RoleGuard>} />
         <Route path="/audit" element={<RoleGuard role={role}><AuditTrailPage /></RoleGuard>} />
         <Route path="/chat" element={<RoleGuard role={role}><ChatPage /></RoleGuard>} />
-        <Route path="/ess" element={<RoleGuard role={role}><ESSPage /></RoleGuard>} />
+        <Route path="/ess" element={<RoleGuard role={role}><ESSPage role={role} /></RoleGuard>} />
         <Route path="/profile" element={<RoleGuard role={role}><ProfilePage /></RoleGuard>} />
         <Route path="/offboarding" element={<RoleGuard role={role}><OffboardingPage /></RoleGuard>} />
         <Route path="/browse-editors" element={<RoleGuard role={role}><BrowseEditorsPage /></RoleGuard>} />
