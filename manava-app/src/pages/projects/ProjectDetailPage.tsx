@@ -114,7 +114,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
       </button>
 
       {/* Hero */}
-      <div className="card p-0 overflow-hidden">
+      <div className="card no-hover p-0 overflow-hidden">
         <div className="p-5 sm:p-6">
           <div className="flex items-start gap-4">
             <span className="grid place-items-center w-12 h-12 rounded-xl bg-navy text-white shrink-0">
@@ -195,7 +195,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
       </div>
 
       {/* Panel */}
-      <div className="card">
+      <div className="card no-hover">
         {tab === 'ringkasan' && <OverviewPanel project={project} envelope={envelope} />}
         {tab === 'kontrak' && (
           <ContractPanel

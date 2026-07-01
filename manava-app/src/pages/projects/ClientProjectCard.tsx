@@ -20,11 +20,9 @@ interface ClientProjectCardProps {
   /** Person shown under the title — defaults to the editor (client's view). */
   personName?: string
   personLabel?: string
-  /** Keep the shadow/border hover but drop the transform lift/scale. */
-  flatHover?: boolean
 }
 
-export function ClientProjectCard({ project, onDetail, personName, personLabel, flatHover }: ClientProjectCardProps) {
+export function ClientProjectCard({ project, onDetail, personName, personLabel }: ClientProjectCardProps) {
   const { Icon, label } = projectCategory(project.title)
   const person = personName ?? project.editor_name
   const pct = progressPercent(project.status)
@@ -37,7 +35,7 @@ export function ClientProjectCard({ project, onDetail, personName, personLabel, 
 
   return (
     <StyledWrapper>
-      <div className={flatHover ? 'card flat-hover' : 'card'} onClick={() => onDetail(project)}>
+      <div className="card" onClick={() => onDetail(project)}>
         {/* Media — bezel-less project type marker */}
         <div className="card-image">
           <span className="type">
@@ -75,6 +73,9 @@ export function ClientProjectCard({ project, onDetail, personName, personLabel, 
             </p>
           )}
 
+          {/* Spacer keeps the CTA pinned to the bottom so cards stay equal height. */}
+          <div className="grow" aria-hidden />
+
           <button
             type="button"
             className="detail-btn"
@@ -89,8 +90,11 @@ export function ClientProjectCard({ project, onDetail, personName, personLabel, 
 }
 
 const StyledWrapper = styled.div`
+  height: 100%;
+
   .card {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     background: #fff;
@@ -140,9 +144,15 @@ const StyledWrapper = styled.div`
   }
 
   .content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     padding: 16px;
+  }
+  /* Absorbs leftover space so every card's CTA lines up at the bottom. */
+  .grow {
+    flex: 1 1 auto;
+    min-height: 0;
   }
   .title {
     font-family: 'Inter Display', 'Open Runde', sans-serif;
@@ -258,16 +268,6 @@ const StyledWrapper = styled.div`
   }
   .card:hover .type {
     transform: scale(1.06);
-  }
-
-  /* Editor view keeps the shadow/border hover but drops the transform lift —
-     a transformed ancestor would create a containing block that clips fixed
-     overlays (e.g. the preview modal). */
-  .card.flat-hover:hover {
-    transform: none;
-  }
-  .card.flat-hover:hover .type {
-    transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
