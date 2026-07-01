@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, Briefcase, CreditCard, Wallet,
   AlertTriangle, UserCheck,
   Settings, ChevronLeft, LogOut, Shield, X, Search, User, Home,
-  BadgeDollarSign, ArrowUpRightFromSquare, Cog, Building2,
+  BadgeDollarSign, Cog, Building2,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -22,7 +22,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'Rekrutmen & ATS' },
     { to: '/departments', icon: Building2, label: 'Dashboard Departemen' },
-    { to: '/escalation', icon: ArrowUpRightFromSquare, label: 'Eskalasi Tinggi' },
   ],
   admin_manager: [
     { to: '/dashboard', icon: Home, label: 'Home' },

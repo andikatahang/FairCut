@@ -3,7 +3,7 @@ import {
   Users, Briefcase, FileText, CreditCard, Clock, BarChart2, AlertTriangle,
   MessageSquare, UserCheck, Shield, PackageCheck, Search, Settings, BadgeDollarSign,
   ClipboardCheck, Wallet, Scale, FileSearch, KeyRound, Cog,
-  LifeBuoy, ScanLine, Bell, ArrowUpRight, AlertOctagon, ArrowUpRightFromSquare,
+  LifeBuoy, ScanLine, Bell, ArrowUpRight, AlertOctagon,
   Database, Building2,
 } from 'lucide-react'
 import type { User, UserRole } from '../../types'
@@ -47,16 +47,13 @@ const configs: Record<UserRole, RoleHomeConfig> = {
       { label: 'Presensi',           to: '/attendance',   icon: Clock,                 accent: 'amber' },
       { label: 'Cutoff Bulanan',     to: '/attendance',   icon: KeyRound,              accent: 'navy' },
       { label: 'Departemen',         to: '/departments',  icon: Building2,             accent: 'blue' },
-      { label: 'Payroll Run',        to: '/payments',     icon: Wallet,                accent: 'emerald' },
       { label: 'KPI Editor',         to: '/performance',  icon: BarChart2,             accent: 'pink' },
       { label: 'Peringatan Kerja',   to: '/warning',      icon: AlertOctagon,          accent: 'amber',   badge: '3' },
-      { label: 'Eskalasi Tinggi',    to: '/escalation',   icon: ArrowUpRightFromSquare, accent: 'cyan',   badge: '2' },
       { label: 'Offboarding',        to: '/offboarding',  icon: UserCheck,             accent: 'navy' },
       { label: 'Pengaturan',         to: '/settings',     icon: Settings,              accent: 'navy' },
     ],
     spotlight: [
       { label: 'Lowongan aktif',      value: '4',  hint: '23 pelamar baru',                  to: '/recruitment' },
-      { label: 'Eskalasi tinggi',     value: '2',  hint: 'salah satu < 6 jam SLA',           to: '/escalation' },
       { label: 'Peringatan aktif',    value: '3',  hint: '1 berat butuh action plan',        to: '/warning' },
     ],
   },

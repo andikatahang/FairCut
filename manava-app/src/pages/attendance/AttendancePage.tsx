@@ -88,8 +88,8 @@ type Tab = 'attendance' | 'leave'
 type LeaveType = 'cuti' | 'izin'
 type LeaveForm = { type: LeaveType; start: string; end: string; reason: string }
 
-export default function AttendancePage({ role, embedded = false }: { role: UserRole; embedded?: boolean }) {
-  const [tab, setTab] = useState<Tab>('attendance')
+export default function AttendancePage({ role, embedded = false, forcedView }: { role: UserRole; embedded?: boolean; forcedView?: Tab }) {
+  const [tab, setTab] = useState<Tab>(forcedView ?? 'attendance')
   const [leaves, setLeaves] = useState<LeaveRequest[]>(mockLeaveRequests)
   const [dayDetail, setDayDetail] = useState<string | null>(null)
   const [leaveDetail, setLeaveDetail] = useState<LeaveRequest | null>(null)
@@ -179,14 +179,18 @@ export default function AttendancePage({ role, embedded = false }: { role: UserR
         </div>
       )}
 
-      {/* Tabs ─ kept to two; payroll lives in /payments. */}
-      <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit">
-        <TabBtn active={tab === 'attendance'} onClick={() => setTab('attendance')} label="Presensi" />
-        <TabBtn
-          active={tab === 'leave'} onClick={() => setTab('leave')} label="Permohonan Cuti"
-          badge={canApproveLeave && pendingLeaves.length > 0 ? pendingLeaves.length : undefined}
-        />
-      </div>
+      {/* Tabs ─ kept to two; payroll lives in /payments. Hidden when a single
+          view is forced by the host (e.g. the HR Dashboard splits these into
+          its own top-level tabs). */}
+      {!forcedView && (
+        <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit">
+          <TabBtn active={tab === 'attendance'} onClick={() => setTab('attendance')} label="Presensi" />
+          <TabBtn
+            active={tab === 'leave'} onClick={() => setTab('leave')} label="Permohonan Cuti"
+            badge={canApproveLeave && pendingLeaves.length > 0 ? pendingLeaves.length : undefined}
+          />
+        </div>
+      )}
 
       {tab === 'attendance' && (
         <AttendanceView

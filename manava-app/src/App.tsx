@@ -22,7 +22,6 @@ import RoleHomePage from './pages/home/RoleHomePage'
 import UsersPage from './pages/users/UsersPage'
 import SystemPage from './pages/system/SystemPage'
 import WarningPage from './pages/warning/WarningPage'
-import EscalationPage from './pages/escalation/EscalationPage'
 import ChatPage from './pages/chat/ChatPage'
 import OffboardingPage from './pages/offboarding/OffboardingPage'
 import SettingsPage from './pages/settings/SettingsPage'
@@ -36,7 +35,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
   ],
   hr_admin: [
     '/dashboard', '/recruitment', '/attendance', '/departments', '/performance',
-    '/warning', '/escalation', '/offboarding', '/settings', '/profile',
+    '/warning', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
     '/dashboard', '/team-dashboard', '/attendance', '/departments', '/performance', '/projects',
@@ -111,7 +110,6 @@ function AppRoutes() {
         <Route path="/users" element={<RoleGuard role={role}><UsersPage /></RoleGuard>} />
         <Route path="/system" element={<RoleGuard role={role}><SystemPage /></RoleGuard>} />
         <Route path="/warning" element={<RoleGuard role={role}><WarningPage role={role} /></RoleGuard>} />
-        <Route path="/escalation" element={<RoleGuard role={role}><EscalationPage role={role} /></RoleGuard>} />
         <Route path="/settings" element={<SettingsPage role={role} />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

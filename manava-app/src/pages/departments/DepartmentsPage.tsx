@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   Building2, Plus, Check, Sparkles, Pencil, Star, BarChart2,
-  Clock, AlertOctagon, UserX, TrendingUp, Award, ArrowLeft, UserMinus,
+  Clock, CalendarCheck, AlertOctagon, UserX, TrendingUp, Award, ArrowLeft, UserMinus,
 } from 'lucide-react'
 import { Modal } from '../../components/ui/Modal'
 import { PageHeader, StatPillsRow } from '../../components/page/PageHeader'
@@ -29,12 +29,13 @@ const SPEC_LABELS: Record<string, string> = {
 const ACTIVE_EDITORS = mockEditors.filter(e => e.status === 'active')
 const ALL_SKILLS = Array.from(new Set(ACTIVE_EDITORS.flatMap(e => e.specialization)))
 
-type HrTab = 'departemen' | 'kpi' | 'presensi' | 'peringatan' | 'offboarding'
+type HrTab = 'departemen' | 'kpi' | 'presensi' | 'cuti' | 'peringatan' | 'offboarding'
 
 const HR_TABS: { id: HrTab; label: string; icon: typeof Building2 }[] = [
   { id: 'departemen', label: 'Departemen', icon: Building2 },
   { id: 'kpi', label: 'KPI Editor', icon: BarChart2 },
   { id: 'presensi', label: 'Presensi', icon: Clock },
+  { id: 'cuti', label: 'Permohonan Cuti', icon: CalendarCheck },
   { id: 'peringatan', label: 'Peringatan', icon: AlertOctagon },
   { id: 'offboarding', label: 'Offboarding', icon: UserX },
 ]
@@ -136,7 +137,8 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
       )}
 
       {tab === 'kpi' && <PerformancePage role="hr_admin" embedded />}
-      {tab === 'presensi' && <AttendancePage role="hr_admin" embedded />}
+      {tab === 'presensi' && <AttendancePage role="hr_admin" embedded forcedView="attendance" />}
+      {tab === 'cuti' && <AttendancePage role="hr_admin" embedded forcedView="leave" />}
       {tab === 'peringatan' && <WarningPage role="hr_admin" />}
       {tab === 'offboarding' && <OffboardingPage />}
 
