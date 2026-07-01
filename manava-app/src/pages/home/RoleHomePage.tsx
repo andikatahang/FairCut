@@ -4,7 +4,7 @@ import {
   MessageSquare, UserCheck, Shield, PackageCheck, Search, Settings, BadgeDollarSign,
   ClipboardCheck, Wallet, Scale, FileSearch, KeyRound, Cog,
   LifeBuoy, ScanLine, Bell, ArrowUpRight, AlertOctagon, ArrowUpRightFromSquare,
-  Database,
+  Database, Building2,
 } from 'lucide-react'
 import type { User, UserRole } from '../../types'
 import { HomeHero } from '../../components/home/HomeHero'
@@ -44,8 +44,9 @@ const configs: Record<UserRole, RoleHomeConfig> = {
     features: [
       { label: 'ATS Pipeline',       to: '/recruitment',  icon: Users,                 accent: 'lime' },
       { label: 'Onboarding',         to: '/recruitment',  icon: ClipboardCheck,        accent: 'blue' },
-      { label: 'Absensi',            to: '/attendance',   icon: Clock,                 accent: 'amber' },
+      { label: 'Presensi',           to: '/attendance',   icon: Clock,                 accent: 'amber' },
       { label: 'Cutoff Bulanan',     to: '/attendance',   icon: KeyRound,              accent: 'navy' },
+      { label: 'Departemen',         to: '/departments',  icon: Building2,             accent: 'blue' },
       { label: 'Payroll Run',        to: '/payments',     icon: Wallet,                accent: 'emerald' },
       { label: 'KPI Editor',         to: '/performance',  icon: BarChart2,             accent: 'pink' },
       { label: 'Peringatan Kerja',   to: '/warning',      icon: AlertOctagon,          accent: 'amber',   badge: '3' },
@@ -63,17 +64,13 @@ const configs: Record<UserRole, RoleHomeConfig> = {
     roleLabel: 'Admin Manager',
     subtitle: 'Atur tim editor di departemen Anda, pantau KPI, dan setujui cuti tim sebelum naik ke HR Admin.',
     features: [
-      { label: 'Approval Cuti',       to: '/attendance',  icon: ClipboardCheck,         accent: 'lime',  badge: '3' },
-      { label: 'Klarifikasi Absen',   to: '/attendance',  icon: Clock,                  accent: 'amber' },
-      { label: 'KPI Tim',             to: '/performance', icon: BarChart2,              accent: 'pink' },
-      { label: 'Manager Assessment',  to: '/performance', icon: ClipboardCheck,         accent: 'blue' },
-      { label: 'Peringatan Tim',      to: '/warning',     icon: AlertOctagon,           accent: 'amber' },
-      { label: 'Proyek Tim',          to: '/projects',    icon: Briefcase,              accent: 'navy' },
-      { label: 'Pengaturan',          to: '/settings',    icon: Settings,               accent: 'navy' },
+      { label: 'Dashboard Departemen', to: '/team-dashboard', icon: Building2,       accent: 'lime' },
+      { label: 'Peringatan Tim',       to: '/warning',        icon: AlertOctagon,    accent: 'amber' },
+      { label: 'Pengaturan',           to: '/settings',       icon: Settings,        accent: 'navy' },
     ],
     spotlight: [
-      { label: 'Cuti menunggu',     value: '3',   hint: 'aksi Anda',                   to: '/attendance' },
-      { label: 'Assessment Q2',     value: '5/8', hint: 'belum diisi',                 to: '/performance' },
+      { label: 'Cuti menunggu',     value: '3',   hint: 'aksi Anda',                   to: '/team-dashboard' },
+      { label: 'Assessment Q2',     value: '5/8', hint: 'belum diisi',                 to: '/team-dashboard' },
     ],
   },
   editor: {
@@ -83,7 +80,7 @@ const configs: Record<UserRole, RoleHomeConfig> = {
       { label: 'Proyek Saya',        to: '/projects',  icon: Briefcase,    accent: 'lime',  badge: '2' },
       { label: 'Chat Klien',         to: '/chat',      icon: MessageSquare, accent: 'blue', badge: '1' },
       { label: 'Layanan Mandiri',    to: '/ess',       icon: UserCheck,    accent: 'cyan' },
-      { label: 'Absensi',            to: '/attendance', icon: Clock,       accent: 'amber' },
+      { label: 'Presensi',           to: '/attendance', icon: Clock,       accent: 'amber' },
       { label: 'Ajukan Cuti',        to: '/ess',       icon: ClipboardCheck, accent: 'pink' },
       { label: 'Slip Gaji',          to: '/ess',       icon: Wallet,       accent: 'emerald' },
       { label: 'KPI Saya',           to: '/dashboard', icon: BarChart2,    accent: 'navy' },

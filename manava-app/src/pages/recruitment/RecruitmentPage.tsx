@@ -13,6 +13,7 @@ import {
   type JobApplication, type ApplicationStatus, type InterviewInfo,
 } from '../../lib/applications'
 import type { UserRole } from '../../types'
+import { recommendDepartment } from '../../lib/departmentMatch'
 import { ApplicantCard } from './ApplicantCard'
 import { InterviewForm } from './InterviewForm'
 import { PageHeader } from '../../components/page/PageHeader'
@@ -188,6 +189,9 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
       >
         {detail && (
           <div className="space-y-5">
+            {/* On acceptance, AI summarizes skills into a department recommendation. */}
+            {detail.status === 'accepted' && <AiDeptRecommendation skills={detail.skills} />}
+
             <div className="grid sm:grid-cols-2 gap-x-5 gap-y-3 text-sm">
               <Fact icon={<Mail className="w-4 h-4" />} label="Email" value={detail.email} />
               <Fact icon={<Phone className="w-4 h-4" />} label="No. Handphone" value={detail.phone} />
@@ -287,6 +291,36 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
     >
       {label}
     </button>
+  )
+}
+
+function AiDeptRecommendation({ skills }: { skills: string[] }) {
+  const rec = recommendDepartment(skills)
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2">
+      <p className="text-[13px] font-semibold text-emerald-800 flex items-center gap-1.5">
+        <Sparkles className="w-4 h-4" /> Ringkasan AI — Rekomendasi Departemen
+      </p>
+      {rec ? (
+        <>
+          <p className="text-sm text-navy/70">
+            Berdasarkan keahlian pelamar, kandidat paling cocok untuk departemen{' '}
+            <span className="font-semibold text-navy">{rec.department}</span>.
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {rec.matched.map(s => (
+              <span key={s} className="px-2 py-0.5 rounded-full text-xs font-medium bg-white text-emerald-700 border border-emerald-200">
+                {s}
+              </span>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="text-sm text-navy/70">
+          Keahlian pelamar belum cukup spesifik untuk direkomendasikan ke satu departemen — tinjau manual.
+        </p>
+      )}
+    </div>
   )
 }
 

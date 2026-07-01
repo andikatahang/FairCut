@@ -1,4 +1,4 @@
-import type { User, Editor, TeamMember, Applicant, JobPosting, Project, Dispute, EditorMetrics, Payslip, AttendanceRecord, LeaveRequest, EscrowAccount, Transaction, Message, RevisionRequest, RevisionEnvelope } from '../types'
+import type { User, Editor, TeamMember, Department, Applicant, JobPosting, Project, Dispute, EditorMetrics, Payslip, AttendanceRecord, LeaveRequest, EscrowAccount, Transaction, Message, RevisionRequest, RevisionEnvelope } from '../types'
 
 export const currentUser: User = {
   user_id: 'u1',
@@ -32,6 +32,13 @@ export const mockAdminManagers: TeamMember[] = [
   { id: 'u5',  full_name: 'Eko Manager',   department: 'Photo Retouching', avatar: 'https://i.pravatar.cc/480?img=68' },
   { id: 'am2', full_name: 'Rina Wijaya',   department: 'Video Editing',    avatar: 'https://i.pravatar.cc/480?img=15' },
   { id: 'am3', full_name: 'Dani Kusuma',   department: 'Color Grading',    avatar: 'https://i.pravatar.cc/480?img=25' },
+]
+
+// Departments = manager + relevant editors. HR Admin manages this structure.
+export const mockDepartments: Department[] = [
+  { id: 'd1', name: 'Photo Retouching', manager_id: 'u5',  member_ids: ['e1', 'e3'] },
+  { id: 'd2', name: 'Video Editing',    manager_id: 'am2', member_ids: ['e2', 'e5'] },
+  { id: 'd3', name: 'Color Grading',    manager_id: 'am3', member_ids: ['e4'] },
 ]
 
 export const mockJobPostings: JobPosting[] = [

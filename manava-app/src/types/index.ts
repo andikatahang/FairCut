@@ -17,6 +17,14 @@ export interface TeamMember {
   avatar?: string
 }
 
+// A department groups editors under one Admin Manager.
+export interface Department {
+  id: string
+  name: string
+  manager_id: string   // TeamMember id from mockAdminManagers
+  member_ids: string[] // editor_id references
+}
+
 export interface Editor {
   editor_id: string
   user_id: string

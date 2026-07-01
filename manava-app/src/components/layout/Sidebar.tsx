@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, Briefcase, CreditCard,
   Clock, BarChart2, AlertTriangle, UserCheck,
   Settings, ChevronLeft, LogOut, Shield, X, Search, User, Home,
-  BadgeDollarSign, AlertOctagon, ArrowUpRightFromSquare, Cog,
+  BadgeDollarSign, AlertOctagon, ArrowUpRightFromSquare, Cog, Building2,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -21,7 +21,8 @@ const navByRole: Record<UserRole, NavItem[]> = {
   hr_admin: [
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'Rekrutmen & ATS' },
-    { to: '/attendance', icon: Clock, label: 'Absensi & Cutoff' },
+    { to: '/attendance', icon: Clock, label: 'Presensi & Cutoff' },
+    { to: '/departments', icon: Building2, label: 'Departemen' },
     { to: '/payments', icon: CreditCard, label: 'Payroll Run' },
     { to: '/performance', icon: BarChart2, label: 'KPI Editor' },
     { to: '/warning', icon: AlertOctagon, label: 'Peringatan Kerja' },
@@ -30,9 +31,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   admin_manager: [
     { to: '/dashboard', icon: Home, label: 'Home' },
-    { to: '/attendance', icon: Clock, label: 'Absensi & Cuti Tim' },
-    { to: '/performance', icon: BarChart2, label: 'KPI Tim' },
-    { to: '/projects', icon: Briefcase, label: 'Proyek Tim' },
+    { to: '/team-dashboard', icon: Building2, label: 'Dashboard Departemen' },
   ],
   editor: [
     { to: '/dashboard', icon: Home, label: 'Home' },

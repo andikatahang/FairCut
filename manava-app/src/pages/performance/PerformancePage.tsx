@@ -279,7 +279,7 @@ function DetailBody({
   )
 }
 
-export default function PerformancePage({ role }: { role: UserRole }) {
+export default function PerformancePage({ role, embedded = false }: { role: UserRole; embedded?: boolean }) {
   const isManager = role === 'superadmin' || role === 'admin_manager'
   const canRate = isManager
   const sorted = useMemo(() => [...mockEditorMetrics].sort((a, b) => b.kpi_average - a.kpi_average), [])
@@ -340,7 +340,7 @@ export default function PerformancePage({ role }: { role: UserRole }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow={headerCfg.eyebrow} title={headerCfg.title} description={headerCfg.description} role={role} />
+      {!embedded && <PageHeader eyebrow={headerCfg.eyebrow} title={headerCfg.title} description={headerCfg.description} role={role} />}
 
       {/* Signal */}
       {canRate && counts.needs > 0 && (

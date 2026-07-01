@@ -57,13 +57,13 @@ const STATUS_LABEL: Record<AttendanceRecord['status'], string> = {
 }
 
 const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
-  superadmin:    { eyebrow: 'Operasi HR', title: 'Absensi & Cuti', description: 'Pantau siklus kehadiran dan permohonan cuti lintas departemen.' },
-  hr_admin:      { eyebrow: 'Cutoff bulanan', title: 'Absensi & Cuti', description: 'Awasi rekap kehadiran dan setujui permohonan cuti dari Admin Manager sebelum lock cutoff bulanan.' },
-  admin_manager: { eyebrow: 'Operasi tim', title: 'Absensi Tim', description: 'Setujui cuti editor departemen Anda, dan ajukan cuti Anda sendiri ke HR Admin.' },
-  editor:        { eyebrow: 'Layanan mandiri', title: 'Absensi Saya', description: 'Catat clock-in/out hari ini dan kelola permohonan cuti Anda.' },
-  client:        { eyebrow: 'Operasi', title: 'Absensi', description: '' },
-  mediator:      { eyebrow: 'Operasi', title: 'Absensi', description: '' },
-  finance:       { eyebrow: 'Operasi HR', title: 'Absensi & Cuti', description: 'Lihat rekap kehadiran sebagai input rekonsiliasi payroll.' },
+  superadmin:    { eyebrow: 'Operasi HR', title: 'Presensi & Cuti', description: 'Pantau siklus kehadiran dan permohonan cuti lintas departemen.' },
+  hr_admin:      { eyebrow: 'Cutoff bulanan', title: 'Presensi & Cuti', description: 'Awasi rekap kehadiran dan setujui permohonan cuti dari Admin Manager sebelum lock cutoff bulanan.' },
+  admin_manager: { eyebrow: 'Operasi tim', title: 'Presensi Tim', description: 'Setujui cuti editor departemen Anda, dan ajukan cuti Anda sendiri ke HR Admin.' },
+  editor:        { eyebrow: 'Layanan mandiri', title: 'Presensi Saya', description: 'Catat clock-in/out hari ini dan kelola permohonan cuti Anda.' },
+  client:        { eyebrow: 'Operasi', title: 'Presensi', description: '' },
+  mediator:      { eyebrow: 'Operasi', title: 'Presensi', description: '' },
+  finance:       { eyebrow: 'Operasi HR', title: 'Presensi & Cuti', description: 'Lihat rekap kehadiran sebagai input rekonsiliasi payroll.' },
 }
 
 // Today date is fixed for mock data — clock-out missing flag uses 17:30 cutoff per PRD.
@@ -88,7 +88,7 @@ type Tab = 'attendance' | 'leave'
 type LeaveType = 'cuti' | 'izin'
 type LeaveForm = { type: LeaveType; start: string; end: string; reason: string }
 
-export default function AttendancePage({ role }: { role: UserRole }) {
+export default function AttendancePage({ role, embedded = false }: { role: UserRole; embedded?: boolean }) {
   const [tab, setTab] = useState<Tab>('attendance')
   const [leaves, setLeaves] = useState<LeaveRequest[]>(mockLeaveRequests)
   const [dayDetail, setDayDetail] = useState<string | null>(null)
@@ -171,7 +171,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />
+      {!embedded && <PageHeader eyebrow={h.eyebrow} title={h.title} description={h.description} role={role} />}
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-[60] bg-navy text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
 
       {/* Tabs ─ kept to two; payroll lives in /payments. */}
       <div className="flex gap-1 bg-white border border-border rounded-xl p-1 w-fit">
-        <TabBtn active={tab === 'attendance'} onClick={() => setTab('attendance')} label="Absensi" />
+        <TabBtn active={tab === 'attendance'} onClick={() => setTab('attendance')} label="Presensi" />
         <TabBtn
           active={tab === 'leave'} onClick={() => setTab('leave')} label="Permohonan Cuti"
           badge={canApproveLeave && pendingLeaves.length > 0 ? pendingLeaves.length : undefined}

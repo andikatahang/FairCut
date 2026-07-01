@@ -20,7 +20,7 @@ const CURRENT = { year: 2026, month: 5 }
 const LEAVE_BALANCE = { cuti: { total: 12, used: 2 }, izin: { total: 6, used: 1 } }
 
 const TABS: { id: Tab; label: string; icon: typeof Clock }[] = [
-  { id: 'absensi', label: 'Absensi', icon: Clock },
+  { id: 'absensi', label: 'Presensi', icon: Clock },
   { id: 'cuti', label: 'Cuti & Izin', icon: Calendar },
   { id: 'gaji', label: 'Slip Gaji', icon: FileText },
 ]
@@ -86,7 +86,7 @@ function AttendanceTab() {
     <div className="space-y-4">
       <PageHeader
         eyebrow="Layanan mandiri editor"
-        title="ESS — Absensi, Cuti, Slip Gaji"
+        title="ESS — Presensi, Cuti, Slip Gaji"
         description="Lihat ringkasan kehadiran bulanan, ajukan cuti, dan unduh payslip Anda."
         role="editor"
       />
