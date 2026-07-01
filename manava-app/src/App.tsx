@@ -28,14 +28,21 @@ import SettingsPage from './pages/settings/SettingsPage'
 import DeliverablesPage from './pages/deliverables/DeliverablesPage'
 import AuditTrailPage from './pages/audit/AuditTrailPage'
 import BrowseEditorsPage from './pages/browse-editors/BrowseEditorsPage'
+import EscrowPage from './pages/finance/EscrowPage'
+import EmergencyReleasePage from './pages/finance/EmergencyReleasePage'
+import RefundPage from './pages/finance/RefundPage'
+import BonusAccrualPage from './pages/finance/BonusAccrualPage'
+import ReconciliationPage from './pages/finance/ReconciliationPage'
+import RevenueReportPage from './pages/finance/RevenueReportPage'
+import PayrollDisbursementPage from './pages/finance/PayrollDisbursementPage'
 
 const ALLOWED_PATHS: Record<UserRole, string[]> = {
   superadmin: [
-    '/dashboard', '/users', '/system', '/audit', '/settings', '/profile',
+    '/dashboard', '/users', '/system', '/audit', '/escrow', '/emergency-release', '/refund', '/bonus-accrual', '/reconciliation', '/revenue-report', '/payroll-disbursement', '/payments', '/settings', '/profile',
   ],
   hr_admin: [
-    '/dashboard', '/recruitment', '/attendance', '/departments', '/performance',
-    '/warning', '/offboarding', '/settings', '/profile',
+    '/dashboard', '/recruitment', '/attendance', '/payments', '/bonus-accrual', '/payroll-disbursement', '/performance',
+    '/warning', '/escalation', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
     '/dashboard', '/team-dashboard', '/attendance', '/departments', '/performance', '/projects',
@@ -51,7 +58,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/dashboard', '/disputes', '/projects', '/settings',
   ],
   finance: [
-    '/dashboard', '/payments', '/payroll', '/attendance', '/audit', '/settings',
+    '/dashboard', '/payments', '/escrow', '/refund', '/bonus-accrual', '/reconciliation', '/revenue-report', '/attendance', '/audit', '/settings',
   ],
 }
 
@@ -94,7 +101,13 @@ function AppRoutes() {
         <Route path="/projects/:id" element={<RoleGuard role={role}><ProjectDetailPage role={role} /></RoleGuard>} />
         <Route path="/contracts" element={<RoleGuard role={role}><ContractsPage /></RoleGuard>} />
         <Route path="/payments" element={<RoleGuard role={role}><PaymentsPage role={role} /></RoleGuard>} />
-        <Route path="/payroll" element={<RoleGuard role={role}><PaymentsPage role={role} /></RoleGuard>} />
+        <Route path="/escrow" element={<RoleGuard role={role}><EscrowPage role={role} /></RoleGuard>} />
+        <Route path="/emergency-release" element={<RoleGuard role={role}><EmergencyReleasePage role={role} /></RoleGuard>} />
+        <Route path="/refund" element={<RoleGuard role={role}><RefundPage role={role} /></RoleGuard>} />
+        <Route path="/bonus-accrual" element={<RoleGuard role={role}><BonusAccrualPage role={role} /></RoleGuard>} />
+        <Route path="/reconciliation" element={<RoleGuard role={role}><ReconciliationPage role={role} /></RoleGuard>} />
+        <Route path="/revenue-report" element={<RoleGuard role={role}><RevenueReportPage role={role} /></RoleGuard>} />
+        <Route path="/payroll-disbursement" element={<RoleGuard role={role}><PayrollDisbursementPage role={role} /></RoleGuard>} />
         <Route path="/attendance" element={<RoleGuard role={role}><AttendancePage role={role} /></RoleGuard>} />
         <Route path="/departments" element={<RoleGuard role={role}><DepartmentsPage role={role} /></RoleGuard>} />
         <Route path="/team-dashboard" element={<RoleGuard role={role}><TeamDashboardPage role={role} /></RoleGuard>} />
