@@ -367,7 +367,10 @@ export function DeliverablesPanel({
         </div>
       ) : (
         versions.map(v => (
-          <div key={v.version} className="rounded-xl border border-border bg-white p-4">
+          <div
+            key={v.version}
+            className="rounded-xl border border-border bg-white p-4 transition-all duration-200 hover:border-navy/15 hover:shadow-[0_14px_44px_-16px_rgba(2,21,38,0.18)] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 min-w-0">
                 <span className="grid place-items-center w-9 h-9 rounded-lg bg-navy-50/60 shrink-0">{fileIcon(v.file_name)}</span>

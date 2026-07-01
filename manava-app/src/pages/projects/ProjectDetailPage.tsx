@@ -114,7 +114,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
       </button>
 
       {/* Hero */}
-      <div className="card p-0 overflow-hidden">
+      <div className="card no-hover p-0 overflow-hidden">
         <div className="p-5 sm:p-6">
           <div className="flex items-start gap-4">
             <span className="grid place-items-center w-12 h-12 rounded-xl bg-navy text-white shrink-0">
@@ -182,7 +182,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
               onClick={() => setTab(t.key)}
               className={cn(
                 'px-4 py-3 text-sm font-medium border-b-2 transition-all whitespace-nowrap',
-                tab === t.key ? 'border-navy text-navy' : 'border-transparent text-navy/45 hover:text-navy'
+                tab === t.key ? 'border-navy text-navy hover:bg-navy-50/40' : 'border-transparent text-navy/45 hover:text-navy hover:bg-navy-50/40'
               )}
             >
               {t.label}
@@ -195,7 +195,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
       </div>
 
       {/* Panel */}
-      <div className="card">
+      <div className="card no-hover">
         {tab === 'ringkasan' && <OverviewPanel project={project} envelope={envelope} />}
         {tab === 'kontrak' && (
           <ContractPanel

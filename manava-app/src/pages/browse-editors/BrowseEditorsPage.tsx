@@ -77,7 +77,7 @@ export default function BrowseEditorsPage() {
           onClick={() => setSpecFilter('all')}
           className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 ${
             specFilter === 'all'
-              ? 'bg-[#021526] text-white'
+              ? 'bg-[#021526] text-white hover:bg-[#0a2942]'
               : 'bg-[#f2f2f2] text-[#555] hover:bg-[#e8e8e8]'
           }`}
         >
