@@ -117,7 +117,7 @@ function ProjectsHubView({
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Portfolio summary */}
-      <div className="card">
+      <div className={isEditor ? 'card no-hover' : 'card'}>
         <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
           <div className="flex gap-7 sm:pr-7 sm:border-r border-border">
             <SummaryStat value={needAction} label="Perlu tindakan" accent="text-amber-600" />
@@ -180,6 +180,7 @@ function ProjectsHubView({
               project={p}
               personName={isEditor ? p.client_name : p.editor_name}
               personLabel={isEditor ? 'Klien' : 'Editor'}
+              flatHover={isEditor}
               onDetail={pr => navigate(`/projects/${pr.project_id}`)}
             />
           ))}
