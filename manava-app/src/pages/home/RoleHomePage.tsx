@@ -61,21 +61,18 @@ const configs: Record<UserRole, RoleHomeConfig> = {
   },
   admin_manager: {
     roleLabel: 'Admin Manager',
-    subtitle: 'Atur tim editor di departemen Anda, pantau KPI, dan tangani eskalasi cuti & gaji tingkat menengah sebelum naik ke HR Admin.',
+    subtitle: 'Atur tim editor di departemen Anda, pantau KPI, dan setujui cuti tim sebelum naik ke HR Admin.',
     features: [
       { label: 'Approval Cuti',       to: '/attendance',  icon: ClipboardCheck,         accent: 'lime',  badge: '3' },
       { label: 'Klarifikasi Absen',   to: '/attendance',  icon: Clock,                  accent: 'amber' },
       { label: 'KPI Tim',             to: '/performance', icon: BarChart2,              accent: 'pink' },
       { label: 'Manager Assessment',  to: '/performance', icon: ClipboardCheck,         accent: 'blue' },
-      { label: 'Eskalasi Menengah',   to: '/escalation',  icon: ArrowUpRightFromSquare, accent: 'cyan',  badge: '1' },
       { label: 'Peringatan Tim',      to: '/warning',     icon: AlertOctagon,           accent: 'amber' },
       { label: 'Proyek Tim',          to: '/projects',    icon: Briefcase,              accent: 'navy' },
-      { label: 'Offboarding',         to: '/offboarding', icon: UserCheck,              accent: 'navy' },
       { label: 'Pengaturan',          to: '/settings',    icon: Settings,               accent: 'navy' },
     ],
     spotlight: [
       { label: 'Cuti menunggu',     value: '3',   hint: 'aksi Anda',                   to: '/attendance' },
-      { label: 'Eskalasi menengah', value: '1',   hint: 'editor di tim Anda',          to: '/escalation' },
       { label: 'Assessment Q2',     value: '5/8', hint: 'belum diisi',                 to: '/performance' },
     ],
   },

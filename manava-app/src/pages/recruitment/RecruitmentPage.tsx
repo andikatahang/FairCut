@@ -32,7 +32,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   pending: 'Menunggu', interview: 'Wawancara', accepted: 'Diterima', rejected: 'Ditolak',
 }
 
-const CAN_MANAGE: UserRole[] = ['superadmin', 'admin_manager']
+const CAN_MANAGE: UserRole[] = ['superadmin', 'hr_admin', 'admin_manager']
 
 // Primary card action depends on where the application is in the flow.
 function primaryFor(status: ApplicationStatus): string | null {
@@ -227,6 +227,12 @@ export default function RecruitmentPage({ role }: { role: UserRole }) {
                       ? <><Video className="w-3.5 h-3.5 text-navy/40" /> Online</>
                       : <><MapPin className="w-3.5 h-3.5 text-navy/40" /> Offline · {detail.interview.location}</>}
                   </p>
+                  {detail.interview.notes && (
+                    <p className="flex items-start gap-2 pt-1 border-t border-navy/10 mt-2">
+                      <FileText className="w-3.5 h-3.5 text-navy/40 mt-0.5 shrink-0" />
+                      <span>{detail.interview.notes}</span>
+                    </p>
+                  )}
                 </div>
               </div>
             )}

@@ -9,6 +9,14 @@ export interface User {
   is_active: boolean
 }
 
+// Lightweight roster entry used by attendance team views (editors or managers).
+export interface TeamMember {
+  id: string
+  full_name: string
+  department: string
+  avatar?: string
+}
+
 export interface Editor {
   editor_id: string
   user_id: string
@@ -127,6 +135,10 @@ export interface LeaveRequest {
   leave_id: string
   editor_id: string
   editor_name: string
+  // Role of whoever filed the request. Drives approval routing up the hierarchy:
+  // an 'editor' request is approved by Admin Manager, an 'admin_manager' request
+  // is approved by HR Admin.
+  requester_role: 'editor' | 'admin_manager'
   leave_type: 'cuti' | 'izin'
   start_date: string
   end_date: string

@@ -32,9 +32,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/attendance', icon: Clock, label: 'Absensi & Cuti Tim' },
     { to: '/performance', icon: BarChart2, label: 'KPI Tim' },
-    { to: '/escalation', icon: ArrowUpRightFromSquare, label: 'Eskalasi Menengah' },
     { to: '/projects', icon: Briefcase, label: 'Proyek Tim' },
-    { to: '/offboarding', icon: UserCheck, label: 'Pengakhiran' },
   ],
   editor: [
     { to: '/dashboard', icon: Home, label: 'Home' },

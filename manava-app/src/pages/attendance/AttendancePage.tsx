@@ -1,19 +1,42 @@
 import { useMemo, useState } from 'react'
 import {
   Clock, Calendar, CheckCircle2, XCircle, AlertCircle, AlertTriangle,
-  CalendarDays, Lock, ChevronRight, Plus,
+  CalendarDays, Lock, ChevronRight, Plus, ArrowRight,
 } from 'lucide-react'
 import { StatusBadge } from '../../components/ui/Badge'
 import { Modal } from '../../components/ui/Modal'
 import { Drawer } from '../../components/ui/Drawer'
 import { formatDate } from '../../lib/utils'
-import { mockAttendance, mockLeaveRequests, mockEditors } from '../../data/mockData'
+import { mockAttendance, mockLeaveRequests, mockEditors, mockAdminManagers, mockUsers } from '../../data/mockData'
 
 // Mock attendance is implicitly one editor's record. Use the first active editor
 // as the "subject" so manager / HR drawer headers identify whose day is being viewed.
 const SUBJECT_EDITOR = mockEditors[0]
-import type { UserRole, AttendanceRecord, LeaveRequest } from '../../types'
+import type { UserRole, AttendanceRecord, LeaveRequest, TeamMember } from '../../types'
 import { PageHeader } from '../../components/page/PageHeader'
+
+// ── leave approval hierarchy ───────────────────────────────────────────────────
+// Requests travel one level up the org chart: Editor → Admin Manager → HR Admin.
+type RequesterRole = 'editor' | 'admin_manager'
+
+// Which requester roles each approver is responsible for. An Admin Manager clears
+// editor requests; HR Admin clears Admin Manager requests; Superadmin oversees all.
+const APPROVES_REQUESTS_FROM: Partial<Record<UserRole, RequesterRole[]>> = {
+  admin_manager: ['editor'],
+  hr_admin: ['admin_manager'],
+  superadmin: ['editor', 'admin_manager'],
+}
+
+// Human label for where a given requester's leave is sent.
+const ROUTES_TO_LABEL: Record<RequesterRole, string> = {
+  editor: 'Admin Manager',
+  admin_manager: 'HR Admin',
+}
+
+const REQUESTER_ROLE_LABEL: Record<RequesterRole, string> = {
+  editor: 'Editor',
+  admin_manager: 'Admin Manager',
+}
 
 // ── constants ────────────────────────────────────────────────────────────────
 const CAL_YEAR = 2026
@@ -35,8 +58,8 @@ const STATUS_LABEL: Record<AttendanceRecord['status'], string> = {
 
 const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; description: string }> = {
   superadmin:    { eyebrow: 'Operasi HR', title: 'Absensi & Cuti', description: 'Pantau siklus kehadiran dan permohonan cuti lintas departemen.' },
-  hr_admin:      { eyebrow: 'Cutoff bulanan', title: 'Absensi & Cuti', description: 'Awasi rekap kehadiran sebelum lock cutoff bulanan.' },
-  admin_manager: { eyebrow: 'Operasi tim', title: 'Absensi & Cuti Tim', description: 'Klarifikasi missing clock-out dan setujui cuti anggota departemen Anda.' },
+  hr_admin:      { eyebrow: 'Cutoff bulanan', title: 'Absensi & Cuti', description: 'Awasi rekap kehadiran dan setujui permohonan cuti dari Admin Manager sebelum lock cutoff bulanan.' },
+  admin_manager: { eyebrow: 'Operasi tim', title: 'Absensi Tim', description: 'Setujui cuti editor departemen Anda, dan ajukan cuti Anda sendiri ke HR Admin.' },
   editor:        { eyebrow: 'Layanan mandiri', title: 'Absensi Saya', description: 'Catat clock-in/out hari ini dan kelola permohonan cuti Anda.' },
   client:        { eyebrow: 'Operasi', title: 'Absensi', description: '' },
   mediator:      { eyebrow: 'Operasi', title: 'Absensi', description: '' },
@@ -75,11 +98,34 @@ export default function AttendancePage({ role }: { role: UserRole }) {
   const [toast, setToast] = useState<string | null>(null)
 
   const isManager = role === 'admin_manager' || role === 'hr_admin' || role === 'superadmin'
-  const canApproveLeave = role === 'admin_manager' || role === 'superadmin'
   const canLock = role === 'hr_admin'
   const isEditor = role === 'editor'
 
-  const pendingLeaves = useMemo(() => leaves.filter(l => l.status === 'pending'), [leaves])
+  // Approval scope + submission rights derived from the hierarchy map.
+  // Memoized so its identity is stable per role (keeps dependent useMemos honest).
+  const approvableRoles = useMemo(() => APPROVES_REQUESTS_FROM[role] ?? [], [role])
+  const canApproveLeave = approvableRoles.length > 0
+  // Editors and Admin Managers file their own leave (each routed one level up).
+  const canRequestLeave = role === 'editor' || role === 'admin_manager'
+  const myRequesterRole: RequesterRole = role === 'admin_manager' ? 'admin_manager' : 'editor'
+
+  // Requests this role should see: an approver's queue plus, for an Admin Manager,
+  // their own submissions to HR Admin. Editors see only editor-filed requests.
+  const visibleLeaves = useMemo(() => {
+    if (role === 'hr_admin') return leaves.filter(l => l.requester_role === 'admin_manager')
+    if (role === 'editor') return leaves.filter(l => l.requester_role === 'editor')
+    return leaves // admin_manager / superadmin / finance see the full chain
+  }, [role, leaves])
+
+  // Badge/queue counts only what THIS role can actually action.
+  const pendingLeaves = useMemo(
+    () => leaves.filter(l => l.status === 'pending' && approvableRoles.includes(l.requester_role)),
+    [leaves, approvableRoles],
+  )
+
+  // A request is actionable here only if it was filed by a role we approve for.
+  const canActOnDetail = (l: LeaveRequest) =>
+    l.status === 'pending' && approvableRoles.includes(l.requester_role)
   const needsClarification = useMemo(
     () => mockAttendance.filter(a => a.clock_in && !a.clock_out && a.date.startsWith('2026-06')),
     [],
@@ -101,9 +147,23 @@ export default function AttendancePage({ role }: { role: UserRole }) {
   }
   function submitLeave() {
     if (!leaveForm.start || !leaveForm.end) return
+    // Attribute the request to the current role and route it one level up.
+    const requester = role === 'admin_manager' ? mockUsers.admin_manager : null
+    const newLeave: LeaveRequest = {
+      leave_id: `l-${Date.now()}`,
+      editor_id: requester ? requester.user_id : SUBJECT_EDITOR.editor_id,
+      editor_name: requester ? requester.full_name : SUBJECT_EDITOR.full_name,
+      requester_role: myRequesterRole,
+      leave_type: leaveForm.type,
+      start_date: leaveForm.start,
+      end_date: leaveForm.end,
+      status: 'pending',
+      created_at: TODAY,
+    }
+    setLeaves(prev => [newLeave, ...prev])
     setLeaveModal(false)
     setLeaveForm({ type: 'cuti', start: '', end: '', reason: '' })
-    flash('Permohonan cuti terkirim ke Admin Manager.')
+    flash(`Permohonan cuti terkirim ke ${ROUTES_TO_LABEL[myRequesterRole]}.`)
   }
 
   const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.editor
@@ -135,6 +195,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
           isManager={isManager}
           canLock={canLock}
           needsClarification={needsClarification}
+          leaves={leaves}
           onOpenDay={setDayDetail}
           onLockMonth={() => flash('Rekap Juni 2026 berhasil dikunci.')}
         />
@@ -142,9 +203,10 @@ export default function AttendancePage({ role }: { role: UserRole }) {
 
       {tab === 'leave' && (
         <LeaveView
-          role={role}
           canApprove={canApproveLeave}
-          leaves={leaves}
+          canRequest={canRequestLeave}
+          requesterRole={myRequesterRole}
+          leaves={visibleLeaves}
           onOpenLeave={setLeaveDetail}
           onAjukan={() => setLeaveModal(true)}
         />
@@ -175,7 +237,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
         onClose={() => setLeaveDetail(null)}
         title={leaveDetail?.editor_name ?? ''}
         subtitle={leaveDetail ? `${leaveDetail.leave_type === 'cuti' ? 'Cuti Tahunan' : 'Izin / Sakit'} · ${formatDate(leaveDetail.start_date)} – ${formatDate(leaveDetail.end_date)}` : ''}
-        footer={leaveDetail && canApproveLeave && leaveDetail.status === 'pending' ? (
+        footer={leaveDetail && canActOnDetail(leaveDetail) ? (
           <div className="grid grid-cols-2 gap-2">
             <button
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
@@ -229,7 +291,7 @@ export default function AttendancePage({ role }: { role: UserRole }) {
               onChange={e => setLeaveForm(f => ({ ...f, reason: e.target.value }))}
               rows={3}
               className="input resize-none"
-              placeholder="Cantumkan konteks untuk Admin Manager Anda."
+              placeholder={`Cantumkan konteks untuk ${ROUTES_TO_LABEL[myRequesterRole]} Anda.`}
             />
           </div>
           <div className="flex justify-end gap-2 pt-1">
@@ -265,13 +327,14 @@ function TabBtn({ active, onClick, label, badge }: { active: boolean; onClick: (
 
 // ── Attendance view ──────────────────────────────────────────────────────────
 function AttendanceView({
-  role, isEditor, isManager, canLock, needsClarification, onOpenDay, onLockMonth,
+  role, isEditor, isManager, canLock, needsClarification, leaves, onOpenDay, onLockMonth,
 }: {
   role: UserRole
   isEditor: boolean
   isManager: boolean
   canLock: boolean
   needsClarification: AttendanceRecord[]
+  leaves: LeaveRequest[]
   onOpenDay: (date: string) => void
   onLockMonth: () => void
 }) {
@@ -319,6 +382,123 @@ function AttendanceView({
         <CalendarGrid onOpenDay={onOpenDay} />
         <LegendRow />
       </div>
+
+      {/* Team roster — single column: who is in today + who filed leave. */}
+      {isManager && <TeamRoster role={role} leaves={leaves} />}
+    </div>
+  )
+}
+
+// ── Team roster (manager view) ─────────────────────────────────────────────────
+// Single-column snapshot for managers: who is present today (with clock-in) and
+// who has filed leave. The roster is scoped to the viewer's supervisory level —
+// HR Admin sees Admin Managers across departments; an Admin Manager sees the
+// editors in their team. Clock-in times are a deterministic mock (no per-person
+// attendance feed yet); present members are the roster minus anyone on leave today.
+const MOCK_CLOCK_INS = ['08:00', '08:05', '07:58', '08:12', '08:03']
+
+function TeamRoster({ role, leaves }: { role: UserRole; leaves: LeaveRequest[] }) {
+  // HR Admin oversees managers; everyone else at this level oversees editors.
+  const seesManagers = role === 'hr_admin'
+  const requesterScope: RequesterRole = seesManagers ? 'admin_manager' : 'editor'
+  const roster: TeamMember[] = seesManagers
+    ? mockAdminManagers
+    : mockEditors
+        .filter(e => e.status === 'active')
+        .map(e => ({ id: e.editor_id, full_name: e.full_name, department: e.department, avatar: e.avatar }))
+
+  const onLeaveToday = (name: string) =>
+    leaves.some(l =>
+      l.editor_name === name && l.requester_role === requesterScope &&
+      l.status !== 'rejected' && l.start_date <= TODAY && TODAY <= l.end_date,
+    )
+  const present = roster.filter(m => !onLeaveToday(m.full_name))
+  const leaveRequests = leaves
+    .filter(l => l.requester_role === requesterScope)
+    .slice()
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+
+  const presentSubtitle = seesManagers ? 'Admin Manager per departemen' : fmtFullDate(TODAY)
+  const leaveSubtitle = seesManagers
+    ? 'Admin Manager yang mengajukan cuti / izin.'
+    : 'Anggota tim yang mengajukan cuti / izin.'
+
+  return (
+    <div className="space-y-6">
+      {/* Hadir hari ini */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-navy">Hadir Hari Ini</h3>
+            <p className="text-xs text-navy/50 mt-0.5">{presentSubtitle}</p>
+          </div>
+          <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full shrink-0">
+            {present.length} hadir
+          </span>
+        </div>
+        {present.length === 0 ? (
+          <p className="text-sm text-navy/50 py-6 text-center">Belum ada yang clock-in hari ini.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {present.map((m, i) => (
+              <li key={m.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                <RosterAvatar name={m.full_name} avatar={m.avatar} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-navy truncate">{m.full_name}</p>
+                  <p className="text-xs text-navy/50 truncate">{m.department}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[11px] uppercase tracking-wider text-navy/40">Masuk</p>
+                  <p className="text-sm font-bold text-navy tabular-nums flex items-center gap-1 justify-end">
+                    <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                    {MOCK_CLOCK_INS[i % MOCK_CLOCK_INS.length]}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Pengajuan cuti */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-navy">Pengajuan Cuti</h3>
+            <p className="text-xs text-navy/50 mt-0.5">{leaveSubtitle}</p>
+          </div>
+          <span className="text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full shrink-0">
+            {leaveRequests.length} pengajuan
+          </span>
+        </div>
+        {leaveRequests.length === 0 ? (
+          <p className="text-sm text-navy/50 py-6 text-center">Belum ada pengajuan cuti.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {leaveRequests.map(l => (
+              <li key={l.leave_id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                <RosterAvatar name={l.editor_name} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-navy truncate">{l.editor_name}</p>
+                  <p className="text-xs text-navy/50 truncate">
+                    {l.leave_type === 'cuti' ? 'Cuti Tahunan' : 'Izin / Sakit'} · {formatDate(l.start_date)} – {formatDate(l.end_date)}
+                  </p>
+                </div>
+                <StatusBadge status={l.status} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function RosterAvatar({ name, avatar }: { name: string; avatar?: string }) {
+  if (avatar) return <img src={avatar} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
+  return (
+    <div className="w-9 h-9 rounded-full bg-navy/10 flex items-center justify-center text-xs font-semibold text-navy shrink-0">
+      {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
     </div>
   )
 }
@@ -570,10 +750,11 @@ function Stat({ label, value }: { label: string; value: string }) {
 type LeaveFilter = 'pending' | 'approved' | 'rejected' | 'all'
 
 function LeaveView({
-  role, canApprove, leaves, onOpenLeave, onAjukan,
+  canApprove, canRequest, requesterRole, leaves, onOpenLeave, onAjukan,
 }: {
-  role: UserRole
   canApprove: boolean
+  canRequest: boolean
+  requesterRole: RequesterRole
   leaves: LeaveRequest[]
   onOpenLeave: (l: LeaveRequest) => void
   onAjukan: () => void
@@ -599,10 +780,15 @@ function LeaveView({
             )
           })}
         </div>
-        {role === 'editor' && (
-          <button className="btn-primary text-sm" onClick={onAjukan}>
-            <Plus className="w-4 h-4" />Ajukan Cuti
-          </button>
+        {canRequest && (
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-xs text-navy/50">
+              Disetujui oleh <span className="font-medium text-navy">{ROUTES_TO_LABEL[requesterRole]}</span>
+            </span>
+            <button className="btn-primary text-sm" onClick={onAjukan}>
+              <Plus className="w-4 h-4" />Ajukan Cuti
+            </button>
+          </div>
         )}
       </div>
 
@@ -653,6 +839,15 @@ function LeaveDetailBody({ leave }: { leave: LeaveRequest }) {
         <Stat label="Selesai" value={formatDate(leave.end_date)} />
         <Stat label="Durasi"  value={`${days} hari`} />
         <Stat label="Jenis"   value={leave.leave_type === 'cuti' ? 'Cuti Tahunan' : 'Izin'} />
+      </div>
+
+      <div>
+        <p className="text-[11px] uppercase tracking-wider text-navy/40 mb-1.5">Alur persetujuan</p>
+        <div className="flex items-center gap-2 rounded-xl border border-navy/10 bg-navy/5 px-3 py-2.5 text-xs">
+          <span className="font-semibold text-navy">{REQUESTER_ROLE_LABEL[leave.requester_role]}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-navy/40 shrink-0" />
+          <span className="text-navy/60">Persetujuan <span className="font-medium text-navy">{ROUTES_TO_LABEL[leave.requester_role]}</span></span>
+        </div>
       </div>
 
       <div>

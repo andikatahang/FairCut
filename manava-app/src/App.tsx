@@ -37,8 +37,8 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/warning', '/escalation', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
-    '/dashboard', '/attendance', '/performance', '/escalation', '/projects',
-    '/warning', '/offboarding', '/settings', '/profile',
+    '/dashboard', '/attendance', '/performance', '/projects',
+    '/warning', '/settings', '/profile',
   ],
   editor: [
     '/dashboard', '/projects', '/chat', '/ess', '/attendance', '/settings', '/profile',

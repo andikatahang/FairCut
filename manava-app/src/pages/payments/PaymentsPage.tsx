@@ -1,7 +1,7 @@
 import { useState, useMemo, type ReactNode, type ComponentType } from 'react'
 import {
   CreditCard, TrendingUp, ArrowDownLeft, ArrowUpRight, RefreshCw, CheckCircle2,
-  AlertTriangle, Clock, BarChart2, Lock, Send, FileText, Wallet, ChevronRight,
+  AlertTriangle, Clock, Lock, Send, FileText, Wallet, ChevronRight,
   Users,
 } from 'lucide-react'
 import { StatusBadge } from '../../components/ui/Badge'
