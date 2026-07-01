@@ -1,4 +1,5 @@
 import { useState, useMemo, type ReactNode, type ComponentType } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
   CreditCard, TrendingUp, ArrowDownLeft, ArrowUpRight, RefreshCw, CheckCircle2,
   AlertTriangle, Clock, Lock, Send, FileText, Wallet, ChevronRight,
@@ -438,9 +439,12 @@ function PayslipDrawerBody({ payslip }: { payslip: Payslip }) {
 // Main page
 
 export default function PaymentsPage({ role }: { role: UserRole }) {
-  const showPayrollTab = role === 'hr_admin' || role === 'superadmin'
-  const showEscrowTab  = role !== 'editor'
-  const defaultTab: Tab = role === 'hr_admin' ? 'payroll' : 'escrow'
+  const location = useLocation()
+  const isPayrollRoute = location.pathname === '/payroll'
+  // Finance reaches payroll only via /payroll; superadmin keeps both tabs on one page.
+  const showPayrollTab = role === 'superadmin' || (role === 'finance' && isPayrollRoute)
+  const showEscrowTab  = role !== 'editor' && !isPayrollRoute
+  const defaultTab: Tab = isPayrollRoute ? 'payroll' : 'escrow'
 
   const [tab, setTab] = useState<Tab>(defaultTab)
   const [selectedEscrowId,  setSelectedEscrowId]  = useState<string | null>(null)
@@ -473,10 +477,11 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
   const pendingPayslips = junePayslips.filter(p => p.status !== 'paid')
 
   const canActFinance = role === 'finance' || role === 'superadmin'
-  const canActHr      = role === 'hr_admin' || role === 'superadmin'
+  const canActPayroll = role === 'finance' || role === 'superadmin'
 
-  // Header
-  const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.superadmin
+  // Header — payroll context overrides the role default
+  const payrollHeader = { eyebrow: 'Payroll', title: 'Payroll Run', description: 'Jalankan payroll bulanan secara bertahap: tarik data → tinjau → finalisasi → publish ke ESS.' }
+  const h = tab === 'payroll' ? payrollHeader : (HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.superadmin)
 
   // Stat strip per role
   const statItems: StatItem[] = tab === 'payroll'
@@ -495,7 +500,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
 
   // Signal cards per role
   function renderSignal(): ReactNode {
-    if (tab === 'payroll' && canActHr) {
+    if (tab === 'payroll' && canActPayroll) {
       if (payrollStep === 3) return null
       return (
         <SignalCard
@@ -582,7 +587,7 @@ export default function PaymentsPage({ role }: { role: UserRole }) {
           payslips={junePayslips}
           onPickPayslip={(id) => setSelectedPayslipId(id)}
           onPublish={() => setPublishModal(true)}
-          canEdit={canActHr}
+          canEdit={canActPayroll}
         />
       )}
 

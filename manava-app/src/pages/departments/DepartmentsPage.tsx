@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   Building2, Plus, Check, Sparkles, Pencil, Star, BarChart2,
-  Clock, AlertOctagon, UserX, Users, TrendingUp, Award,
+  Clock, AlertOctagon, UserX, TrendingUp, Award, ArrowLeft, UserMinus,
 } from 'lucide-react'
 import { Modal } from '../../components/ui/Modal'
 import { PageHeader, StatPillsRow } from '../../components/page/PageHeader'
@@ -13,6 +13,7 @@ import { ManagerDepartmentView } from './ManagerDepartmentView'
 import AttendancePage from '../attendance/AttendancePage'
 import WarningPage from '../warning/WarningPage'
 import OffboardingPage from '../offboarding/OffboardingPage'
+import PerformancePage from '../performance/PerformancePage'
 
 const SPEC_LABELS: Record<string, string> = {
   product_retouch: 'Product Retouch',
@@ -28,10 +29,11 @@ const SPEC_LABELS: Record<string, string> = {
 const ACTIVE_EDITORS = mockEditors.filter(e => e.status === 'active')
 const ALL_SKILLS = Array.from(new Set(ACTIVE_EDITORS.flatMap(e => e.specialization)))
 
-type HrTab = 'departemen' | 'presensi' | 'peringatan' | 'offboarding'
+type HrTab = 'departemen' | 'kpi' | 'presensi' | 'peringatan' | 'offboarding'
 
 const HR_TABS: { id: HrTab; label: string; icon: typeof Building2 }[] = [
   { id: 'departemen', label: 'Departemen', icon: Building2 },
+  { id: 'kpi', label: 'KPI Editor', icon: BarChart2 },
   { id: 'presensi', label: 'Presensi', icon: Clock },
   { id: 'peringatan', label: 'Peringatan', icon: AlertOctagon },
   { id: 'offboarding', label: 'Offboarding', icon: UserX },
@@ -58,11 +60,18 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
   const [departments, setDepartments] = useState<Department[]>(mockDepartments)
   const [showAdd, setShowAdd] = useState(false)
   const [editing, setEditing] = useState<Department | null>(null)
+  const [managingId, setManagingId] = useState<string | null>(null)
+
+  const managing = managingId ? departments.find(d => d.id === managingId) ?? null : null
 
   const totalEditors = ACTIVE_EDITORS.length
   const allKpi = mockEditorMetrics.map(m => m.kpi_average)
   const avgKpi = allKpi.length ? allKpi.reduce((a, b) => a + b, 0) / allKpi.length : 0
 
+  function switchTab(id: HrTab) {
+    setTab(id)
+    setManagingId(null)
+  }
   function addDepartment(dep: Department) {
     setDepartments(prev => [dep, ...prev])
     setShowAdd(false)
@@ -70,6 +79,11 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
   function updateDepartment(dep: Department) {
     setDepartments(prev => prev.map(d => (d.id === dep.id ? dep : d)))
     setEditing(null)
+  }
+  function removeMember(depId: string, editorId: string) {
+    setDepartments(prev => prev.map(d =>
+      d.id === depId ? { ...d, member_ids: d.member_ids.filter(id => id !== editorId) } : d,
+    ))
   }
 
   const stats = [
@@ -94,7 +108,7 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
         {HR_TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => switchTab(id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
               tab === id ? 'bg-navy text-white' : 'text-navy/60 hover:text-navy'
             }`}
@@ -105,13 +119,23 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
       </div>
 
       {tab === 'departemen' && (
-        <DepartemenTab
-          departments={departments}
-          onAdd={() => setShowAdd(true)}
-          onManage={setEditing}
-        />
+        managing ? (
+          <DepartmentManageView
+            department={managing}
+            onBack={() => setManagingId(null)}
+            onEdit={() => setEditing(managing)}
+            onRemoveMember={editorId => removeMember(managing.id, editorId)}
+          />
+        ) : (
+          <DepartemenTab
+            departments={departments}
+            onAdd={() => setShowAdd(true)}
+            onManage={d => setManagingId(d.id)}
+          />
+        )
       )}
 
+      {tab === 'kpi' && <PerformancePage role="hr_admin" embedded />}
       {tab === 'presensi' && <AttendancePage role="hr_admin" embedded />}
       {tab === 'peringatan' && <WarningPage role="hr_admin" />}
       {tab === 'offboarding' && <OffboardingPage />}
@@ -153,6 +177,119 @@ function DepartemenTab({
         {departments.map(d => (
           <DepartmentKpiCard key={d.id} department={d} onManage={() => onManage(d)} />
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Per-department management page: department + manager info at the top,
+// followed by the editor roster with KPI and remove-member controls.
+function DepartmentManageView({
+  department, onBack, onEdit, onRemoveMember,
+}: {
+  department: Department
+  onBack: () => void
+  onEdit: () => void
+  onRemoveMember: (editorId: string) => void
+}) {
+  const manager = mockAdminManagers.find(m => m.id === department.manager_id)
+  const members = ACTIVE_EDITORS.filter(e => department.member_ids.includes(e.editor_id))
+  const memberMetrics = mockEditorMetrics.filter(m => department.member_ids.includes(m.editor_id))
+  const deptKpi = memberMetrics.length
+    ? memberMetrics.reduce((s, m) => s + m.kpi_average, 0) / memberMetrics.length
+    : 0
+
+  return (
+    <div className="space-y-5 max-w-[1140px]">
+      <button
+        onClick={onBack}
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-navy/60 hover:text-navy transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" /> Kembali ke daftar
+      </button>
+
+      {/* Department + manager info — paling atas */}
+      <div className="rounded-[12px] border border-black/[0.06] bg-[#fbfbfb] p-5 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="grid place-items-center w-11 h-11 rounded-xl bg-navy text-white shrink-0">
+            <Building2 className="w-5 h-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] uppercase tracking-wider text-navy/40">Departemen</p>
+            <h2 className="text-lg font-semibold text-navy truncate leading-tight">{department.name}</h2>
+          </div>
+          <button onClick={onEdit} className="btn-secondary text-xs py-1.5 px-3 shrink-0">
+            <Pencil className="w-3.5 h-3.5" /> Edit Departemen
+          </button>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="sm:col-span-2 flex items-center gap-3 rounded-xl border border-navy/10 bg-navy/[0.03] p-3">
+            <Avatar name={manager?.full_name ?? '—'} avatar={manager?.avatar} />
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wider text-navy/40">Manajer Departemen</p>
+              <p className="text-sm font-semibold text-navy truncate">{manager?.full_name ?? 'Belum ditunjuk'}</p>
+              {manager && <p className="text-xs text-navy/50 truncate">{manager.department}</p>}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <KpiCell icon={<Award className="w-3.5 h-3.5 text-emerald-500" />} label="Editor" value={String(members.length)} />
+            <KpiCell icon={<BarChart2 className="w-3.5 h-3.5 text-navy/50" />} label="KPI Rata-rata" value={deptKpi.toFixed(1)} highlight />
+          </div>
+        </div>
+      </div>
+
+      {/* Editor roster */}
+      <div>
+        <p className="text-[11px] uppercase tracking-wider text-navy/40 mb-2">
+          Daftar Editor ({members.length})
+        </p>
+        {members.length === 0 ? (
+          <div className="rounded-[12px] border border-dashed border-navy/15 p-8 text-center">
+            <p className="text-sm text-navy/40">Belum ada editor di departemen ini.</p>
+            <button onClick={onEdit} className="btn-secondary text-xs py-1.5 px-3 mt-3">
+              <Plus className="w-3.5 h-3.5" /> Tambah Anggota
+            </button>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {members.map(e => {
+              const metric = mockEditorMetrics.find(m => m.editor_id === e.editor_id)
+              return (
+                <li
+                  key={e.editor_id}
+                  className="flex items-center gap-3 rounded-[12px] border border-black/[0.06] bg-[#fbfbfb] p-3.5"
+                >
+                  <Avatar name={e.full_name} avatar={e.avatar} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-navy truncate">{e.full_name}</p>
+                    <div className="flex flex-wrap gap-1 mt-0.5">
+                      {e.specialization.map(s => <SkillTag key={s} skill={s} />)}
+                    </div>
+                  </div>
+                  {metric && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-sm font-semibold text-navy tabular-nums flex items-center gap-0.5">
+                        <Star className="w-3.5 h-3.5 text-amber-500" />
+                        {metric.kpi_average.toFixed(1)}
+                      </span>
+                      <span className={`hidden sm:inline text-[10px] font-semibold px-2 py-0.5 rounded-full border ${BAND_STYLE[metric.performance_band]}`}>
+                        {BAND_LABEL[metric.performance_band]}
+                      </span>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => onRemoveMember(e.editor_id)}
+                    title="Keluarkan dari departemen"
+                    className="grid place-items-center w-8 h-8 rounded-lg text-navy/40 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+                  >
+                    <UserMinus className="w-4 h-4" />
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
     </div>
   )

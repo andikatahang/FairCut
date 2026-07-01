@@ -3,10 +3,10 @@ import { cn } from '../../lib/utils'
 import type { UserRole } from '../../types'
 import logoDark from '../../assets/logo-dark.png'
 import {
-  LayoutDashboard, Users, Briefcase, CreditCard,
-  Clock, BarChart2, AlertTriangle, UserCheck,
+  LayoutDashboard, Users, Briefcase, CreditCard, Wallet,
+  AlertTriangle, UserCheck,
   Settings, ChevronLeft, LogOut, Shield, X, Search, User, Home,
-  BadgeDollarSign, AlertOctagon, ArrowUpRightFromSquare, Cog, Building2,
+  BadgeDollarSign, ArrowUpRightFromSquare, Cog, Building2,
 } from 'lucide-react'
 
 interface NavItem { to: string; icon: typeof LayoutDashboard; label: string }
@@ -22,8 +22,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'Rekrutmen & ATS' },
     { to: '/departments', icon: Building2, label: 'Dashboard Departemen' },
-    { to: '/payments', icon: CreditCard, label: 'Payroll Run' },
-    { to: '/performance', icon: BarChart2, label: 'KPI Editor' },
     { to: '/escalation', icon: ArrowUpRightFromSquare, label: 'Eskalasi Tinggi' },
   ],
   admin_manager: [
@@ -49,6 +47,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   finance: [
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/payments', icon: CreditCard, label: 'Escrow & Ledger' },
+    { to: '/payroll', icon: Wallet, label: 'Payroll Run' },
     { to: '/attendance', icon: BadgeDollarSign, label: 'Disbursement' },
     { to: '/audit', icon: Shield, label: 'Jejak Audit' },
   ],

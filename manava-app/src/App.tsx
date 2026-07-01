@@ -35,7 +35,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/dashboard', '/users', '/system', '/audit', '/settings', '/profile',
   ],
   hr_admin: [
-    '/dashboard', '/recruitment', '/attendance', '/departments', '/payments', '/performance',
+    '/dashboard', '/recruitment', '/attendance', '/departments', '/performance',
     '/warning', '/escalation', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
@@ -52,7 +52,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/dashboard', '/disputes', '/projects', '/settings',
   ],
   finance: [
-    '/dashboard', '/payments', '/attendance', '/audit', '/settings',
+    '/dashboard', '/payments', '/payroll', '/attendance', '/audit', '/settings',
   ],
 }
 
@@ -95,6 +95,7 @@ function AppRoutes() {
         <Route path="/projects/:id" element={<RoleGuard role={role}><ProjectDetailPage role={role} /></RoleGuard>} />
         <Route path="/contracts" element={<RoleGuard role={role}><ContractsPage /></RoleGuard>} />
         <Route path="/payments" element={<RoleGuard role={role}><PaymentsPage role={role} /></RoleGuard>} />
+        <Route path="/payroll" element={<RoleGuard role={role}><PaymentsPage role={role} /></RoleGuard>} />
         <Route path="/attendance" element={<RoleGuard role={role}><AttendancePage role={role} /></RoleGuard>} />
         <Route path="/departments" element={<RoleGuard role={role}><DepartmentsPage role={role} /></RoleGuard>} />
         <Route path="/team-dashboard" element={<RoleGuard role={role}><TeamDashboardPage role={role} /></RoleGuard>} />
