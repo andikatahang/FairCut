@@ -182,7 +182,7 @@ export default function ProjectDetailPage({ role }: { role: UserRole }) {
               onClick={() => setTab(t.key)}
               className={cn(
                 'px-4 py-3 text-sm font-medium border-b-2 transition-all whitespace-nowrap',
-                tab === t.key ? 'border-navy text-navy' : 'border-transparent text-navy/45 hover:text-navy'
+                tab === t.key ? 'border-navy text-navy hover:bg-navy-50/40' : 'border-transparent text-navy/45 hover:text-navy hover:bg-navy-50/40'
               )}
             >
               {t.label}
