@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
-  Building2, Plus, Check, Sparkles, Pencil, Star, BarChart2,
+  Building2, Plus, Check, Pencil, Star, BarChart2,
   Clock, CalendarCheck, AlertOctagon, UserX, TrendingUp, Award, ArrowLeft, UserMinus,
 } from 'lucide-react'
 import { Modal } from '../../components/ui/Modal'
@@ -27,7 +27,6 @@ const SPEC_LABELS: Record<string, string> = {
 }
 
 const ACTIVE_EDITORS = mockEditors.filter(e => e.status === 'active')
-const ALL_SKILLS = Array.from(new Set(ACTIVE_EDITORS.flatMap(e => e.specialization)))
 
 type HrTab = 'departemen' | 'kpi' | 'presensi' | 'cuti' | 'peringatan' | 'offboarding'
 
@@ -62,6 +61,9 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
   const [showAdd, setShowAdd] = useState(false)
   const [editing, setEditing] = useState<Department | null>(null)
   const [managingId, setManagingId] = useState<string | null>(null)
+  // A department is a "draft" between creation and its first save — HR must add
+  // at least one editor before it can be kept.
+  const [draftId, setDraftId] = useState<string | null>(null)
 
   const managing = managingId ? departments.find(d => d.id === managingId) ?? null : null
 
@@ -73,18 +75,36 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
     setTab(id)
     setManagingId(null)
   }
-  function addDepartment(dep: Department) {
+  // Create with no members, then drop straight into the new department's page.
+  function createDepartment(name: string, managerId: string) {
+    const dep: Department = { id: `d-${Date.now()}`, name, manager_id: managerId, member_ids: [] }
     setDepartments(prev => [dep, ...prev])
     setShowAdd(false)
+    setDraftId(dep.id)
+    setManagingId(dep.id)
   }
-  function updateDepartment(dep: Department) {
-    setDepartments(prev => prev.map(d => (d.id === dep.id ? dep : d)))
+  function updateBasics(depId: string, name: string, managerId: string) {
+    setDepartments(prev => prev.map(d => (d.id === depId ? { ...d, name, manager_id: managerId } : d)))
     setEditing(null)
+  }
+  function addMembers(depId: string, editorIds: string[]) {
+    setDepartments(prev => prev.map(d =>
+      d.id === depId ? { ...d, member_ids: Array.from(new Set([...d.member_ids, ...editorIds])) } : d,
+    ))
   }
   function removeMember(depId: string, editorId: string) {
     setDepartments(prev => prev.map(d =>
       d.id === depId ? { ...d, member_ids: d.member_ids.filter(id => id !== editorId) } : d,
     ))
+  }
+  function finishManage() {
+    setManagingId(null)
+    setDraftId(null)
+  }
+  function discardDraft(depId: string) {
+    setDepartments(prev => prev.filter(d => d.id !== depId))
+    setManagingId(null)
+    setDraftId(null)
   }
 
   const stats = [
@@ -123,8 +143,11 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
         managing ? (
           <DepartmentManageView
             department={managing}
-            onBack={() => setManagingId(null)}
+            isNew={managing.id === draftId}
+            onDone={finishManage}
+            onDiscard={() => discardDraft(managing.id)}
             onEdit={() => setEditing(managing)}
+            onAddMembers={editorIds => addMembers(managing.id, editorIds)}
             onRemoveMember={editorId => removeMember(managing.id, editorId)}
           />
         ) : (
@@ -143,14 +166,18 @@ function HrDepartmentDashboard({ role }: { role: UserRole }) {
       {tab === 'offboarding' && <OffboardingPage />}
 
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Tambah Departemen" size="md">
-        <DepartmentForm submitLabel="Simpan Departemen" onSubmit={addDepartment} onCancel={() => setShowAdd(false)} />
+        <DepartmentBasicForm
+          submitLabel="Tambah"
+          onSubmit={createDepartment}
+          onCancel={() => setShowAdd(false)}
+        />
       </Modal>
-      <Modal open={!!editing} onClose={() => setEditing(null)} title="Kelola Departemen" size="md">
+      <Modal open={!!editing} onClose={() => setEditing(null)} title="Edit Departemen" size="md">
         {editing && (
-          <DepartmentForm
+          <DepartmentBasicForm
             initial={editing}
             submitLabel="Simpan Perubahan"
-            onSubmit={updateDepartment}
+            onSubmit={(name, managerId) => updateBasics(editing.id, name, managerId)}
             onCancel={() => setEditing(null)}
           />
         )}
@@ -184,33 +211,44 @@ function DepartemenTab({
   )
 }
 
-// Per-department management page: department + manager info at the top,
-// followed by the editor roster with KPI and remove-member controls.
+// Per-department management page. Department + manager info at the top; simple
+// table roster below. New departments require ≥1 editor before Save enables.
 function DepartmentManageView({
-  department, onBack, onEdit, onRemoveMember,
+  department, isNew, onDone, onDiscard, onEdit, onAddMembers, onRemoveMember,
 }: {
   department: Department
-  onBack: () => void
+  isNew: boolean
+  onDone: () => void
+  onDiscard: () => void
   onEdit: () => void
+  onAddMembers: (editorIds: string[]) => void
   onRemoveMember: (editorId: string) => void
 }) {
+  const [showPicker, setShowPicker] = useState(false)
+
   const manager = mockAdminManagers.find(m => m.id === department.manager_id)
   const members = ACTIVE_EDITORS.filter(e => department.member_ids.includes(e.editor_id))
+  const available = ACTIVE_EDITORS.filter(e => !department.member_ids.includes(e.editor_id))
   const memberMetrics = mockEditorMetrics.filter(m => department.member_ids.includes(m.editor_id))
   const deptKpi = memberMetrics.length
     ? memberMetrics.reduce((s, m) => s + m.kpi_average, 0) / memberMetrics.length
     : 0
+  const canSave = members.length >= 1
 
   return (
     <div className="space-y-5 max-w-[1140px]">
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-navy/60 hover:text-navy transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Kembali ke daftar
-      </button>
+      {isNew ? (
+        <p className="text-sm text-navy/50">Langkah terakhir — tambahkan minimal satu editor, lalu simpan.</p>
+      ) : (
+        <button
+          onClick={onDone}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-navy/60 hover:text-navy transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Kembali ke daftar
+        </button>
+      )}
 
-      {/* Department + manager info — paling atas */}
+      {/* Department + manager info */}
       <div className="rounded-[12px] border border-black/[0.06] bg-[#fbfbfb] p-5 space-y-4">
         <div className="flex items-center gap-3">
           <span className="grid place-items-center w-11 h-11 rounded-xl bg-navy text-white shrink-0">
@@ -241,59 +279,158 @@ function DepartmentManageView({
         </div>
       </div>
 
-      {/* Editor roster */}
-      <div>
-        <p className="text-[11px] uppercase tracking-wider text-navy/40 mb-2">
-          Daftar Editor ({members.length})
-        </p>
+      {/* Roster */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] uppercase tracking-wider text-navy/40">Daftar Editor ({members.length})</p>
+          {available.length > 0 && (
+            <button onClick={() => setShowPicker(true)} className="btn-secondary text-xs py-1.5 px-3">
+              <Plus className="w-3.5 h-3.5" /> Tambah Editor
+            </button>
+          )}
+        </div>
+
         {members.length === 0 ? (
           <div className="rounded-[12px] border border-dashed border-navy/15 p-8 text-center">
-            <p className="text-sm text-navy/40">Belum ada editor di departemen ini.</p>
-            <button onClick={onEdit} className="btn-secondary text-xs py-1.5 px-3 mt-3">
-              <Plus className="w-3.5 h-3.5" /> Tambah Anggota
+            <p className="text-sm text-navy/40">Belum ada editor. Tambahkan minimal satu untuk menyimpan.</p>
+            <button onClick={() => setShowPicker(true)} className="btn-primary text-xs py-1.5 px-3 mt-3">
+              <Plus className="w-3.5 h-3.5" /> Tambah Editor
             </button>
           </div>
         ) : (
-          <ul className="space-y-2">
-            {members.map(e => {
-              const metric = mockEditorMetrics.find(m => m.editor_id === e.editor_id)
+          <div className="rounded-[12px] border border-black/[0.06] overflow-hidden bg-white">
+            <div className="flex items-center gap-3 px-4 py-2.5 bg-[#fafafa] border-b border-black/[0.06] text-[11px] font-medium uppercase tracking-wider text-navy/40">
+              <span className="flex-1">Editor</span>
+              <span className="w-14 text-right">KPI</span>
+              <span className="w-32 hidden sm:block">Kinerja</span>
+              <span className="w-8" />
+            </div>
+            <ul className="divide-y divide-black/[0.05]">
+              {members.map(e => {
+                const metric = mockEditorMetrics.find(m => m.editor_id === e.editor_id)
+                return (
+                  <li key={e.editor_id} className="flex items-center gap-3 px-4 py-3">
+                    <Avatar name={e.full_name} avatar={e.avatar} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-navy truncate">{e.full_name}</p>
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        {e.specialization.map(s => <SkillTag key={s} skill={s} />)}
+                      </div>
+                    </div>
+                    <span className="w-14 text-right text-sm font-semibold text-navy tabular-nums">
+                      {metric ? metric.kpi_average.toFixed(1) : '—'}
+                    </span>
+                    <span className="w-32 hidden sm:block">
+                      {metric && (
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${BAND_STYLE[metric.performance_band]}`}>
+                          {BAND_LABEL[metric.performance_band]}
+                        </span>
+                      )}
+                    </span>
+                    <button
+                      onClick={() => onRemoveMember(e.editor_id)}
+                      title="Keluarkan dari departemen"
+                      className="grid place-items-center w-8 h-8 rounded-lg text-navy/40 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+                    >
+                      <UserMinus className="w-4 h-4" />
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Save bar */}
+      <div className="flex items-center justify-between gap-3 border-t border-black/[0.06] pt-4">
+        <p className="text-xs text-navy/50">
+          {canSave ? `${members.length} editor di departemen ini` : 'Tambah minimal 1 editor untuk menyimpan.'}
+        </p>
+        <div className="flex gap-2">
+          {isNew && (
+            <button onClick={onDiscard} className="btn-secondary text-sm">Batal</button>
+          )}
+          <button
+            onClick={onDone}
+            disabled={!canSave}
+            className="btn-primary text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Check className="w-4 h-4" /> Simpan
+          </button>
+        </div>
+      </div>
+
+      <AddEditorModal
+        open={showPicker}
+        available={available}
+        onClose={() => setShowPicker(false)}
+        onConfirm={ids => { onAddMembers(ids); setShowPicker(false) }}
+      />
+    </div>
+  )
+}
+
+// Editor picker used from the department page to add employees to a department.
+function AddEditorModal({
+  open, available, onClose, onConfirm,
+}: {
+  open: boolean
+  available: typeof ACTIVE_EDITORS
+  onClose: () => void
+  onConfirm: (editorIds: string[]) => void
+}) {
+  const [picked, setPicked] = useState<string[]>([])
+
+  function toggle(id: string) {
+    setPicked(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
+  }
+  function confirm() {
+    if (picked.length) onConfirm(picked)
+    setPicked([])
+  }
+  function cancel() { setPicked([]); onClose() }
+
+  return (
+    <Modal open={open} onClose={cancel} title="Tambah Editor" size="md">
+      {available.length === 0 ? (
+        <p className="text-sm text-navy/50 py-4 text-center">Semua editor aktif sudah tergabung di departemen ini.</p>
+      ) : (
+        <div className="space-y-4">
+          <ul className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
+            {available.map(e => {
+              const checked = picked.includes(e.editor_id)
               return (
-                <li
-                  key={e.editor_id}
-                  className="flex items-center gap-3 rounded-[12px] border border-black/[0.06] bg-[#fbfbfb] p-3.5"
-                >
-                  <Avatar name={e.full_name} avatar={e.avatar} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-navy truncate">{e.full_name}</p>
-                    <div className="flex flex-wrap gap-1 mt-0.5">
-                      {e.specialization.map(s => <SkillTag key={s} skill={s} />)}
-                    </div>
-                  </div>
-                  {metric && (
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-sm font-semibold text-navy tabular-nums flex items-center gap-0.5">
-                        <Star className="w-3.5 h-3.5 text-amber-500" />
-                        {metric.kpi_average.toFixed(1)}
-                      </span>
-                      <span className={`hidden sm:inline text-[10px] font-semibold px-2 py-0.5 rounded-full border ${BAND_STYLE[metric.performance_band]}`}>
-                        {BAND_LABEL[metric.performance_band]}
-                      </span>
-                    </div>
-                  )}
+                <li key={e.editor_id}>
                   <button
-                    onClick={() => onRemoveMember(e.editor_id)}
-                    title="Keluarkan dari departemen"
-                    className="grid place-items-center w-8 h-8 rounded-lg text-navy/40 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+                    type="button"
+                    onClick={() => toggle(e.editor_id)}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-xl border text-left transition-colors ${checked ? 'border-navy bg-navy/5' : 'border-border hover:border-navy/30'}`}
                   >
-                    <UserMinus className="w-4 h-4" />
+                    <span className={`w-5 h-5 rounded-md border grid place-items-center shrink-0 ${checked ? 'bg-navy border-navy text-white' : 'border-navy/30'}`}>
+                      {checked && <Check className="w-3.5 h-3.5" />}
+                    </span>
+                    <Avatar name={e.full_name} avatar={e.avatar} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-navy truncate">{e.full_name}</p>
+                      <p className="text-xs text-navy/50 truncate">
+                        {e.specialization.map(s => SPEC_LABELS[s] ?? s).join(' · ')}
+                      </p>
+                    </div>
                   </button>
                 </li>
               )
             })}
           </ul>
-        )}
-      </div>
-    </div>
+          <div className="flex justify-end gap-2 pt-1">
+            <button className="btn-secondary" onClick={cancel}>Batal</button>
+            <button className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed" disabled={picked.length === 0} onClick={confirm}>
+              Tambah {picked.length > 0 ? `(${picked.length})` : ''}
+            </button>
+          </div>
+        </div>
+      )}
+    </Modal>
   )
 }
 
@@ -420,46 +557,22 @@ function KpiCell({ label, value, icon, highlight }: { label: string; value: stri
   )
 }
 
-function DepartmentForm({
+// Just name + manager — HR fills the roster on the department page itself.
+function DepartmentBasicForm({
   initial, submitLabel, onSubmit, onCancel,
 }: {
   initial?: Department
   submitLabel: string
-  onSubmit: (dep: Department) => void
+  onSubmit: (name: string, managerId: string) => void
   onCancel: () => void
 }) {
   const [name, setName] = useState(initial?.name ?? '')
   const [managerId, setManagerId] = useState(initial?.manager_id ?? mockAdminManagers[0]?.id ?? '')
-  const [skill, setSkill] = useState('')
-  const [memberIds, setMemberIds] = useState<string[]>(initial?.member_ids ?? [])
   const [error, setError] = useState('')
-
-  const suggestedIds = useMemo(
-    () => (skill ? ACTIVE_EDITORS.filter(e => e.specialization.includes(skill)).map(e => e.editor_id) : []),
-    [skill],
-  )
-
-  function pickSkill(s: string) {
-    const next = skill === s ? '' : s
-    setSkill(next)
-    if (next) {
-      const relevant = ACTIVE_EDITORS.filter(e => e.specialization.includes(next)).map(e => e.editor_id)
-      setMemberIds(prev => Array.from(new Set([...prev, ...relevant])))
-    }
-  }
-
-  function toggleMember(id: string) {
-    setMemberIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
-  }
 
   function submit() {
     if (!name.trim()) { setError('Nama departemen wajib diisi'); return }
-    onSubmit({
-      id: initial?.id ?? `d-${Date.now()}`,
-      name: name.trim(),
-      manager_id: managerId,
-      member_ids: memberIds,
-    })
+    onSubmit(name.trim(), managerId)
   }
 
   return (
@@ -471,6 +584,7 @@ function DepartmentForm({
           value={name}
           onChange={e => { setName(e.target.value); setError('') }}
           placeholder="mis. Motion Graphics"
+          autoFocus
         />
         {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
       </div>
@@ -482,58 +596,6 @@ function DepartmentForm({
             <option key={m.id} value={m.id}>{m.full_name} — {m.department}</option>
           ))}
         </select>
-      </div>
-
-      <div>
-        <label className="label">Keahlian utama <span className="text-navy/40 font-normal">(saran anggota)</span></label>
-        <div className="flex flex-wrap gap-2">
-          {ALL_SKILLS.map(s => (
-            <button
-              type="button"
-              key={s}
-              onClick={() => pickSkill(s)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${skill === s ? 'bg-navy text-white border-navy' : 'bg-white text-navy/60 border-border hover:border-navy/30'}`}
-            >
-              {SPEC_LABELS[s] ?? s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="label">Anggota <span className="text-navy/40 font-normal">({memberIds.length} dipilih)</span></label>
-        <ul className="space-y-1.5 max-h-56 overflow-y-auto pr-0.5">
-          {ACTIVE_EDITORS.map(e => {
-            const checked = memberIds.includes(e.editor_id)
-            const suggested = suggestedIds.includes(e.editor_id)
-            return (
-              <li key={e.editor_id}>
-                <button
-                  type="button"
-                  onClick={() => toggleMember(e.editor_id)}
-                  className={`w-full flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all ${checked ? 'border-navy bg-navy/5' : 'border-border hover:border-navy/30'}`}
-                >
-                  <span className={`w-5 h-5 rounded-md border grid place-items-center shrink-0 ${checked ? 'bg-navy border-navy text-white' : 'border-navy/30'}`}>
-                    {checked && <Check className="w-3.5 h-3.5" />}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-navy truncate">{e.full_name}</p>
-                      {suggested && (
-                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5 shrink-0">
-                          <Sparkles className="w-2.5 h-2.5" /> Disarankan
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-navy/50 truncate">
-                      {e.specialization.map(s => SPEC_LABELS[s] ?? s).join(' · ')}
-                    </p>
-                  </div>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
       </div>
 
       <div className="flex justify-end gap-2 pt-1">

@@ -41,7 +41,7 @@ const ALLOWED_PATHS: Record<UserRole, string[]> = {
     '/dashboard', '/users', '/system', '/audit', '/escrow', '/emergency-release', '/refund', '/bonus-accrual', '/reconciliation', '/revenue-report', '/payroll-disbursement', '/payments', '/settings', '/profile',
   ],
   hr_admin: [
-    '/dashboard', '/recruitment', '/attendance', '/payments', '/bonus-accrual', '/payroll-disbursement', '/performance',
+    '/dashboard', '/recruitment', '/attendance', '/departments', '/payments', '/bonus-accrual', '/payroll-disbursement', '/performance',
     '/warning', '/escalation', '/offboarding', '/settings', '/profile',
   ],
   admin_manager: [
