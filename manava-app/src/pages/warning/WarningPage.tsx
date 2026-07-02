@@ -72,6 +72,7 @@ export default function WarningPage({ role }: WarningPageProps) {
   const [filter, setFilter] = useState<Status | 'all'>('all')
   const [warnings, setWarnings] = useState<Warning[]>(MOCK_WARNINGS)
   const [showForm, setShowForm] = useState(false)
+  const [selected, setSelected] = useState<Warning | null>(null)
 
   const candidates = useMemo<Candidate[]>(() => ([
     ...mockEditors
@@ -97,6 +98,11 @@ export default function WarningPage({ role }: WarningPageProps) {
     }
     setWarnings(prev => [next, ...prev])
     setShowForm(false)
+  }
+
+  function updateStatus(id: string, status: Status) {
+    setWarnings(prev => prev.map(w => (w.id === id ? { ...w, status } : w)))
+    setSelected(prev => (prev && prev.id === id ? { ...prev, status } : prev))
   }
 
   const filtered = filter === 'all' ? warnings : warnings.filter(w => w.status === filter)
@@ -168,7 +174,12 @@ export default function WarningPage({ role }: WarningPageProps) {
                     Akui peringatan
                   </button>
                 )}
-                <button className="text-[12px] font-semibold text-[#021526] hover:underline">Detail</button>
+                <button
+                  onClick={() => setSelected(w)}
+                  className="text-[12px] font-semibold text-[#021526] hover:underline"
+                >
+                  Detail
+                </button>
               </div>
             </div>
           </article>
@@ -186,6 +197,17 @@ export default function WarningPage({ role }: WarningPageProps) {
           onCancel={() => setShowForm(false)}
           onSubmit={issueWarning}
         />
+      </Modal>
+
+      <Modal open={!!selected} onClose={() => setSelected(null)} title="Detail Peringatan" size="md">
+        {selected && (
+          <WarningDetail
+            warning={selected}
+            role={role}
+            onClose={() => setSelected(null)}
+            onStatusChange={s => updateStatus(selected.id, s)}
+          />
+        )}
       </Modal>
     </div>
   )
@@ -295,6 +317,94 @@ function IssueWarningForm({ candidates, onCancel, onSubmit }: IssueWarningFormPr
           Terbitkan
         </button>
       </div>
+    </div>
+  )
+}
+
+interface WarningDetailProps {
+  warning: Warning
+  role: UserRole
+  onClose: () => void
+  onStatusChange: (status: Status) => void
+}
+
+function WarningDetail({ warning, role, onClose, onStatusChange }: WarningDetailProps) {
+  const canManage = role === 'hr_admin' || role === 'superadmin'
+  return (
+    <div className="space-y-5">
+      {/* Header block: target + severity + status */}
+      <div className="flex items-start gap-3">
+        <span className="w-11 h-11 rounded-full bg-[#FEE2E2] text-[#B91C1C] flex items-center justify-center flex-shrink-0">
+          <AlertOctagon className="w-5 h-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] uppercase tracking-wider text-navy/40">Diterbitkan kepada</p>
+          <h3 className="text-base font-semibold text-navy truncate leading-tight">{warning.targetName}</h3>
+          <p className="text-xs text-navy/50 mt-0.5">{ROLE_LABEL[warning.targetRole]}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold uppercase tracking-[0.06em] border ${SEVERITY_TONE[warning.severity]}`}>
+          Severity {warning.severity}
+        </span>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold ${STATUS_TONE[warning.status]}`}>
+          {warning.status}
+        </span>
+      </div>
+
+      {/* Catatan */}
+      <div>
+        <p className="text-[11px] uppercase tracking-wider text-navy/40 mb-1.5">Catatan HR Admin</p>
+        <div className="rounded-xl border border-black/[0.06] bg-[#fbfbfb] p-3.5">
+          <p className="text-sm text-navy leading-relaxed whitespace-pre-wrap">{warning.reason}</p>
+        </div>
+      </div>
+
+      {/* Meta grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <DetailField label="Diterbitkan oleh" value={warning.issuedBy} />
+        <DetailField label="Tanggal terbit" value={warning.issuedAt} icon={<Calendar className="w-3 h-3" />} />
+        <DetailField label="Kedaluwarsa" value={warning.expiresAt} icon={<Calendar className="w-3 h-3" />} />
+        <DetailField label="ID Peringatan" value={warning.id.toUpperCase()} />
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-between gap-3 pt-1 border-t border-black/[0.06]">
+        <p className="text-[11px] text-navy/50">
+          {canManage
+            ? 'Sebagai HR Admin, Anda dapat mengubah status peringatan.'
+            : 'Detail hanya-baca berdasarkan role Anda.'}
+        </p>
+        <div className="flex gap-2">
+          {canManage && warning.status === 'aktif' && (
+            <button
+              onClick={() => onStatusChange('diakui')}
+              className="btn-secondary text-sm"
+            >
+              Tandai Diakui
+            </button>
+          )}
+          {canManage && warning.status !== 'kedaluwarsa' && (
+            <button
+              onClick={() => onStatusChange('kedaluwarsa')}
+              className="text-sm font-semibold text-red-600 hover:underline px-2"
+            >
+              Kedaluwarsakan
+            </button>
+          )}
+          <button onClick={onClose} className="btn-primary text-sm">Tutup</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DetailField({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-border px-3 py-2">
+      <p className="text-[10px] uppercase tracking-wider text-navy/40">{label}</p>
+      <p className="text-sm font-semibold text-navy flex items-center gap-1 mt-0.5">{icon}{value}</p>
     </div>
   )
 }
