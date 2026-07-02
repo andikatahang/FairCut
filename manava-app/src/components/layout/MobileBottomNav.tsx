@@ -21,6 +21,7 @@ const itemsByRole: Record<UserRole, BottomNavItem[]> = {
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'ATS' },
     { to: '/departments', icon: Building2, label: 'Departemen' },
+    { to: '/ess', icon: UserCheck, label: 'Mandiri' },
     { to: '/profile', icon: User, label: 'Profil' },
   ],
   admin_manager: [
