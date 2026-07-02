@@ -1,6 +1,6 @@
 # Manava — 3 single-responsibility containers on a shared bridge network.
-#   postgres  → PostgreSQL 16 (data volume: postgres_data)
-#   api       → Express + Prisma backend
+#   postgres  → PostgreSQL 16, container "database" (data volume: postgres_data)
+#   api       → Express + Prisma backend, container "backend"
 #   frontend  → Vite build served by nginx
 #
 # Dev workflow: `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`
@@ -10,12 +10,12 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: manava-postgres
+    container_name: database
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-manava}
       POSTGRES_USER: ${POSTGRES_USER:-manava}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-manava_dev_change_me}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-manava123}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -32,12 +32,12 @@ services:
     build:
       context: ./manava-api
       dockerfile: Dockerfile
-    container_name: manava-api
+    container_name: backend
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 4000
-      DATABASE_URL: ${DATABASE_URL:-postgresql://manava:manava_dev_change_me@postgres:5432/manava?schema=public}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://manava:${POSTGRES_PASSWORD:-manava123}@postgres:5432/manava?schema=public}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-15m}
