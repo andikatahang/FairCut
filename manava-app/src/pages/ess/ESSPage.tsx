@@ -12,9 +12,11 @@ import { PageHeader } from '../../components/page/PageHeader'
 import type { UserRole } from '../../types'
 
 // The self-service subject depends on who is logged in — an editor sees their own
-// records; an Admin Manager sees theirs. Keeps the page "based on the user".
+// records; an Admin Manager or HR Admin sees theirs. Keeps the page "based on the user".
 function selfIdFor(role: UserRole): string {
-  return role === 'admin_manager' ? mockUsers.admin_manager.user_id : MY_EDITOR.editor_id
+  if (role === 'admin_manager') return mockUsers.admin_manager.user_id
+  if (role === 'hr_admin') return mockUsers.hr_admin.user_id
+  return MY_EDITOR.editor_id
 }
 
 type Tab = 'absensi' | 'cuti' | 'gaji'

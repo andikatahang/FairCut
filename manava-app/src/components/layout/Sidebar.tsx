@@ -22,6 +22,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { to: '/dashboard', icon: Home, label: 'Home' },
     { to: '/recruitment', icon: Users, label: 'Rekrutmen & ATS' },
     { to: '/departments', icon: Building2, label: 'Dashboard Departemen' },
+    { to: '/ess', icon: UserCheck, label: 'Layanan Mandiri' },
   ],
   admin_manager: [
     { to: '/dashboard', icon: Home, label: 'Home' },
