@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AlertOctagon, Plus, Filter, Calendar } from 'lucide-react'
 import { PageHeader, StatPillsRow } from '../../components/page/PageHeader'
+import { Modal } from '../../components/ui/Modal'
+import { mockEditors, mockAdminManagers } from '../../data/mockData'
 import type { UserRole } from '../../types'
 
 type Severity = 'ringan' | 'sedang' | 'berat'
 type Status = 'aktif' | 'diakui' | 'kedaluwarsa'
+type TargetRole = 'editor' | 'admin_manager'
 
 interface Warning {
   id: string
   targetName: string
-  targetRole: 'editor' | 'admin_manager'
+  targetRole: TargetRole
   reason: string
   severity: Severity
   status: Status
@@ -17,6 +20,22 @@ interface Warning {
   issuedAt: string
   expiresAt: string
 }
+
+// Pool of candidate targets: active editors + admin managers. Sourced live from
+// mock data so a newly added editor is automatically eligible for a warning.
+interface Candidate { id: string; name: string; role: TargetRole; subLabel: string }
+
+const ROLE_LABEL: Record<TargetRole, string> = {
+  editor: 'Editor',
+  admin_manager: 'Admin Manager',
+}
+
+function addMonths(iso: string, months: number): string {
+  const d = new Date(iso)
+  d.setMonth(d.getMonth() + months)
+  return d.toISOString().slice(0, 10)
+}
+const SEVERITY_MONTHS: Record<Severity, number> = { ringan: 2, sedang: 3, berat: 6 }
 
 const SEVERITY_TONE: Record<Severity, string> = {
   ringan: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
@@ -51,13 +70,41 @@ const HEADER_BY_ROLE: Record<UserRole, { eyebrow: string; title: string; descrip
 export default function WarningPage({ role }: WarningPageProps) {
   const h = HEADER_BY_ROLE[role] ?? HEADER_BY_ROLE.hr_admin
   const [filter, setFilter] = useState<Status | 'all'>('all')
+  const [warnings, setWarnings] = useState<Warning[]>(MOCK_WARNINGS)
+  const [showForm, setShowForm] = useState(false)
 
-  const filtered = filter === 'all' ? MOCK_WARNINGS : MOCK_WARNINGS.filter(w => w.status === filter)
+  const candidates = useMemo<Candidate[]>(() => ([
+    ...mockEditors
+      .filter(e => e.status === 'active')
+      .map(e => ({ id: e.editor_id, name: e.full_name, role: 'editor' as TargetRole, subLabel: e.department })),
+    ...mockAdminManagers.map(m => ({ id: m.id, name: m.full_name, role: 'admin_manager' as TargetRole, subLabel: m.department })),
+  ]), [])
+
+  function issueWarning(input: { targetId: string; reason: string; severity: Severity }) {
+    const target = candidates.find(c => c.id === input.targetId)
+    if (!target) return
+    const today = new Date().toISOString().slice(0, 10)
+    const next: Warning = {
+      id: `w-${Date.now()}`,
+      targetName: target.name,
+      targetRole: target.role,
+      reason: input.reason.trim(),
+      severity: input.severity,
+      status: 'aktif',
+      issuedBy: 'Hasna HR Admin',
+      issuedAt: today,
+      expiresAt: addMonths(today, SEVERITY_MONTHS[input.severity]),
+    }
+    setWarnings(prev => [next, ...prev])
+    setShowForm(false)
+  }
+
+  const filtered = filter === 'all' ? warnings : warnings.filter(w => w.status === filter)
 
   const stats = [
-    { label: 'Aktif',       value: MOCK_WARNINGS.filter(w => w.status === 'aktif').length, tone: 'red' as const,     hint: 'belum diakui' },
-    { label: 'Diakui',      value: MOCK_WARNINGS.filter(w => w.status === 'diakui').length, tone: 'emerald' as const, hint: 'sudah dikonfirmasi' },
-    { label: 'Severity berat', value: MOCK_WARNINGS.filter(w => w.severity === 'berat').length, tone: 'amber' as const, hint: 'butuh action plan' },
+    { label: 'Aktif',       value: warnings.filter(w => w.status === 'aktif').length, tone: 'red' as const,     hint: 'belum diakui' },
+    { label: 'Diakui',      value: warnings.filter(w => w.status === 'diakui').length, tone: 'emerald' as const, hint: 'sudah dikonfirmasi' },
+    { label: 'Severity berat', value: warnings.filter(w => w.severity === 'berat').length, tone: 'amber' as const, hint: 'butuh action plan' },
   ]
 
   return (
@@ -67,7 +114,7 @@ export default function WarningPage({ role }: WarningPageProps) {
         title={h.title}
         description={h.description}
         role={role}
-        actions={h.canIssue ? [{ label: 'Terbitkan Peringatan', icon: Plus }] : undefined}
+        actions={h.canIssue ? [{ label: 'Terbitkan Peringatan', icon: Plus, onClick: () => setShowForm(true), variant: 'primary' }] : undefined}
       >
         <StatPillsRow items={stats} cols={3} />
       </PageHeader>
@@ -132,6 +179,122 @@ export default function WarningPage({ role }: WarningPageProps) {
         HR Admin adalah satu-satunya role yang dapat menerbitkan peringatan kerja formal.
         Manajer & editor melihat peringatan yang diterima dan menindaklanjuti dengan action plan.
       </p>
+
+      <Modal open={showForm} onClose={() => setShowForm(false)} title="Terbitkan Peringatan Kerja" size="md">
+        <IssueWarningForm
+          candidates={candidates}
+          onCancel={() => setShowForm(false)}
+          onSubmit={issueWarning}
+        />
+      </Modal>
+    </div>
+  )
+}
+
+interface IssueWarningFormProps {
+  candidates: Candidate[]
+  onCancel: () => void
+  onSubmit: (input: { targetId: string; reason: string; severity: Severity }) => void
+}
+
+function IssueWarningForm({ candidates, onCancel, onSubmit }: IssueWarningFormProps) {
+  const [targetId, setTargetId] = useState('')
+  const [severity, setSeverity] = useState<Severity>('sedang')
+  const [reason, setReason] = useState('')
+  const [error, setError] = useState('')
+
+  const target = candidates.find(c => c.id === targetId)
+  const canSubmit = Boolean(targetId) && reason.trim().length > 0
+
+  function handleSubmit() {
+    if (!targetId) { setError('Pilih pengguna terlebih dahulu.'); return }
+    if (!reason.trim()) { setError('Catatan wajib diisi.'); return }
+    onSubmit({ targetId, reason, severity })
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="label">Pengguna</label>
+        <select
+          className="input"
+          value={targetId}
+          onChange={e => { setTargetId(e.target.value); setError('') }}
+        >
+          <option value="" disabled>Pilih pengguna…</option>
+          <optgroup label="Editor">
+            {candidates.filter(c => c.role === 'editor').map(c => (
+              <option key={c.id} value={c.id}>{c.name} — {c.subLabel}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Admin Manager">
+            {candidates.filter(c => c.role === 'admin_manager').map(c => (
+              <option key={c.id} value={c.id}>{c.name} — {c.subLabel}</option>
+            ))}
+          </optgroup>
+        </select>
+      </div>
+
+      {/* Auto-derived role chip so HR sees who they're targeting. */}
+      <div>
+        <label className="label">Role</label>
+        {target ? (
+          <div className="flex items-center gap-2 rounded-xl border border-navy/10 bg-navy/[0.03] px-3 py-2.5">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-navy text-white">
+              {ROLE_LABEL[target.role]}
+            </span>
+            <span className="text-sm text-navy/60 truncate">{target.subLabel}</span>
+          </div>
+        ) : (
+          <p className="text-xs text-navy/40 px-1">Role akan muncul setelah pengguna dipilih.</p>
+        )}
+      </div>
+
+      <div>
+        <label className="label">Severity</label>
+        <div className="flex flex-wrap gap-2">
+          {(['ringan', 'sedang', 'berat'] as const).map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSeverity(s)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.06em] border transition-colors ${
+                severity === s ? SEVERITY_TONE[s] : 'bg-white text-navy/60 border-black/[0.08] hover:border-navy/30'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-navy/45 mt-1.5">Berat berlaku 6 bulan · Sedang 3 bulan · Ringan 2 bulan.</p>
+      </div>
+
+      <div>
+        <label className="label">
+          Catatan <span className="text-red-600">*</span>
+        </label>
+        <textarea
+          rows={4}
+          className="input resize-none"
+          value={reason}
+          onChange={e => { setReason(e.target.value); setError('') }}
+          placeholder="Jelaskan alasan peringatan — kebijakan yang dilanggar, bukti, dampak, dan ekspektasi tindak lanjut."
+        />
+        <p className="text-[11px] text-navy/45 mt-1">Wajib diisi. Akan disimpan di catatan HR dan dikirim ke penerima.</p>
+      </div>
+
+      {error && <p className="text-xs text-red-600">{error}</p>}
+
+      <div className="flex justify-end gap-2 pt-1">
+        <button className="btn-secondary" onClick={onCancel}>Batal</button>
+        <button
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={!canSubmit}
+          onClick={handleSubmit}
+        >
+          Terbitkan
+        </button>
+      </div>
     </div>
   )
 }
